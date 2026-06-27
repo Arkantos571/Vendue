@@ -15,7 +15,7 @@ export function VenueRequiredEmptyState({
   buttonLabel = "Go to venue setup",
 }: VenueRequiredEmptyStateProps) {
   return (
-    <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+    <div className="v-empty">
       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-700">
         <Building2 className="h-6 w-6" />
       </div>

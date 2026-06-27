@@ -138,7 +138,7 @@ export function AddShiftForm({
   }
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
+    <div className="v-panel">
       <h3 className="text-sm font-semibold text-stone-900">Add shift</h3>
       <p className="mt-1 text-sm text-stone-500">
         Assign a team member to a role and section for this event.

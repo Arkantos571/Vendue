@@ -57,7 +57,7 @@ export function EnquiriesPageContent() {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+      <div className="v-empty">
         <p className="text-sm text-stone-500">Loading enquiries…</p>
       </div>
     );

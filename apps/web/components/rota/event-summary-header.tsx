@@ -23,7 +23,7 @@ interface EventSummaryHeaderProps {
 
 export function EventSummaryHeader({ data }: EventSummaryHeaderProps) {
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
+    <div className="v-panel">
       <Link
         href="/dashboard/rota"
         className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-stone-500 transition-colors hover:text-brand-700"

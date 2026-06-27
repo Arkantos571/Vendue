@@ -49,7 +49,7 @@ function FilterChip({
         "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
         active
           ? "bg-brand-700 text-white"
-          : "bg-white text-stone-600 ring-1 ring-stone-200 hover:bg-stone-50",
+          : "bg-white text-stone-600 ring-1 ring-stone-200 hover:bg-stone-50 dark:bg-stone-900 dark:text-stone-300 dark:ring-stone-700 dark:hover:bg-stone-800",
       )}
     >
       {label}
@@ -116,7 +116,7 @@ export function TeamList() {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+      <div className="v-empty">
         <p className="text-sm text-stone-500">Loading team…</p>
       </div>
     );
@@ -190,7 +190,7 @@ export function TeamList() {
       </div>
 
       {filteredMembers.length === 0 ? (
-        <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+        <div className="v-empty">
           <p className="text-sm font-medium text-stone-900">No team members found</p>
           <p className="mt-1 text-sm text-stone-500">
             Try adjusting your search or filters, or add a new team member.
@@ -251,7 +251,7 @@ function TeamTableRow({ member }: { member: MockTeamMember }) {
       tabIndex={0}
       onClick={navigate}
       onKeyDown={handleKeyDown}
-      className="cursor-pointer transition-colors hover:bg-stone-50/80 focus-visible:bg-stone-50/80 focus-visible:outline-none"
+      className="cursor-pointer transition-colors hover:bg-stone-50/80 focus-visible:bg-stone-50/80 dark:hover:bg-stone-800/50 dark:focus-visible:bg-stone-800/50 focus-visible:outline-none"
       aria-label={`View ${member.fullName}`}
     >
       <td className="px-6 py-4">
@@ -281,7 +281,7 @@ export function TeamMemberCard({ member }: { member: MockTeamMember }) {
   return (
     <Link
       href={`/dashboard/team/${member.id}`}
-      className="block rounded-xl border border-stone-200 bg-white p-5 shadow-sm transition-colors hover:border-stone-300 hover:bg-stone-50/50"
+      className="block v-card p-5 transition-colors hover:border-stone-300 hover:bg-stone-50/50"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

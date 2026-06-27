@@ -57,7 +57,7 @@ export function OverviewCards({ stats }: OverviewCardsProps) {
           key={key}
           href={href}
           className={cn(
-            "block rounded-xl border border-stone-200/80 bg-white p-5 shadow-sm",
+            "block v-card p-5 shadow-sm",
             "cursor-pointer transition-all hover:border-stone-300 hover:bg-stone-50/80 hover:shadow-md",
             "dark:border-stone-700 dark:bg-stone-900 dark:hover:border-stone-600 dark:hover:bg-stone-800/80",
           )}

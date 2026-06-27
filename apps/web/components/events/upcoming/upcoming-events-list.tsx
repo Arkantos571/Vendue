@@ -83,7 +83,7 @@ export function UpcomingEventsList() {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+      <div className="v-empty">
         <p className="text-sm text-stone-500">Loading upcoming events…</p>
       </div>
     );
@@ -116,7 +116,7 @@ export function UpcomingEventsList() {
               "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
               filter === value
                 ? "bg-brand-700 text-white"
-                : "bg-white text-stone-600 ring-1 ring-stone-200 hover:bg-stone-50",
+                : "bg-white text-stone-600 ring-1 ring-stone-200 hover:bg-stone-50 dark:bg-stone-900 dark:text-stone-300 dark:ring-stone-700 dark:hover:bg-stone-800",
             )}
           >
             {label}
@@ -125,7 +125,7 @@ export function UpcomingEventsList() {
       </div>
 
       {grouped.length === 0 ? (
-        <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+        <div className="v-empty">
           <p className="text-sm font-medium text-stone-900">No upcoming events found</p>
           <p className="mt-1 text-sm text-stone-500">Try another filter to see more events.</p>
         </div>
@@ -158,7 +158,7 @@ export function UpcomingEventsList() {
                         tabIndex={0}
                         onClick={() => navigate(event.id)}
                         onKeyDown={(e) => handleKeyDown(e, event.id)}
-                        className="cursor-pointer transition-colors hover:bg-stone-50/80 focus-visible:bg-stone-50/80 focus-visible:outline-none"
+                        className="cursor-pointer transition-colors hover:bg-stone-50/80 focus-visible:bg-stone-50/80 dark:hover:bg-stone-800/50 dark:focus-visible:bg-stone-800/50 focus-visible:outline-none"
                         aria-label={`View ${event.title}`}
                       >
                         <td className="px-6 py-4 font-medium text-stone-900">{event.title}</td>

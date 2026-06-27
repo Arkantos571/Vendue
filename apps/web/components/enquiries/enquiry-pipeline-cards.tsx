@@ -26,12 +26,12 @@ export function EnquiryPipelineCards({ stats }: EnquiryPipelineCardsProps) {
         <div
           key={key}
           className={cn(
-            "rounded-xl border border-stone-200/80 bg-white p-5 shadow-sm",
-            key === "conversionRate" && "bg-brand-50/30",
+            "v-card p-5",
+            key === "conversionRate" && "bg-brand-50/30 dark:bg-brand-950/30",
           )}
         >
-          <p className="text-sm font-medium text-stone-500">{label}</p>
-          <p className="mt-2 text-3xl font-semibold tracking-tight text-stone-900">{values[key]}</p>
+          <p className="text-sm font-medium text-stone-500 dark:text-stone-400">{label}</p>
+          <p className="mt-2 text-3xl font-semibold tracking-tight text-stone-900 dark:text-stone-50">{values[key]}</p>
           <p className="mt-1 text-xs text-stone-400">{sublabel}</p>
         </div>
       ))}

@@ -72,7 +72,7 @@ export function EventCalendar() {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+      <div className="v-empty">
         <p className="text-sm text-stone-500">Loading calendar…</p>
       </div>
     );
@@ -104,7 +104,7 @@ export function EventCalendar() {
                 "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
                 viewMode === value
                   ? "bg-brand-700 text-white"
-                  : "bg-white text-stone-600 ring-1 ring-stone-200 hover:bg-stone-50",
+                  : "bg-white text-stone-600 ring-1 ring-stone-200 hover:bg-stone-50 dark:bg-stone-900 dark:text-stone-300 dark:ring-stone-700 dark:hover:bg-stone-800",
               )}
             >
               {label}

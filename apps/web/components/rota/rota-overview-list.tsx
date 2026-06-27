@@ -37,7 +37,7 @@ function RotaTableRow({ event }: { event: RotaEventSummary }) {
       tabIndex={0}
       onClick={navigate}
       onKeyDown={handleKeyDown}
-      className="group cursor-pointer transition-colors hover:bg-stone-50/80 focus-visible:bg-stone-50/80 focus-visible:outline-none"
+      className="group cursor-pointer transition-colors hover:bg-stone-50/80 focus-visible:bg-stone-50/80 dark:hover:bg-stone-800/50 dark:focus-visible:bg-stone-800/50 focus-visible:outline-none"
       aria-label={`Build rota for ${event.eventName}`}
     >
       <td className="px-6 py-4">
@@ -201,7 +201,7 @@ export function RotaOverviewList() {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+      <div className="v-empty">
         <p className="text-sm text-stone-500">Loading rotas…</p>
       </div>
     );
@@ -247,7 +247,7 @@ export function RotaOverviewList() {
               "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
               statusFilter === value
                 ? "bg-brand-700 text-white"
-                : "bg-white text-stone-600 ring-1 ring-stone-200 hover:bg-stone-50",
+                : "bg-white text-stone-600 ring-1 ring-stone-200 hover:bg-stone-50 dark:bg-stone-900 dark:text-stone-300 dark:ring-stone-700 dark:hover:bg-stone-800",
             )}
           >
             {label}
@@ -256,7 +256,7 @@ export function RotaOverviewList() {
       </div>
 
       {filteredEvents.length === 0 ? (
-        <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+        <div className="v-empty">
           <p className="text-sm font-medium text-stone-900">No rota events found</p>
           <p className="mt-1 text-sm text-stone-500">
             {events.length === 0

@@ -22,7 +22,7 @@ export function AssignedShiftsList({
 }: AssignedShiftsListProps) {
   if (shifts.length === 0) {
     return (
-      <div className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
+      <div className="v-panel">
         <h3 className="text-sm font-semibold text-stone-900">Assigned shifts</h3>
         <p className="mt-4 text-sm text-stone-500">
           No shifts assigned yet. Add staff from the panel below or use the add shift form.

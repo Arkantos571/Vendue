@@ -40,7 +40,7 @@ function EnquiryTableRow({ enquiry }: { enquiry: MockEnquiry }) {
       tabIndex={0}
       onClick={navigate}
       onKeyDown={handleKeyDown}
-      className="cursor-pointer transition-colors hover:bg-stone-50/80 focus-visible:bg-stone-50/80 focus-visible:outline-none"
+      className="cursor-pointer transition-colors hover:bg-stone-50/80 focus-visible:bg-stone-50/80 dark:hover:bg-stone-800/50 dark:focus-visible:bg-stone-800/50 focus-visible:outline-none"
       aria-label={`View ${enquiry.eventName}`}
     >
       <td className="px-6 py-4 font-medium text-stone-900">{enquiry.eventName}</td>
@@ -87,7 +87,7 @@ function EnquiryCard({ enquiry }: { enquiry: MockEnquiry }) {
       tabIndex={0}
       onClick={navigate}
       onKeyDown={handleKeyDown}
-      className="cursor-pointer rounded-xl border border-stone-200 bg-white p-5 shadow-sm transition-all hover:border-stone-300 hover:bg-stone-50/80"
+      className="cursor-pointer v-card p-5 transition-all hover:border-stone-300 hover:bg-stone-50/80"
       aria-label={`View ${enquiry.eventName}`}
     >
       <div className="flex items-start justify-between gap-3">
@@ -171,7 +171,7 @@ export function EnquiriesList({ enquiries }: EnquiriesListProps) {
               "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
               statusFilter === value
                 ? "bg-brand-700 text-white"
-                : "bg-white text-stone-600 ring-1 ring-stone-200 hover:bg-stone-50",
+                : "bg-white text-stone-600 ring-1 ring-stone-200 hover:bg-stone-50 dark:bg-stone-900 dark:text-stone-300 dark:ring-stone-700 dark:hover:bg-stone-800",
             )}
           >
             {label}
@@ -180,13 +180,13 @@ export function EnquiriesList({ enquiries }: EnquiriesListProps) {
       </div>
 
       {filteredEnquiries.length === 0 ? (
-        <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+        <div className="v-empty">
           <p className="text-sm font-medium text-stone-900">No enquiries found</p>
           <p className="mt-1 text-sm text-stone-500">Try adjusting your search or filters.</p>
         </div>
       ) : (
         <>
-          <div className="hidden overflow-x-auto rounded-xl border border-stone-200 bg-white shadow-sm lg:block">
+          <div className="hidden overflow-x-auto v-card lg:block">
             <table className="w-full min-w-[1100px] text-left text-sm">
               <thead>
                 <tr className="border-b border-stone-100 bg-stone-50/50 text-xs font-medium uppercase tracking-wide text-stone-500">

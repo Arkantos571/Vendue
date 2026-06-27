@@ -176,7 +176,7 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+      <div className="v-empty">
         <p className="text-sm text-stone-500">Loading rota…</p>
       </div>
     );
@@ -195,7 +195,7 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
 
   if (!data) {
     return (
-      <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+      <div className="v-empty">
         <p className="text-sm font-medium text-stone-900">Event not found</p>
         <p className="mt-1 text-sm text-stone-500">
           This event may not exist or is not in your venue.
@@ -230,7 +230,7 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
         <div className="space-y-6">
           <LabourCostSummary summary={labourSummary} />
 
-          <div className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
+          <div className="v-panel">
             <h3 className="text-sm font-semibold text-stone-900">Publish rota</h3>
             <p className="mt-1 text-sm text-stone-500">
               {published

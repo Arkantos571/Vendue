@@ -10,7 +10,7 @@ export function EnquiriesDashboardWidget({ stats }: EnquiriesDashboardWidgetProp
   return (
     <Link
       href="/dashboard/enquiries"
-      className="block rounded-xl border border-stone-200 bg-white p-5 shadow-sm transition-all hover:border-stone-300 hover:bg-stone-50/80 hover:shadow-md"
+      className="block v-card p-5 transition-all hover:border-stone-300 hover:bg-stone-50/80 hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3">

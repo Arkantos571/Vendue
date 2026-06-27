@@ -18,7 +18,7 @@ export function LabourCostSummary({ summary }: LabourCostSummaryProps) {
   ];
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
+    <div className="v-panel">
       <h3 className="text-sm font-semibold text-stone-900">Labour summary</h3>
       <p className="mt-1 text-sm text-stone-500">
         Estimated cost based on assigned shifts.

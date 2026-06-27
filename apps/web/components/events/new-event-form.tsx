@@ -149,7 +149,7 @@ export function NewEventForm() {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+      <div className="v-empty">
         <p className="text-sm text-stone-500">Loading form…</p>
       </div>
     );
@@ -167,7 +167,7 @@ export function NewEventForm() {
         </div>
       )}
 
-      <section className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
+      <section className="v-panel">
         <h2 className="text-base font-semibold text-stone-900">Event details</h2>
         <p className="mt-1 text-sm text-stone-500">Core information for this booking.</p>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -195,7 +195,7 @@ export function NewEventForm() {
         </div>
       </section>
 
-      <section className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
+      <section className="v-panel">
         <h2 className="text-base font-semibold text-stone-900">Client details</h2>
         <p className="mt-1 text-sm text-stone-500">Primary contact for this event.</p>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -214,7 +214,7 @@ export function NewEventForm() {
         </div>
       </section>
 
-      <section className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
+      <section className="v-panel">
         <h2 className="text-base font-semibold text-stone-900">Schedule & space</h2>
         <p className="mt-1 text-sm text-stone-500">When and where the event takes place.</p>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -299,7 +299,7 @@ export function NewEventForm() {
         </div>
       </section>
 
-      <section className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
+      <section className="v-panel">
         <h2 className="text-base font-semibold text-stone-900">Notes</h2>
         <p className="mt-1 text-sm text-stone-500">Operational notes for your team.</p>
         <div className="mt-5">
