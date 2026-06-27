@@ -1,5 +1,6 @@
 "use server";
 
+import { randomUUID } from "crypto";
 import { redirect } from "next/navigation";
 import { ensureProfile } from "@/lib/auth/profile";
 import type { DbClient } from "@/lib/supabase/db";
@@ -30,7 +31,10 @@ async function requireAuthenticatedClient() {
 
   const db = supabase as unknown as DbClient;
 
-  await ensureProfile(db, user);
+  const profileResult = await ensureProfile(db, user);
+  if (profileResult.error) {
+    throw new Error(`Profile setup failed: ${profileResult.error}`);
+  }
 
   return { supabase: db, user };
 }
@@ -40,15 +44,12 @@ export async function loadVenueSetupAction(): Promise<VenueSetupActionResult> {
     return { success: true, draft: createEmptyVenueDraft() };
   }
 
-  const { supabase, user } = await requireAuthenticatedClient();
+  try {
+    const { supabase, user } = await requireAuthenticatedClient();
 
   const { data: membership, error: membershipError } = await supabase
     .from("venue_members")
-    .select(
-      `venue_id, venues (
-        id, name, venue_type, accent_colour, default_opening_hours
-      )`,
-    )
+    .select("venue_id")
     .eq("profile_id", user.id)
     .not("joined_at", "is", null)
     .order("created_at", { ascending: true })
@@ -59,24 +60,19 @@ export async function loadVenueSetupAction(): Promise<VenueSetupActionResult> {
     return { success: false, error: dbErrorMessage(membershipError) };
   }
 
-  const venueRelation = membership?.venues as
-    | {
-        id: string;
-        name: string;
-        venue_type: VenueOnboardingDraft["venue_type"];
-        accent_colour: string | null;
-        default_opening_hours: string | null;
-      }
-    | {
-        id: string;
-        name: string;
-        venue_type: VenueOnboardingDraft["venue_type"];
-        accent_colour: string | null;
-        default_opening_hours: string | null;
-      }[]
-    | null
-    | undefined;
-  const venue = Array.isArray(venueRelation) ? venueRelation[0] : venueRelation;
+  if (!membership?.venue_id) {
+    return { success: true, draft: createEmptyVenueDraft() };
+  }
+
+  const { data: venue, error: venueError } = await supabase
+    .from("venues")
+    .select("id, name, venue_type, accent_colour, default_opening_hours")
+    .eq("id", membership.venue_id)
+    .maybeSingle();
+
+  if (venueError) {
+    return { success: false, error: dbErrorMessage(venueError) };
+  }
 
   if (!venue) {
     return { success: true, draft: createEmptyVenueDraft() };
@@ -129,6 +125,10 @@ export async function loadVenueSetupAction(): Promise<VenueSetupActionResult> {
   };
 
   return { success: true, draft };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to load venue setup.";
+    return { success: false, error: message };
+  }
 }
 
 export async function saveVenueSetupAction(
@@ -142,7 +142,8 @@ export async function saveVenueSetupAction(
     };
   }
 
-  const { supabase, user } = await requireAuthenticatedClient();
+  try {
+    const { supabase, user } = await requireAuthenticatedClient();
 
   const trimmedName = draft.name.trim();
   if (!trimmedName) {
@@ -176,24 +177,20 @@ export async function saveVenueSetupAction(
   let venueId = draft.venue_id;
 
   if (!venueId) {
+    const newVenueId = randomUUID();
     let slug = slugifyVenueName(trimmedName);
-    let venue = null;
-    let venueError = null;
+    let venueError: { message?: string; code?: string } | null = null;
 
     for (let attempt = 0; attempt < 3; attempt += 1) {
-      const result = await supabase
-        .from("venues")
-        .insert({
-          name: trimmedName,
-          slug: attempt === 0 ? slug : uniqueVenueSlug(trimmedName),
-          venue_type: draft.venue_type,
-          accent_colour: draft.accent_colour,
-          default_opening_hours: draft.default_opening_hours.trim() || null,
-        })
-        .select("id")
-        .single();
+      const result = await supabase.from("venues").insert({
+        id: newVenueId,
+        name: trimmedName,
+        slug: attempt === 0 ? slug : uniqueVenueSlug(trimmedName),
+        venue_type: draft.venue_type,
+        accent_colour: draft.accent_colour,
+        default_opening_hours: draft.default_opening_hours.trim() || null,
+      });
 
-      venue = result.data;
       venueError = result.error;
 
       if (!venueError) {
@@ -205,15 +202,13 @@ export async function saveVenueSetupAction(
       }
     }
 
-    if (venueError || !venue) {
+    if (venueError) {
       return { success: false, error: dbErrorMessage(venueError) };
     }
 
-    venueId = venue.id;
-
     const { error: memberError } = await supabase.from("venue_members").upsert(
       {
-        venue_id: venueId,
+        venue_id: newVenueId,
         profile_id: user.id,
         role: "owner",
         joined_at: new Date().toISOString(),
@@ -224,6 +219,8 @@ export async function saveVenueSetupAction(
     if (memberError) {
       return { success: false, error: dbErrorMessage(memberError) };
     }
+
+    venueId = newVenueId;
   } else {
     const { error: updateError } = await supabase
       .from("venues")
@@ -294,4 +291,8 @@ export async function saveVenueSetupAction(
     draft: { ...draft, venue_id: venueId },
     message: draft.venue_id ? "Venue setup saved." : "Venue created and setup saved.",
   };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to save venue setup.";
+    return { success: false, error: message };
+  }
 }
