@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { RotaStatusBadge } from "@/components/rota/rota-status-badge";
@@ -15,15 +16,30 @@ import {
 } from "@/lib/mock/rota";
 
 function RotaTableRow({ event }: { event: RotaEventSummary }) {
+  const router = useRouter();
+
+  function navigate() {
+    router.push(`/dashboard/rota/${event.eventId}`);
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      navigate();
+    }
+  }
+
   return (
-    <tr className="hover:bg-stone-50/50">
+    <tr
+      role="link"
+      tabIndex={0}
+      onClick={navigate}
+      onKeyDown={handleKeyDown}
+      className="group cursor-pointer transition-colors hover:bg-stone-50/80 focus-visible:bg-stone-50/80 focus-visible:outline-none"
+      aria-label={`Build rota for ${event.eventName}`}
+    >
       <td className="px-6 py-4">
-        <Link
-          href={`/dashboard/rota/${event.eventId}`}
-          className="font-medium text-stone-900 hover:text-brand-700"
-        >
-          {event.eventName}
-        </Link>
+        <span className="font-medium text-stone-900">{event.eventName}</span>
       </td>
       <td className="px-4 py-4 text-stone-600">{formatDate(event.date)}</td>
       <td className="px-4 py-4 text-stone-600">
@@ -45,7 +61,7 @@ function RotaTableRow({ event }: { event: RotaEventSummary }) {
       <td className="px-4 py-4 font-medium text-stone-900">
         {formatCurrency(event.estimatedLabourCost)}
       </td>
-      <td className="px-6 py-4">
+      <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
         <Link
           href={`/dashboard/rota/${event.eventId}`}
           className="inline-flex h-8 items-center justify-center rounded-lg bg-brand-700 px-3 text-xs font-medium text-white transition-colors hover:bg-brand-800"
@@ -58,16 +74,31 @@ function RotaTableRow({ event }: { event: RotaEventSummary }) {
 }
 
 function RotaCard({ event }: { event: RotaEventSummary }) {
+  const router = useRouter();
+
+  function navigate() {
+    router.push(`/dashboard/rota/${event.eventId}`);
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      navigate();
+    }
+  }
+
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
+    <div
+      role="link"
+      tabIndex={0}
+      onClick={navigate}
+      onKeyDown={handleKeyDown}
+      className="cursor-pointer rounded-xl border border-stone-200 bg-white p-4 shadow-sm transition-all hover:border-stone-300 hover:bg-stone-50/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+      aria-label={`Build rota for ${event.eventName}`}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <Link
-            href={`/dashboard/rota/${event.eventId}`}
-            className="font-medium text-stone-900 hover:text-brand-700"
-          >
-            {event.eventName}
-          </Link>
+          <p className="font-medium text-stone-900">{event.eventName}</p>
           <p className="mt-1 text-sm text-stone-500">
             {formatDate(event.date)} · {event.startTime} – {event.endTime}
           </p>
@@ -102,12 +133,14 @@ function RotaCard({ event }: { event: RotaEventSummary }) {
         </div>
       </dl>
 
-      <Link
-        href={`/dashboard/rota/${event.eventId}`}
-        className="mt-4 inline-flex h-9 w-full items-center justify-center rounded-lg bg-brand-700 text-sm font-medium text-white transition-colors hover:bg-brand-800"
-      >
-        Build rota
-      </Link>
+      <div className="mt-4" onClick={(e) => e.stopPropagation()}>
+        <Link
+          href={`/dashboard/rota/${event.eventId}`}
+          className="inline-flex h-9 w-full items-center justify-center rounded-lg bg-brand-700 text-sm font-medium text-white transition-colors hover:bg-brand-800"
+        >
+          Build rota
+        </Link>
+      </div>
     </div>
   );
 }

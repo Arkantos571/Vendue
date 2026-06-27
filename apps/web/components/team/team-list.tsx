@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AvailabilityBadge } from "@/components/team/availability-badge";
 import { TeamRoleBadge } from "@/components/team/team-role-badge";
 import { TeamStatusBadge } from "@/components/team/team-status-badge";
@@ -170,15 +171,30 @@ export function TeamList() {
 }
 
 function TeamTableRow({ member }: { member: MockTeamMember }) {
+  const router = useRouter();
+
+  function navigate() {
+    router.push(`/dashboard/team/${member.id}`);
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      navigate();
+    }
+  }
+
   return (
-    <tr className="hover:bg-stone-50/80">
+    <tr
+      role="link"
+      tabIndex={0}
+      onClick={navigate}
+      onKeyDown={handleKeyDown}
+      className="cursor-pointer transition-colors hover:bg-stone-50/80 focus-visible:bg-stone-50/80 focus-visible:outline-none"
+      aria-label={`View ${member.fullName}`}
+    >
       <td className="px-6 py-4">
-        <Link
-          href={`/dashboard/team/${member.id}`}
-          className="font-medium text-stone-900 hover:text-brand-700"
-        >
-          {member.fullName}
-        </Link>
+        <span className="font-medium text-stone-900">{member.fullName}</span>
       </td>
       <td className="px-4 py-4">
         <p className="text-stone-700">{member.email}</p>

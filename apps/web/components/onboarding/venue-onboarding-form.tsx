@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { mockEventTypes, mockSpaces } from "@/lib/mock/events";
 import type { VenueOnboardingDraft, VenueType } from "@/types";
 
 const venueTypeOptions: { value: VenueType; label: string }[] = [
@@ -22,13 +23,24 @@ const venueTypeOptions: { value: VenueType; label: string }[] = [
 const emptySpace = () => ({ name: "", capacity: null as number | null, description: "" });
 const emptyEventType = () => ({ name: "", description: "", default_duration_minutes: 180 as number | null });
 
+const initialDraft: VenueOnboardingDraft = {
+  name: "The Grand Assembly",
+  venue_type: "wedding_venue",
+  accent_colour: "#5c4b8a",
+  spaces: mockSpaces.map((space) => ({
+    name: space.name,
+    capacity: space.name === "Main Ballroom" ? 250 : space.name === "Garden Terrace" ? 120 : 40,
+    description: "",
+  })),
+  event_types: mockEventTypes.map((type) => ({
+    name: type.name,
+    description: "",
+    default_duration_minutes: 180,
+  })),
+};
+
 export function VenueOnboardingForm() {
-  const [draft, setDraft] = useState<VenueOnboardingDraft>({
-    name: "",
-    venue_type: "hotel",
-    spaces: [emptySpace()],
-    event_types: [emptyEventType()],
-  });
+  const [draft, setDraft] = useState<VenueOnboardingDraft>(initialDraft);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -73,7 +85,6 @@ export function VenueOnboardingForm() {
     event.preventDefault();
     setIsSubmitting(true);
     setSaved(false);
-    // Persistence will connect to Supabase in a later iteration.
     await new Promise((resolve) => setTimeout(resolve, 800));
     setIsSubmitting(false);
     setSaved(true);
@@ -81,12 +92,12 @@ export function VenueOnboardingForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      <section className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
-        <h2 className="text-base font-semibold text-stone-900">Venue details</h2>
-        <p className="mt-1 text-sm text-stone-500">
-          Start with the basics. You can refine address and branding later.
-        </p>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+      <section className="space-y-4">
+        <div>
+          <h3 className="text-sm font-semibold text-stone-900">Venue details</h3>
+          <p className="mt-1 text-sm text-stone-500">Name and type shown across the dashboard.</p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="venue_name">Venue name</Label>
             <Input
@@ -113,16 +124,33 @@ export function VenueOnboardingForm() {
               ))}
             </Select>
           </div>
+          <div className="space-y-2 sm:col-span-2">
+            <Label htmlFor="accent_colour">Branding / accent colour</Label>
+            <div className="flex items-center gap-3">
+              <Input
+                id="accent_colour"
+                type="color"
+                value={draft.accent_colour}
+                onChange={(e) => setDraft((prev) => ({ ...prev, accent_colour: e.target.value }))}
+                className="h-10 w-14 cursor-pointer p-1"
+              />
+              <Input
+                value={draft.accent_colour}
+                onChange={(e) => setDraft((prev) => ({ ...prev, accent_colour: e.target.value }))}
+                placeholder="#5c4b8a"
+                className="flex-1"
+              />
+            </div>
+            <p className="text-xs text-stone-500">Used for client-facing materials when branding is enabled.</p>
+          </div>
         </div>
       </section>
 
-      <section className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
+      <section className="space-y-4 border-t border-stone-100 pt-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-base font-semibold text-stone-900">Spaces</h2>
-            <p className="mt-1 text-sm text-stone-500">
-              Rooms, halls, and areas where events take place.
-            </p>
+            <h3 className="text-sm font-semibold text-stone-900">Spaces</h3>
+            <p className="mt-1 text-sm text-stone-500">Rooms, halls, and areas where events take place.</p>
           </div>
           <Button
             type="button"
@@ -135,7 +163,7 @@ export function VenueOnboardingForm() {
           </Button>
         </div>
 
-        <div className="mt-5 space-y-4">
+        <div className="space-y-4">
           {draft.spaces.map((space, index) => (
             <div key={index} className="rounded-lg border border-stone-200 bg-stone-50/50 p-4">
               <div className="mb-3 flex items-center justify-between">
@@ -193,13 +221,11 @@ export function VenueOnboardingForm() {
         </div>
       </section>
 
-      <section className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
+      <section className="space-y-4 border-t border-stone-100 pt-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-base font-semibold text-stone-900">Event types</h2>
-            <p className="mt-1 text-sm text-stone-500">
-              Templates that speed up event creation and staffing.
-            </p>
+            <h3 className="text-sm font-semibold text-stone-900">Event types</h3>
+            <p className="mt-1 text-sm text-stone-500">Templates that speed up event creation and staffing.</p>
           </div>
           <Button
             type="button"
@@ -214,7 +240,7 @@ export function VenueOnboardingForm() {
           </Button>
         </div>
 
-        <div className="mt-5 space-y-4">
+        <div className="space-y-4">
           {draft.event_types.map((eventType, index) => (
             <div key={index} className="rounded-lg border border-stone-200 bg-stone-50/50 p-4">
               <div className="mb-3 flex items-center justify-between">
@@ -273,14 +299,12 @@ export function VenueOnboardingForm() {
         </div>
       </section>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-t border-stone-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
         {saved && (
-          <p className="text-sm text-brand-700">
-            Venue setup saved locally. Database sync coming next.
-          </p>
+          <p className="text-sm text-brand-700">Changes saved locally. Database sync coming next.</p>
         )}
         <Button type="submit" className="sm:ml-auto" disabled={isSubmitting}>
-          {isSubmitting ? "Saving…" : "Save venue setup"}
+          {isSubmitting ? "Saving…" : "Save changes"}
         </Button>
       </div>
     </form>

@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { CalendarDays, ClipboardCheck, UserCog, Users } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { DashboardStats } from "@/lib/mock/dashboard";
 
 interface OverviewCardsProps {
@@ -12,6 +14,7 @@ const cards = [
     sublabel: "Next 7 days",
     icon: CalendarDays,
     accent: "text-sky-600 bg-sky-50",
+    href: "/dashboard/events",
   },
   {
     key: "openRotaGaps" as const,
@@ -19,6 +22,7 @@ const cards = [
     sublabel: "Needs assignment",
     icon: UserCog,
     accent: "text-amber-600 bg-amber-50",
+    href: "/dashboard/rota",
   },
   {
     key: "teamMembers" as const,
@@ -26,6 +30,7 @@ const cards = [
     sublabel: "Active roster",
     icon: Users,
     accent: "text-brand-700 bg-brand-50",
+    href: "/dashboard/team",
   },
   {
     key: "onboarding" as const,
@@ -33,6 +38,7 @@ const cards = [
     sublabel: "Setup progress",
     icon: ClipboardCheck,
     accent: "text-violet-600 bg-violet-50",
+    href: "/dashboard/settings#venue-setup",
   },
 ];
 
@@ -46,10 +52,14 @@ export function OverviewCards({ stats }: OverviewCardsProps) {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      {cards.map(({ key, label, sublabel, icon: Icon, accent }) => (
-        <div
+      {cards.map(({ key, label, sublabel, icon: Icon, accent, href }) => (
+        <Link
           key={key}
-          className="rounded-xl border border-stone-200/80 bg-white p-5 shadow-sm"
+          href={href}
+          className={cn(
+            "block rounded-xl border border-stone-200/80 bg-white p-5 shadow-sm",
+            "cursor-pointer transition-all hover:border-stone-300 hover:bg-stone-50/80 hover:shadow-md",
+          )}
         >
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -63,7 +73,7 @@ export function OverviewCards({ stats }: OverviewCardsProps) {
               <Icon className="h-5 w-5" />
             </div>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

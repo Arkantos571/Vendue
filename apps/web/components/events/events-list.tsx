@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { RotaCompletionIndicator } from "@/components/events/rota-completion-indicator";
 import { Input } from "@/components/ui/input";
@@ -126,15 +127,30 @@ export function EventsList() {
 }
 
 function EventTableRow({ event }: { event: MockEvent }) {
+  const router = useRouter();
+
+  function navigate() {
+    router.push(`/dashboard/events/${event.id}`);
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      navigate();
+    }
+  }
+
   return (
-    <tr className="group hover:bg-stone-50/80">
+    <tr
+      role="link"
+      tabIndex={0}
+      onClick={navigate}
+      onKeyDown={handleKeyDown}
+      className="group cursor-pointer transition-colors hover:bg-stone-50/80 focus-visible:bg-stone-50/80 focus-visible:outline-none"
+      aria-label={`View ${event.title}`}
+    >
       <td className="px-6 py-4">
-        <Link
-          href={`/dashboard/events/${event.id}`}
-          className="font-medium text-stone-900 hover:text-brand-700"
-        >
-          {event.title}
-        </Link>
+        <span className="font-medium text-stone-900">{event.title}</span>
       </td>
       <td className="px-4 py-4 text-stone-600">{event.clientName}</td>
       <td className="px-4 py-4 text-stone-600">{formatDate(event.date)}</td>

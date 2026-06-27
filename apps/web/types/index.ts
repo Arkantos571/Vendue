@@ -137,6 +137,7 @@ export interface RotaShift {
 export interface VenueOnboardingDraft {
   name: string;
   venue_type: VenueType;
+  accent_colour: string;
   spaces: Array<Pick<Space, "name" | "capacity" | "description">>;
   event_types: Array<Pick<EventType, "name" | "description" | "default_duration_minutes">>;
 }

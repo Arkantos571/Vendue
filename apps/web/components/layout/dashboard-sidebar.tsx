@@ -7,7 +7,6 @@ import {
   ClipboardList,
   LayoutDashboard,
   Settings,
-  Sparkles,
   Users,
   X,
 } from "lucide-react";
@@ -15,8 +14,7 @@ import { Logo } from "@/components/layout/logo";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
-  { href: "/dashboard/onboarding", label: "Venue setup", icon: Sparkles },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/events", label: "Events", icon: CalendarDays },
   { href: "/dashboard/rota", label: "Rota", icon: ClipboardList },
   { href: "/dashboard/team", label: "Team", icon: Users },
@@ -34,7 +32,7 @@ export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProp
   const content = (
     <div className="flex h-full flex-col bg-brand-950">
       <div className="flex h-16 items-center justify-between border-b border-white/10 px-5">
-        <Logo variant="dark" />
+        <Logo variant="dark" href="/dashboard" />
         {onClose && (
           <button
             type="button"

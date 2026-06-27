@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
+import { VenueOnboardingForm } from "@/components/onboarding/venue-onboarding-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,9 +13,9 @@ export default function SettingsPage() {
   return (
     <DashboardShell
       title="Settings"
-      description="Venue profile and account preferences."
+      description="Venue profile, configuration, and account preferences."
     >
-      <div className="mx-auto max-w-2xl space-y-6">
+      <div className="mx-auto max-w-3xl space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Account</CardTitle>
@@ -32,16 +33,15 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card id="venue-setup">
           <CardHeader>
-            <CardTitle>Venue</CardTitle>
-            <CardDescription>Branding and regional defaults.</CardDescription>
+            <CardTitle>Venue Setup</CardTitle>
+            <CardDescription>
+              Configure your venue, spaces, and event types. These settings change rarely.
+            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="settings_timezone">Timezone</Label>
-              <Input id="settings_timezone" placeholder="Europe/London" disabled />
-            </div>
+          <CardContent>
+            <VenueOnboardingForm />
           </CardContent>
         </Card>
       </div>
