@@ -14,11 +14,11 @@ export function DashboardShell({ title, description, children }: DashboardShellP
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-stone-50">
+    <div className="flex min-h-screen bg-stone-100">
       <DashboardSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-stone-200 bg-white px-4 sm:px-6">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-stone-200/80 bg-white/95 px-4 backdrop-blur-sm sm:px-6">
           <button
             type="button"
             onClick={() => setSidebarOpen(true)}
@@ -27,11 +27,16 @@ export function DashboardShell({ title, description, children }: DashboardShellP
           >
             <Menu className="h-5 w-5" />
           </button>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <h1 className="truncate text-lg font-semibold text-stone-900">{title}</h1>
             {description && (
               <p className="truncate text-sm text-stone-500">{description}</p>
             )}
+          </div>
+          <div className="hidden items-center gap-2 sm:flex">
+            <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-800">
+              The Grand Assembly
+            </span>
           </div>
         </header>
 

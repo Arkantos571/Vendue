@@ -30,14 +30,14 @@ export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProp
   const pathname = usePathname();
 
   const content = (
-    <div className="flex h-full flex-col">
-      <div className="flex h-16 items-center justify-between border-b border-stone-200 px-5">
-        <Logo />
+    <div className="flex h-full flex-col bg-brand-950">
+      <div className="flex h-16 items-center justify-between border-b border-white/10 px-5">
+        <Logo variant="dark" />
         {onClose && (
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-stone-500 hover:bg-stone-100 lg:hidden"
+            className="rounded-lg p-2 text-stone-400 hover:bg-white/10 hover:text-white lg:hidden"
             aria-label="Close navigation"
           >
             <X className="h-5 w-5" />
@@ -57,8 +57,8 @@ export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProp
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-brand-50 text-brand-800"
-                  : "text-stone-600 hover:bg-stone-100 hover:text-stone-900",
+                  ? "bg-white/10 text-white"
+                  : "text-stone-400 hover:bg-white/5 hover:text-stone-100",
               )}
             >
               <Icon className="h-4 w-4 shrink-0" />
@@ -68,12 +68,12 @@ export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProp
         })}
       </nav>
 
-      <div className="border-t border-stone-200 p-4">
-        <div className="rounded-lg bg-stone-50 px-3 py-3">
+      <div className="border-t border-white/10 p-4">
+        <div className="rounded-lg bg-white/5 px-3 py-3">
           <p className="text-xs font-medium uppercase tracking-wide text-stone-500">
             Core workflow
           </p>
-          <p className="mt-1 text-xs leading-relaxed text-stone-600">
+          <p className="mt-1 text-xs leading-relaxed text-stone-400">
             Venue → Event → Staff → Rota → Mobile
           </p>
         </div>
@@ -83,21 +83,17 @@ export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProp
 
   return (
     <>
-      <aside className="hidden w-64 shrink-0 border-r border-stone-200 bg-white lg:block">
-        {content}
-      </aside>
+      <aside className="hidden w-64 shrink-0 lg:block">{content}</aside>
 
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <button
             type="button"
-            className="absolute inset-0 bg-stone-900/40"
+            className="absolute inset-0 bg-stone-950/60 backdrop-blur-sm"
             onClick={onClose}
             aria-label="Close overlay"
           />
-          <aside className="relative h-full w-72 max-w-[85vw] bg-white shadow-xl">
-            {content}
-          </aside>
+          <aside className="relative h-full w-72 max-w-[85vw] shadow-2xl">{content}</aside>
         </div>
       )}
     </>

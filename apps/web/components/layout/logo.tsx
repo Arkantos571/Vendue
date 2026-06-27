@@ -4,16 +4,29 @@ import { cn } from "@/lib/utils";
 interface LogoProps {
   className?: string;
   showWordmark?: boolean;
+  variant?: "light" | "dark";
 }
 
-export function Logo({ className, showWordmark = true }: LogoProps) {
+export function Logo({ className, showWordmark = true, variant = "light" }: LogoProps) {
+  const isDark = variant === "dark";
+
   return (
     <Link href="/" className={cn("inline-flex items-center gap-2.5", className)}>
-      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-700 text-sm font-bold text-white">
+      <span
+        className={cn(
+          "flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white",
+          isDark ? "bg-brand-500" : "bg-brand-700",
+        )}
+      >
         V
       </span>
       {showWordmark && (
-        <span className="text-lg font-semibold tracking-tight text-stone-900">
+        <span
+          className={cn(
+            "text-lg font-semibold tracking-tight",
+            isDark ? "text-white" : "text-stone-900",
+          )}
+        >
           Vendue
         </span>
       )}
