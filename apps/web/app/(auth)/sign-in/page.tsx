@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { AuthCard, AuthLink } from "@/components/auth/auth-card";
 import { SignInForm } from "@/components/auth/sign-in-form";
 
@@ -17,7 +18,9 @@ export default function SignInPage() {
         </>
       }
     >
-      <SignInForm />
+      <Suspense fallback={<p className="text-sm text-stone-500">Loading…</p>}>
+        <SignInForm />
+      </Suspense>
     </AuthCard>
   );
 }

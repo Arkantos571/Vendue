@@ -1,15 +1,19 @@
 import { createBrowserClient } from "@supabase/ssr";
+import { getSupabaseEnv, requireSupabaseEnv } from "@/lib/supabase/env";
 import type { Database } from "@/src/types/database";
 
 export function createClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const env = requireSupabaseEnv();
 
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error(
-      "Missing Supabase environment variables. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.",
-    );
+  return createBrowserClient<Database>(env.url, env.anonKey);
+}
+
+/** Safe client factory for optional auth flows when env vars may be unset. */
+export function tryCreateClient() {
+  const env = getSupabaseEnv();
+  if (!env) {
+    return null;
   }
 
-  return createBrowserClient<Database>(supabaseUrl, supabaseAnonKey);
+  return createBrowserClient<Database>(env.url, env.anonKey);
 }

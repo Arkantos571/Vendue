@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { Logo } from "@/components/layout/logo";
+import { SignOutButton } from "@/components/auth/sign-out-button";
 import { ThemeSelector } from "@/components/settings/theme-selector";
 import { cn } from "@/lib/utils";
 
@@ -76,6 +77,7 @@ export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProp
           <p className="mb-2 text-xs font-medium uppercase tracking-wide text-stone-500">Theme</p>
           <ThemeSelector compact />
         </div>
+        <SignOutButton />
         <div className="rounded-lg bg-white/5 px-3 py-3">
           <p className="text-xs font-medium uppercase tracking-wide text-stone-500">
             Core workflow
