@@ -111,6 +111,16 @@ export interface Event {
 
 export type TeamMemberStatus = "active" | "invited" | "inactive";
 
+export type EnquiryStatus = "new" | "contacted" | "proposal_sent" | "confirmed" | "lost";
+export type EnquiryPriority = "low" | "medium" | "high";
+export type EnquirySource =
+  | "website"
+  | "phone"
+  | "email"
+  | "referral"
+  | "walk_in"
+  | "agency";
+
 export interface TeamMember {
   id: string;
   venue_id: string;

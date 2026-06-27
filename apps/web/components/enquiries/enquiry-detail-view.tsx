@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EnquiryActions } from "@/components/enquiries/enquiry-actions";
 import { EnquiryActivitySection } from "@/components/enquiries/enquiry-activity-section";
 import { EnquiryClientSection } from "@/components/enquiries/enquiry-client-section";
@@ -21,8 +21,13 @@ const tabs = [
 
 type EnquiryTab = (typeof tabs)[number]["id"];
 
-export function EnquiryDetailView({ enquiry }: { enquiry: MockEnquiry }) {
+export function EnquiryDetailView({ enquiry: initialEnquiry }: { enquiry: MockEnquiry }) {
   const [activeTab, setActiveTab] = useState<EnquiryTab>("overview");
+  const [enquiry, setEnquiry] = useState(initialEnquiry);
+
+  useEffect(() => {
+    setEnquiry(initialEnquiry);
+  }, [initialEnquiry]);
 
   return (
     <div className="space-y-6">
@@ -34,7 +39,7 @@ export function EnquiryDetailView({ enquiry }: { enquiry: MockEnquiry }) {
           </div>
           <p className="mt-1 text-sm text-stone-500">{enquiry.clientName}</p>
         </div>
-        <EnquiryActions />
+        <EnquiryActions enquiry={enquiry} onUpdated={setEnquiry} />
       </div>
 
       <nav className="flex gap-1 overflow-x-auto border-b border-stone-200" aria-label="Enquiry sections">

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { EnquiryDetailView } from "@/components/enquiries/enquiry-detail-view";
-import { getEnquiryById } from "@/lib/mock/enquiries";
+import { loadEnquiryForPage } from "@/lib/enquiries/data";
 
 interface EnquiryDetailPageProps {
   params: Promise<{ enquiryId: string }>;
@@ -12,7 +12,7 @@ interface EnquiryDetailPageProps {
 
 export async function generateMetadata({ params }: EnquiryDetailPageProps): Promise<Metadata> {
   const { enquiryId } = await params;
-  const enquiry = getEnquiryById(enquiryId);
+  const enquiry = await loadEnquiryForPage(enquiryId);
 
   return {
     title: enquiry?.eventName ?? "Enquiry",
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: EnquiryDetailPageProps): Prom
 
 export default async function EnquiryDetailPage({ params }: EnquiryDetailPageProps) {
   const { enquiryId } = await params;
-  const enquiry = getEnquiryById(enquiryId);
+  const enquiry = await loadEnquiryForPage(enquiryId);
 
   if (!enquiry) {
     notFound();

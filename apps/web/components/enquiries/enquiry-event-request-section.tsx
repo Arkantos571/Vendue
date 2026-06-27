@@ -1,3 +1,4 @@
+import { formatEnquiryTimeRange } from "@/lib/enquiries/mappers";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatEnquiryCurrency, type MockEnquiry } from "@/lib/mock/enquiries";
 import { formatDate } from "@/lib/utils";
@@ -7,7 +8,7 @@ export function EnquiryEventRequestSection({ enquiry }: { enquiry: MockEnquiry }
     { label: "Requested date", value: formatDate(enquiry.requestedDate) },
     {
       label: "Time window",
-      value: `${enquiry.preferredStartTime} – ${enquiry.preferredEndTime}`,
+      value: formatEnquiryTimeRange(enquiry),
     },
     { label: "Event type", value: enquiry.eventType },
     { label: "Space preference", value: enquiry.spacePreference },

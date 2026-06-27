@@ -39,6 +39,7 @@ export interface MockEnquiry {
   requestedDate: string;
   preferredStartTime: string;
   preferredEndTime: string;
+  preferredEndIsNextDay?: boolean;
   eventType: string;
   eventTypeId: string;
   spacePreference: string;

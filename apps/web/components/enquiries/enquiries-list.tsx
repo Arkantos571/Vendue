@@ -11,10 +11,14 @@ import {
   enquirySourceLabels,
   enquiryStatusFilters,
   formatEnquiryCurrency,
-  mockEnquiries,
+  
   type EnquiryStatusFilter,
   type MockEnquiry,
 } from "@/lib/mock/enquiries";
+
+interface EnquiriesListProps {
+  enquiries: MockEnquiry[];
+}
 
 function EnquiryTableRow({ enquiry }: { enquiry: MockEnquiry }) {
   const router = useRouter();
@@ -115,14 +119,14 @@ function EnquiryCard({ enquiry }: { enquiry: MockEnquiry }) {
   );
 }
 
-export function EnquiriesList() {
+export function EnquiriesList({ enquiries }: EnquiriesListProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<EnquiryStatusFilter>("all");
 
   const filteredEnquiries = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    return mockEnquiries.filter((enquiry) => {
+    return enquiries.filter((enquiry) => {
       const matchesStatus = statusFilter === "all" || enquiry.status === statusFilter;
       const matchesSearch =
         !query ||
@@ -133,7 +137,7 @@ export function EnquiriesList() {
 
       return matchesStatus && matchesSearch;
     });
-  }, [search, statusFilter]);
+  }, [enquiries, search, statusFilter]);
 
   return (
     <div className="space-y-6">

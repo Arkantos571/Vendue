@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
-import { EnquiriesList } from "@/components/enquiries/enquiries-list";
-import { EnquiryPipelineCards } from "@/components/enquiries/enquiry-pipeline-cards";
-import { enquiryPipelineStats } from "@/lib/mock/enquiries";
+import { EnquiriesPageContent } from "@/components/enquiries/enquiries-page-content";
 
 export const metadata: Metadata = {
   title: "Enquiries",
@@ -14,9 +12,8 @@ export default function EnquiriesPage() {
       title="Enquiries"
       description="Track new event enquiries from first contact to confirmed booking"
     >
-      <div className="mx-auto max-w-7xl space-y-6">
-        <EnquiryPipelineCards stats={enquiryPipelineStats} />
-        <EnquiriesList />
+      <div className="mx-auto max-w-7xl">
+        <EnquiriesPageContent />
       </div>
     </DashboardShell>
   );

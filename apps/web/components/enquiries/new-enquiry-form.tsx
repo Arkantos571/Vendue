@@ -1,37 +1,181 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { VenueRequiredEmptyState } from "@/components/events/venue-required-empty-state";
 import {
-  enquirySourceOptions,
-  mockEventTypes,
-  mockSpaces,
-} from "@/lib/mock/enquiries";
+  createEnquiryAction,
+  loadEnquiryFormOptionsAction,
+} from "@/lib/enquiries/actions";
+import {
+  EVENT_START_TIME_OPTIONS,
+  getEndTimeOptionsForStart,
+} from "@/lib/events/event-time";
+import { enquirySourceOptions } from "@/lib/mock/enquiries";
+
+function endSelectionKey(time: string, nextDay: boolean): string {
+  return nextDay ? `next|${time}` : `same|${time}`;
+}
+
+function parseEndSelectionKey(key: string): { time: string; nextDay: boolean } {
+  if (key.startsWith("next|")) {
+    return { time: key.slice(5), nextDay: true };
+  }
+  if (key.startsWith("same|")) {
+    return { time: key.slice(5), nextDay: false };
+  }
+  return { time: key, nextDay: false };
+}
 
 export function NewEnquiryForm() {
   const router = useRouter();
+  const [spaces, setSpaces] = useState<{ id: string; name: string }[]>([]);
+  const [eventTypes, setEventTypes] = useState<{ id: string; name: string }[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [noVenue, setNoVenue] = useState(false);
+  const [startTime, setStartTime] = useState("");
+  const [endSelection, setEndSelection] = useState("");
 
-  async function saveEnquiry(redirectTo: "/dashboard/enquiries" | "/dashboard/events/new") {
+  const endOptions = useMemo(() => {
+    if (!startTime) {
+      return { sameDay: [], nextDay: [] };
+    }
+    return getEndTimeOptionsForStart(startTime);
+  }, [startTime]);
+
+  useEffect(() => {
+    if (!endSelection) {
+      return;
+    }
+
+    const { time, nextDay } = parseEndSelectionKey(endSelection);
+    const isStillValid =
+      endOptions.sameDay.some((option) => option.value === time && !nextDay) ||
+      endOptions.nextDay.some((option) => option.value === time && nextDay);
+
+    if (!isStillValid) {
+      setEndSelection("");
+    }
+  }, [endOptions, endSelection]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setIsLoading(true);
+      setError(null);
+
+      const result = await loadEnquiryFormOptionsAction();
+
+      if (cancelled) {
+        return;
+      }
+
+      if (!result.success) {
+        setError(result.error);
+        setSpaces([]);
+        setEventTypes([]);
+        setNoVenue(false);
+      } else {
+        setSpaces(result.spaces);
+        setEventTypes(result.eventTypes);
+        setNoVenue(Boolean(result.noVenue));
+      }
+
+      setIsLoading(false);
+    }
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function submitForm(form: HTMLFormElement, redirectToDetail: boolean) {
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    setError(null);
+
+    const formData = new FormData(form);
+    const { time: endTime, nextDay: endIsNextDay } = parseEndSelectionKey(endSelection);
+    const guestCountRaw = String(formData.get("guest_count") ?? "");
+    const budgetRaw = String(formData.get("budget_estimate") ?? "");
+
+    const result = await createEnquiryAction({
+      event_name: String(formData.get("event_name") ?? ""),
+      client_name: String(formData.get("client_name") ?? ""),
+      client_email: String(formData.get("client_email") ?? ""),
+      client_phone: String(formData.get("client_phone") ?? "") || undefined,
+      requested_date: String(formData.get("requested_date") ?? ""),
+      preferred_start_time: startTime || undefined,
+      preferred_end_time: endTime || undefined,
+      end_is_next_day: endIsNextDay,
+      event_type_id: String(formData.get("event_type") ?? ""),
+      space_id: String(formData.get("space_preference") ?? "") || undefined,
+      guest_count: guestCountRaw ? Number(guestCountRaw) : undefined,
+      budget_estimate: budgetRaw ? Number(budgetRaw) : undefined,
+      source: String(formData.get("enquiry_source") ?? "website") as
+        | "website"
+        | "phone"
+        | "email"
+        | "referral"
+        | "walk_in"
+        | "agency",
+      priority: String(formData.get("priority") ?? "medium") as "low" | "medium" | "high",
+      notes: String(formData.get("notes") ?? "") || undefined,
+    });
+
     setIsSubmitting(false);
-    router.push(redirectTo);
+
+    if (!result.success) {
+      setError(result.error);
+      return;
+    }
+
+    router.push(
+      redirectToDetail ? `/dashboard/enquiries/${result.enquiryId}` : "/dashboard/enquiries",
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+        <p className="text-sm text-stone-500">Loading form…</p>
+      </div>
+    );
+  }
+
+  if (noVenue) {
+    return (
+      <VenueRequiredEmptyState
+        message="Set up your venue before managing enquiries"
+        description="Add your venue details, spaces, and event types in Settings first."
+      />
+    );
   }
 
   return (
     <form
+      id="new-enquiry-form"
       onSubmit={(e) => {
         e.preventDefault();
-        saveEnquiry("/dashboard/enquiries");
+        void submitForm(e.currentTarget, true);
       }}
       className="space-y-8"
     >
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {error}
+        </div>
+      )}
+
       <section className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
         <h2 className="text-base font-semibold text-stone-900">Enquiry details</h2>
         <p className="mt-1 text-sm text-stone-500">Event and client information from first contact.</p>
@@ -86,7 +230,7 @@ export function NewEnquiryForm() {
               <option value="" disabled>
                 Select type
               </option>
-              {mockEventTypes.map((type) => (
+              {eventTypes.map((type) => (
                 <option key={type.id} value={type.id}>
                   {type.name}
                 </option>
@@ -95,17 +239,61 @@ export function NewEnquiryForm() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="start_time">Preferred start time</Label>
-            <Input id="start_time" name="start_time" type="time" />
+            <Select
+              id="start_time"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+            >
+              <option value="">No preference</option>
+              {EVENT_START_TIME_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="end_time">Preferred end time</Label>
-            <Input id="end_time" name="end_time" type="time" />
+            <Select
+              id="end_time"
+              value={endSelection}
+              disabled={!startTime}
+              onChange={(e) => setEndSelection(e.target.value)}
+            >
+              <option value="">
+                {startTime ? "No preference" : "Select start time first"}
+              </option>
+              {endOptions.sameDay.length > 0 && (
+                <optgroup label="Same day">
+                  {endOptions.sameDay.map((option) => (
+                    <option
+                      key={endSelectionKey(option.value, false)}
+                      value={endSelectionKey(option.value, false)}
+                    >
+                      {option.label}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+              {endOptions.nextDay.length > 0 && (
+                <optgroup label="Next day">
+                  {endOptions.nextDay.map((option) => (
+                    <option
+                      key={endSelectionKey(option.value, true)}
+                      value={endSelectionKey(option.value, true)}
+                    >
+                      {option.label}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+            </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="space_preference">Space preference</Label>
             <Select id="space_preference" name="space_preference" defaultValue="">
               <option value="">No preference</option>
-              {mockSpaces.map((space) => (
+              {spaces.map((space) => (
                 <option key={space.id} value={space.id}>
                   {space.name}
                 </option>
@@ -128,15 +316,21 @@ export function NewEnquiryForm() {
       </section>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-        <Button type="submit" variant="outline" disabled={isSubmitting}>
-          {isSubmitting ? "Saving…" : "Save enquiry"}
-        </Button>
         <Button
           type="button"
+          variant="outline"
           disabled={isSubmitting}
-          onClick={() => saveEnquiry("/dashboard/events/new")}
+          onClick={() => {
+            const form = document.getElementById("new-enquiry-form");
+            if (form instanceof HTMLFormElement) {
+              void submitForm(form, false);
+            }
+          }}
         >
-          Save and create event
+          {isSubmitting ? "Saving…" : "Save enquiry"}
+        </Button>
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Saving…" : "Save and view enquiry"}
         </Button>
       </div>
     </form>
