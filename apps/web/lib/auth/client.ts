@@ -15,6 +15,11 @@ export interface SignUpInput {
 
 export type AuthResult = { success: true } | { success: false; error: string };
 
+/** Set NEXT_PUBLIC_ENABLE_SOCIAL_AUTH=true once Google/Apple are enabled in Supabase. */
+export function isSocialAuthEnabled(): boolean {
+  return process.env.NEXT_PUBLIC_ENABLE_SOCIAL_AUTH === "true";
+}
+
 export async function signInWithPassword(input: SignInInput): Promise<AuthResult> {
   const supabase = tryCreateClient();
 
@@ -77,6 +82,13 @@ async function signInWithOAuthProvider(
   provider: "google" | "apple",
   redirectPath?: string,
 ): Promise<AuthResult> {
+  if (!isSocialAuthEnabled()) {
+    return {
+      success: false,
+      error: "Social sign-in is not enabled yet.",
+    };
+  }
+
   const supabase = tryCreateClient();
 
   if (!supabase) {
