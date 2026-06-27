@@ -21,7 +21,7 @@ const ENQUIRY_SELECT = `
   converted_event_id, created_at,
   event_types ( name ),
   spaces ( name ),
-  profiles ( full_name )
+  profiles!enquiries_assigned_profile_id_fkey ( full_name )
 `;
 
 export type EnquiriesActionResult<T> =
