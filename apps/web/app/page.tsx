@@ -45,7 +45,7 @@ export default function HomePage() {
                 Run events with clarity from setup to service.
               </h1>
               <p className="mt-6 text-lg leading-relaxed text-stone-600">
-                Vendue helps venues coordinate bookings, teams, and rotas in one operational
+                Venudue helps venues coordinate bookings, teams, and rotas in one operational
                 workspace — so your staff know what is happening, where, and when.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -72,7 +72,7 @@ export default function HomePage() {
             <div className="max-w-2xl">
               <h2 className="text-2xl font-semibold text-stone-900">The core workflow</h2>
               <p className="mt-3 text-stone-600">
-                Everything in Vendue follows the path your team already thinks in.
+                Everything in Venudue follows the path your team already thinks in.
               </p>
             </div>
             <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">

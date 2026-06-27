@@ -11,12 +11,20 @@ export interface Profile {
 }
 
 export type VenueType =
-  | "hotel"
   | "restaurant"
   | "bar"
-  | "conference_centre"
-  | "wedding_venue"
+  | "pub"
+  | "hotel"
+  | "event_venue"
   | "private_members_club"
+  | "wedding_venue"
+  | "conference_centre"
+  | "cafe"
+  | "nightclub"
+  | "gallery_museum"
+  | "outdoor_space"
+  | "coworking_space"
+  | "theatre_performance_space"
   | "other";
 
 export interface Venue {
@@ -138,6 +146,7 @@ export interface VenueOnboardingDraft {
   venue_id: string | null;
   name: string;
   venue_type: VenueType;
+  venue_type_custom: string;
   accent_colour: string;
   default_opening_hours: string;
   spaces: Array<Pick<Space, "name" | "capacity" | "description">>;

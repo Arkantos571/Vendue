@@ -9,7 +9,7 @@ export function SiteFooter() {
           Hospitality events, from venue setup to staff rota.
         </p>
         <p className="text-sm text-stone-400">
-          © {new Date().getFullYear()} Vendue
+          © {new Date().getFullYear()} Venudue
         </p>
       </div>
     </footer>

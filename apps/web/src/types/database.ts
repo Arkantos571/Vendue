@@ -9,12 +9,20 @@ export type Json =
 export type VenueMemberRole = "owner" | "admin" | "manager" | "staff";
 
 export type VenueType =
-  | "hotel"
   | "restaurant"
   | "bar"
-  | "conference_centre"
-  | "wedding_venue"
+  | "pub"
+  | "hotel"
+  | "event_venue"
   | "private_members_club"
+  | "wedding_venue"
+  | "conference_centre"
+  | "cafe"
+  | "nightclub"
+  | "gallery_museum"
+  | "outdoor_space"
+  | "coworking_space"
+  | "theatre_performance_space"
   | "other";
 
 export type EventStatus =
@@ -100,6 +108,7 @@ export interface Database {
           name: string;
           slug: string;
           venue_type: VenueType;
+          venue_type_custom: string | null;
           address_line_1: string | null;
           address_line_2: string | null;
           city: string | null;
@@ -118,6 +127,7 @@ export interface Database {
           name: string;
           slug: string;
           venue_type?: VenueType;
+          venue_type_custom?: string | null;
           address_line_1?: string | null;
           address_line_2?: string | null;
           city?: string | null;
@@ -133,6 +143,7 @@ export interface Database {
           name?: string;
           slug?: string;
           venue_type?: VenueType;
+          venue_type_custom?: string | null;
           address_line_1?: string | null;
           address_line_2?: string | null;
           city?: string | null;

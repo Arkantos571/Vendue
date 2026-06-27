@@ -10,7 +10,7 @@ export default function SignUpPage() {
   return (
     <AuthCard
       title="Create your account"
-      description="Set up Vendue for your venue in minutes."
+      description="Set up Venudue for your venue in minutes."
       footer={
         <>
           Already have an account? <AuthLink href="/sign-in">Sign in</AuthLink>

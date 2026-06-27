@@ -13,17 +13,8 @@ import {
   emptySpace,
 } from "@/lib/venue-setup/defaults";
 import { loadVenueSetupAction, saveVenueSetupAction } from "@/lib/venue-setup/actions";
+import { venueTypeOptions } from "@/lib/venue-setup/venue-types";
 import type { VenueOnboardingDraft, VenueType } from "@/types";
-
-const venueTypeOptions: { value: VenueType; label: string }[] = [
-  { value: "hotel", label: "Hotel" },
-  { value: "restaurant", label: "Restaurant" },
-  { value: "bar", label: "Bar" },
-  { value: "conference_centre", label: "Conference centre" },
-  { value: "wedding_venue", label: "Wedding venue" },
-  { value: "private_members_club", label: "Private members club" },
-  { value: "other", label: "Other" },
-];
 
 export function VenueOnboardingForm() {
   const [draft, setDraft] = useState<VenueOnboardingDraft>(createEmptyVenueDraft);
@@ -158,9 +149,14 @@ export function VenueOnboardingForm() {
             <Select
               id="venue_type"
               value={draft.venue_type}
-              onChange={(e) =>
-                setDraft((prev) => ({ ...prev, venue_type: e.target.value as VenueType }))
-              }
+              onChange={(e) => {
+                const venue_type = e.target.value as VenueType;
+                setDraft((prev) => ({
+                  ...prev,
+                  venue_type,
+                  venue_type_custom: venue_type === "other" ? prev.venue_type_custom : "",
+                }));
+              }}
             >
               {venueTypeOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -169,6 +165,20 @@ export function VenueOnboardingForm() {
               ))}
             </Select>
           </div>
+          {draft.venue_type === "other" && (
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="venue_type_custom">Custom venue type</Label>
+              <Input
+                id="venue_type_custom"
+                value={draft.venue_type_custom}
+                onChange={(e) =>
+                  setDraft((prev) => ({ ...prev, venue_type_custom: e.target.value }))
+                }
+                placeholder="e.g. Pop-up kitchen, Brewery taproom"
+                required
+              />
+            </div>
+          )}
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="accent_colour">Branding / accent colour</Label>
             <div className="flex items-center gap-3">

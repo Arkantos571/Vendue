@@ -66,7 +66,7 @@ export async function loadVenueSetupAction(): Promise<VenueSetupActionResult> {
 
   const { data: venue, error: venueError } = await supabase
     .from("venues")
-    .select("id, name, venue_type, accent_colour, default_opening_hours")
+    .select("id, name, venue_type, venue_type_custom, accent_colour, default_opening_hours")
     .eq("id", membership.venue_id)
     .maybeSingle();
 
@@ -104,6 +104,7 @@ export async function loadVenueSetupAction(): Promise<VenueSetupActionResult> {
     venue_id: venue.id,
     name: venue.name,
     venue_type: venue.venue_type,
+    venue_type_custom: venue.venue_type_custom ?? "",
     accent_colour: venue.accent_colour ?? "#5c4b8a",
     default_opening_hours: venue.default_opening_hours ?? "",
     spaces:
@@ -150,6 +151,11 @@ export async function saveVenueSetupAction(
     return { success: false, error: "Venue name is required." };
   }
 
+  const venueTypeCustom = draft.venue_type_custom.trim();
+  if (draft.venue_type === "other" && !venueTypeCustom) {
+    return { success: false, error: "Enter a custom venue type." };
+  }
+
   const spaces = draft.spaces
     .map((space) => ({
       name: space.name.trim(),
@@ -187,6 +193,7 @@ export async function saveVenueSetupAction(
         name: trimmedName,
         slug: attempt === 0 ? slug : uniqueVenueSlug(trimmedName),
         venue_type: draft.venue_type,
+        venue_type_custom: draft.venue_type === "other" ? venueTypeCustom : null,
         accent_colour: draft.accent_colour,
         default_opening_hours: draft.default_opening_hours.trim() || null,
       });
@@ -227,6 +234,7 @@ export async function saveVenueSetupAction(
       .update({
         name: trimmedName,
         venue_type: draft.venue_type,
+        venue_type_custom: draft.venue_type === "other" ? venueTypeCustom : null,
         accent_colour: draft.accent_colour,
         default_opening_hours: draft.default_opening_hours.trim() || null,
       })

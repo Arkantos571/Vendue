@@ -13,6 +13,7 @@ export function createEmptyVenueDraft(): VenueOnboardingDraft {
     venue_id: null,
     name: "",
     venue_type: "other",
+    venue_type_custom: "",
     accent_colour: "#5c4b8a",
     default_opening_hours: "",
     spaces: [emptySpace()],

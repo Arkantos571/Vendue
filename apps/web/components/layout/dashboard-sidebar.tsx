@@ -34,8 +34,8 @@ export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProp
   const pathname = usePathname();
 
   const content = (
-    <div className="flex h-full flex-col bg-brand-950">
-      <div className="flex h-16 items-center justify-between border-b border-white/10 px-5">
+    <div className="flex h-full min-h-0 flex-col bg-brand-950">
+      <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/10 px-5">
         <Logo variant="dark" href="/dashboard" />
         {onClose && (
           <button
@@ -49,7 +49,7 @@ export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProp
         )}
       </div>
 
-      <nav className="flex-1 space-y-1 px-3 py-4">
+      <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto px-3 py-4">
         {navItems.map(({ href, label, icon: Icon, exact }) => {
           const isActive = exact ? pathname === href : pathname.startsWith(href);
 
@@ -72,7 +72,7 @@ export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProp
         })}
       </nav>
 
-      <div className="space-y-3 border-t border-white/10 p-4">
+      <div className="shrink-0 space-y-3 border-t border-white/10 p-4">
         <div>
           <p className="mb-2 text-xs font-medium uppercase tracking-wide text-stone-500">Theme</p>
           <ThemeSelector compact />
@@ -92,7 +92,7 @@ export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProp
 
   return (
     <>
-      <aside className="hidden w-64 shrink-0 lg:block">{content}</aside>
+      <aside className="hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-64 lg:shrink-0 lg:flex-col lg:overflow-hidden">{content}</aside>
 
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">

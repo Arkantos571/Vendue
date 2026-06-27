@@ -9,12 +9,15 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  ),
   title: {
-    default: "Vendue",
-    template: "%s · Vendue",
+    default: "Venudue",
+    template: "%s · Venudue",
   },
   description:
-    "Hospitality events management — from venue setup to staff rota and mobile operations.",
+    "Venudue — hospitality events management from venue setup to staff rota and mobile operations.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

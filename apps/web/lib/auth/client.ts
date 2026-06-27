@@ -1,5 +1,6 @@
 import { tryCreateClient } from "@/src/lib/supabase/client";
 import { getAuthErrorMessage } from "@/lib/auth/errors";
+import { getAppUrl } from "@/lib/app-url";
 
 export interface SignInInput {
   email: string;
@@ -52,6 +53,7 @@ export async function signUpWithPassword(input: SignUpInput): Promise<AuthResult
     email: input.email,
     password: input.password,
     options: {
+      emailRedirectTo: `${getAppUrl()}/dashboard`,
       data: {
         full_name: input.fullName,
       },

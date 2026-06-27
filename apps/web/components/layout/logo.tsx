@@ -33,7 +33,7 @@ export function Logo({
             isDark ? "text-white" : "text-stone-900",
           )}
         >
-          Vendue
+          Venudue
         </span>
       )}
     </Link>

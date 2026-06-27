@@ -93,7 +93,7 @@ export function NewTeamMemberForm() {
           <span>
             <span className="block text-sm font-medium text-stone-900">Send invite</span>
             <span className="mt-0.5 block text-sm text-stone-500">
-              Email an invitation to join the venue on Vendue.
+              Email an invitation to join the venue on Venudue.
             </span>
           </span>
         </label>

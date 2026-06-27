@@ -62,12 +62,13 @@ export function SettingsView() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl">
-      <div className="mb-6 overflow-x-auto">
-        <nav
-          className="inline-flex min-w-full gap-1 rounded-xl border border-stone-200 bg-white p-1 dark:border-stone-700 dark:bg-stone-900 sm:min-w-0"
-          aria-label="Settings sections"
-        >
+    <div className="mx-auto max-w-5xl">
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+        <div className="lg:sticky lg:top-6 lg:max-h-[calc(100vh-7rem)] lg:w-56 lg:shrink-0 lg:self-start lg:overflow-y-auto">
+          <nav
+            className="flex gap-1 overflow-x-auto rounded-xl border border-stone-200 bg-white p-1 dark:border-stone-700 dark:bg-stone-900 lg:flex-col lg:overflow-x-visible lg:overflow-y-auto"
+            aria-label="Settings sections"
+          >
           {settingsTabs.map(({ id, label, icon: Icon }) => {
             const isActive = activeTab === id;
 
@@ -77,7 +78,7 @@ export function SettingsView() {
                 type="button"
                 onClick={() => selectTab(id)}
                 className={cn(
-                  "flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  "flex w-full shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors lg:justify-start",
                   isActive
                     ? "bg-brand-700 text-white shadow-sm dark:bg-brand-600"
                     : "text-stone-600 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-stone-100",
@@ -89,9 +90,10 @@ export function SettingsView() {
               </button>
             );
           })}
-        </nav>
-      </div>
+          </nav>
+        </div>
 
+        <div className="min-w-0 flex-1">
       {activeTab === "general" && (
         <Card>
           <CardHeader>
@@ -212,6 +214,8 @@ export function SettingsView() {
           </CardContent>
         </Card>
       )}
+        </div>
+      </div>
     </div>
   );
 }
