@@ -1,0 +1,105 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  CalendarDays,
+  LayoutDashboard,
+  Settings,
+  Sparkles,
+  Users,
+  X,
+} from "lucide-react";
+import { Logo } from "@/components/layout/logo";
+import { cn } from "@/lib/utils";
+
+const navItems = [
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
+  { href: "/dashboard/onboarding", label: "Venue setup", icon: Sparkles },
+  { href: "/dashboard/events", label: "Events", icon: CalendarDays },
+  { href: "/dashboard/team", label: "Team & rota", icon: Users },
+  { href: "/dashboard/settings", label: "Settings", icon: Settings },
+];
+
+interface DashboardSidebarProps {
+  open?: boolean;
+  onClose?: () => void;
+}
+
+export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProps) {
+  const pathname = usePathname();
+
+  const content = (
+    <div className="flex h-full flex-col">
+      <div className="flex h-16 items-center justify-between border-b border-stone-200 px-5">
+        <Logo />
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg p-2 text-stone-500 hover:bg-stone-100 lg:hidden"
+            aria-label="Close navigation"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        )}
+      </div>
+
+      <nav className="flex-1 space-y-1 px-3 py-4">
+        {navItems.map(({ href, label, icon: Icon, exact }) => {
+          const isActive = exact ? pathname === href : pathname.startsWith(href);
+
+          return (
+            <Link
+              key={href}
+              href={href}
+              onClick={onClose}
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                isActive
+                  ? "bg-brand-50 text-brand-800"
+                  : "text-stone-600 hover:bg-stone-100 hover:text-stone-900",
+              )}
+            >
+              <Icon className="h-4 w-4 shrink-0" />
+              {label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="border-t border-stone-200 p-4">
+        <div className="rounded-lg bg-stone-50 px-3 py-3">
+          <p className="text-xs font-medium uppercase tracking-wide text-stone-500">
+            Core workflow
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-stone-600">
+            Venue → Event → Staff → Rota → Mobile
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      <aside className="hidden w-64 shrink-0 border-r border-stone-200 bg-white lg:block">
+        {content}
+      </aside>
+
+      {open && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <button
+            type="button"
+            className="absolute inset-0 bg-stone-900/40"
+            onClick={onClose}
+            aria-label="Close overlay"
+          />
+          <aside className="relative h-full w-72 max-w-[85vw] bg-white shadow-xl">
+            {content}
+          </aside>
+        </div>
+      )}
+    </>
+  );
+}
