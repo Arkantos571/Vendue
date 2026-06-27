@@ -30,14 +30,14 @@ export function UpcomingEventsTable({ events }: UpcomingEventsTableProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-start justify-between gap-4">
-        <Link href="/dashboard/events" className="group min-w-0 flex-1">
+        <Link href="/dashboard/events/upcoming" className="group min-w-0 flex-1">
           <CardTitle className="transition-colors group-hover:text-brand-700">
             Upcoming events
           </CardTitle>
           <CardDescription>Bookings scheduled for the week ahead.</CardDescription>
         </Link>
         <Link
-          href="/dashboard/events"
+          href="/dashboard/events/upcoming"
           className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-brand-700 transition-colors hover:text-brand-800"
         >
           View all

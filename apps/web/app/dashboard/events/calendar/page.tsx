@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
-import { EventsList } from "@/components/events/events-list";
+import { EventCalendar } from "@/components/events/calendar/event-calendar";
 import { EventsViewNav } from "@/components/events/events-view-nav";
 
 export const metadata: Metadata = {
-  title: "Events",
+  title: "Event Calendar",
 };
 
-export default function EventsPage() {
+export default function EventCalendarPage() {
   return (
     <DashboardShell
-      title="Events"
-      description="Plan and manage hospitality bookings."
+      title="Event Calendar"
+      description="View events by day, week, and month"
     >
       <div className="mx-auto max-w-7xl space-y-6">
         <EventsViewNav />
-        <EventsList />
+        <EventCalendar />
       </div>
     </DashboardShell>
   );

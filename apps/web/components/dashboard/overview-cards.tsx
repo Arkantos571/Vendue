@@ -14,7 +14,7 @@ const cards = [
     sublabel: "Next 7 days",
     icon: CalendarDays,
     accent: "text-sky-600 bg-sky-50",
-    href: "/dashboard/events",
+    href: "/dashboard/events/upcoming",
   },
   {
     key: "openRotaGaps" as const,
