@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { RotaBuilder } from "@/components/rota/rota-builder";
-import { getRotaBuilderByEventId } from "@/lib/mock/rota";
+import { eventExistsForVenue, loadRotaBuilderForPage } from "@/lib/rota/data";
 
 interface RotaBuilderPageProps {
   params: Promise<{ eventId: string }>;
@@ -10,7 +10,7 @@ interface RotaBuilderPageProps {
 
 export async function generateMetadata({ params }: RotaBuilderPageProps): Promise<Metadata> {
   const { eventId } = await params;
-  const data = getRotaBuilderByEventId(eventId);
+  const data = await loadRotaBuilderForPage(eventId);
 
   return {
     title: data ? `Rota — ${data.eventName}` : "Rota builder",
@@ -19,19 +19,21 @@ export async function generateMetadata({ params }: RotaBuilderPageProps): Promis
 
 export default async function RotaBuilderPage({ params }: RotaBuilderPageProps) {
   const { eventId } = await params;
-  const data = getRotaBuilderByEventId(eventId);
+  const exists = await eventExistsForVenue(eventId);
 
-  if (!data) {
+  if (!exists) {
     notFound();
   }
+
+  const initialData = await loadRotaBuilderForPage(eventId);
 
   return (
     <DashboardShell
       title="Rota builder"
-      description={data.eventName}
+      description={initialData?.eventName ?? "Event rota"}
     >
       <div className="mx-auto max-w-7xl">
-        <RotaBuilder initialData={data} />
+        <RotaBuilder eventId={eventId} initialData={initialData} />
       </div>
     </DashboardShell>
   );

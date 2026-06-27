@@ -1,12 +1,25 @@
+import { Trash2 } from "lucide-react";
 import { ShiftStatusBadge } from "@/components/rota/shift-status-badge";
+import { Button } from "@/components/ui/button";
+import { formatEventEndTime } from "@/lib/events/event-time";
 import { formatCurrencyPrecise, type AssignedShift } from "@/lib/mock/rota";
 import { formatHourlyRate } from "@/lib/mock/team";
 
 interface AssignedShiftsListProps {
   shifts: AssignedShift[];
+  onDeleteShift?: (shiftId: string) => void;
+  isDeletingShiftId?: string | null;
 }
 
-export function AssignedShiftsList({ shifts }: AssignedShiftsListProps) {
+function formatFinishTime(shift: AssignedShift): string {
+  return formatEventEndTime(shift.finishTime, shift.finishIsNextDay ?? false);
+}
+
+export function AssignedShiftsList({
+  shifts,
+  onDeleteShift,
+  isDeletingShiftId,
+}: AssignedShiftsListProps) {
   if (shifts.length === 0) {
     return (
       <div className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
@@ -41,7 +54,8 @@ export function AssignedShiftsList({ shifts }: AssignedShiftsListProps) {
               <th className="px-4 py-3">Rate</th>
               <th className="px-4 py-3">Cost</th>
               <th className="px-4 py-3">Notes</th>
-              <th className="px-6 py-3">Status</th>
+              <th className="px-4 py-3">Status</th>
+              {onDeleteShift && <th className="px-6 py-3"></th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-stone-100">
@@ -52,7 +66,7 @@ export function AssignedShiftsList({ shifts }: AssignedShiftsListProps) {
                 <td className="px-4 py-4 text-stone-600">{shift.section}</td>
                 <td className="px-4 py-4 text-stone-600">{shift.arrivalTime}</td>
                 <td className="px-4 py-4 text-stone-600">{shift.startTime}</td>
-                <td className="px-4 py-4 text-stone-600">{shift.finishTime}</td>
+                <td className="px-4 py-4 text-stone-600">{formatFinishTime(shift)}</td>
                 <td className="px-4 py-4 text-stone-600">{shift.breakMinutes} min</td>
                 <td className="px-4 py-4 text-stone-600">{formatHourlyRate(shift.hourlyRate)}</td>
                 <td className="px-4 py-4 font-medium text-stone-900">
@@ -61,9 +75,27 @@ export function AssignedShiftsList({ shifts }: AssignedShiftsListProps) {
                 <td className="max-w-[160px] truncate px-4 py-4 text-stone-500">
                   {shift.notes ?? "—"}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-4 py-4">
                   <ShiftStatusBadge status={shift.status} />
                 </td>
+                {onDeleteShift && (
+                  <td className="px-6 py-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={isDeletingShiftId === shift.id}
+                      onClick={() => {
+                        if (window.confirm(`Remove ${shift.staffName} from this rota?`)) {
+                          onDeleteShift(shift.id);
+                        }
+                      }}
+                      className="text-red-700 hover:text-red-800"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -90,7 +122,7 @@ export function AssignedShiftsList({ shifts }: AssignedShiftsListProps) {
               <div>
                 <dt className="text-xs text-stone-500">Start – finish</dt>
                 <dd className="text-stone-700">
-                  {shift.startTime} – {shift.finishTime}
+                  {shift.startTime} – {formatFinishTime(shift)}
                 </dd>
               </div>
               <div>
@@ -104,8 +136,22 @@ export function AssignedShiftsList({ shifts }: AssignedShiftsListProps) {
                 </dd>
               </div>
             </dl>
-            {shift.notes && (
-              <p className="mt-2 text-sm text-stone-500">{shift.notes}</p>
+            {shift.notes && <p className="mt-2 text-sm text-stone-500">{shift.notes}</p>}
+            {onDeleteShift && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="mt-3 w-full text-red-700"
+                disabled={isDeletingShiftId === shift.id}
+                onClick={() => {
+                  if (window.confirm(`Remove ${shift.staffName} from this rota?`)) {
+                    onDeleteShift(shift.id);
+                  }
+                }}
+              >
+                Remove shift
+              </Button>
             )}
           </div>
         ))}

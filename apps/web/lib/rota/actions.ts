@@ -1,0 +1,393 @@
+"use server";
+
+import { randomUUID } from "crypto";
+import { getPrimaryVenueId, requireAuthenticatedClient } from "@/lib/auth/session";
+import { toMockEvent, type EventRowWithJoins } from "@/lib/events/mappers";
+import type { RotaBuilderData, RotaEventSummary } from "@/lib/mock/rota";
+import {
+  buildRotaBuilderData,
+  toAssignedShift,
+  toRotaEventSummary,
+  type RotaShiftRow,
+} from "@/lib/rota/mappers";
+import { encodeArrivalInNotes, resolveShiftTimestamps } from "@/lib/rota/shift-time";
+import { toMockTeamMember, type TeamMemberRow } from "@/lib/team/mappers";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
+
+const EVENT_SELECT = `
+  id, title, status, starts_at, ends_at, guest_count,
+  client_name, client_email, client_phone, notes,
+  space_id, event_type_id,
+  spaces ( name ),
+  event_types ( name )
+`;
+
+const ROTA_SHIFT_SELECT = `
+  id, venue_id, event_id, team_member_id, role_label, section,
+  starts_at, ends_at, break_minutes, status, hourly_rate, notes,
+  team_members ( id, full_name, hourly_rate, availability_status, status, role )
+`;
+
+const TEAM_MEMBER_SELECT = `
+  id, venue_id, profile_id, full_name, email, phone,
+  role, job_title, department, employment_type,
+  availability_status, status, hourly_rate, notes,
+  created_at, updated_at
+`;
+
+export type RotaActionResult<T> =
+  | ({ success: true; noVenue?: boolean } & T)
+  | { success: false; error: string };
+
+export type CreateRotaShiftInput = {
+  event_id: string;
+  team_member_id: string;
+  role_label: string;
+  section: string;
+  arrival_time: string;
+  start_time: string;
+  finish_time: string;
+  finish_is_next_day?: boolean;
+  break_minutes: number;
+  notes?: string;
+};
+
+function dbErrorMessage(error: { message?: string } | null): string {
+  return error?.message ?? "Something went wrong. Please try again.";
+}
+
+async function loadVenueContext(
+  redirectPath: string,
+): Promise<
+  | { supabase: Awaited<ReturnType<typeof requireAuthenticatedClient>>["supabase"]; venueId: string }
+  | { noVenue: true }
+> {
+  const { supabase, user } = await requireAuthenticatedClient(redirectPath);
+  const venueId = await getPrimaryVenueId(supabase, user.id);
+
+  if (!venueId) {
+    return { noVenue: true };
+  }
+
+  return { supabase, venueId };
+}
+
+async function fetchEventForVenue(
+  supabase: Awaited<ReturnType<typeof requireAuthenticatedClient>>["supabase"],
+  venueId: string,
+  eventId: string,
+) {
+  const { data, error } = await supabase
+    .from("events")
+    .select(EVENT_SELECT)
+    .eq("id", eventId)
+    .eq("venue_id", venueId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data as EventRowWithJoins | null;
+}
+
+async function fetchShiftsForEvent(
+  supabase: Awaited<ReturnType<typeof requireAuthenticatedClient>>["supabase"],
+  venueId: string,
+  eventId: string,
+): Promise<RotaShiftRow[]> {
+  const { data, error } = await supabase
+    .from("rota_shifts")
+    .select(ROTA_SHIFT_SELECT)
+    .eq("venue_id", venueId)
+    .eq("event_id", eventId)
+    .order("starts_at", { ascending: true });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data as RotaShiftRow[] | null) ?? [];
+}
+
+async function fetchTeamMembers(
+  supabase: Awaited<ReturnType<typeof requireAuthenticatedClient>>["supabase"],
+  venueId: string,
+) {
+  const { data, error } = await supabase
+    .from("team_members")
+    .select(TEAM_MEMBER_SELECT)
+    .eq("venue_id", venueId)
+    .order("full_name", { ascending: true });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data as TeamMemberRow[] | null)?.map(toMockTeamMember) ?? [];
+}
+
+export async function loadRotaOverviewAction(): Promise<
+  RotaActionResult<{ events: RotaEventSummary[] }>
+> {
+  if (!isSupabaseConfigured()) {
+    return { success: true, events: [], noVenue: true };
+  }
+
+  try {
+    const context = await loadVenueContext("/sign-in?redirect=/dashboard/rota");
+
+    if (!("supabase" in context)) {
+      return { success: true, events: [], noVenue: true };
+    }
+
+    const { supabase, venueId } = context;
+    const nowIso = new Date().toISOString();
+
+    const { data: eventRows, error: eventsError } = await supabase
+      .from("events")
+      .select(EVENT_SELECT)
+      .eq("venue_id", venueId)
+      .gte("ends_at", nowIso)
+      .order("starts_at", { ascending: true });
+
+    if (eventsError) {
+      return { success: false, error: dbErrorMessage(eventsError) };
+    }
+
+    const events = (eventRows as EventRowWithJoins[] | null) ?? [];
+
+    if (events.length === 0) {
+      return { success: true, events: [] };
+    }
+
+    const eventIds = events.map((event) => event.id);
+
+    const { data: shiftRows, error: shiftsError } = await supabase
+      .from("rota_shifts")
+      .select(ROTA_SHIFT_SELECT)
+      .eq("venue_id", venueId)
+      .in("event_id", eventIds);
+
+    if (shiftsError) {
+      return { success: false, error: dbErrorMessage(shiftsError) };
+    }
+
+    const shiftsByEvent = new Map<string, RotaShiftRow[]>();
+
+    for (const shift of (shiftRows as RotaShiftRow[] | null) ?? []) {
+      if (!shift.event_id) continue;
+      const list = shiftsByEvent.get(shift.event_id) ?? [];
+      list.push(shift);
+      shiftsByEvent.set(shift.event_id, list);
+    }
+
+    const summaries = events.map((row) => {
+      const event = toMockEvent(row);
+      const eventShifts = (shiftsByEvent.get(event.id) ?? []).map((shift) =>
+        toAssignedShift(shift, event.date),
+      );
+      return toRotaEventSummary(event, eventShifts);
+    });
+
+    return { success: true, events: summaries };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to load rota overview.";
+    return { success: false, error: message };
+  }
+}
+
+export async function loadRotaBuilderAction(
+  eventId: string,
+): Promise<RotaActionResult<{ data: RotaBuilderData | null }>> {
+  if (!isSupabaseConfigured()) {
+    return { success: true, data: null, noVenue: true };
+  }
+
+  try {
+    const context = await loadVenueContext(`/sign-in?redirect=/dashboard/rota/${eventId}`);
+
+    if (!("supabase" in context)) {
+      return { success: true, data: null, noVenue: true };
+    }
+
+    const { supabase, venueId } = context;
+    const eventRow = await fetchEventForVenue(supabase, venueId, eventId);
+
+    if (!eventRow) {
+      return { success: true, data: null };
+    }
+
+    const event = toMockEvent(eventRow);
+    const [shiftRows, teamMembers] = await Promise.all([
+      fetchShiftsForEvent(supabase, venueId, eventId),
+      fetchTeamMembers(supabase, venueId),
+    ]);
+
+    const assignedShifts = shiftRows.map((shift) => toAssignedShift(shift, event.date));
+    const data = buildRotaBuilderData(event, assignedShifts, teamMembers);
+
+    return { success: true, data };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to load rota builder.";
+    return { success: false, error: message };
+  }
+}
+
+export async function createRotaShiftAction(
+  input: CreateRotaShiftInput,
+): Promise<RotaActionResult<{ shiftId: string }>> {
+  if (!isSupabaseConfigured()) {
+    return {
+      success: false,
+      error:
+        "Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local.",
+    };
+  }
+
+  try {
+    const context = await loadVenueContext(
+      `/sign-in?redirect=/dashboard/rota/${input.event_id}`,
+    );
+
+    if (!("supabase" in context)) {
+      return { success: false, error: "Set up your venue before building rotas." };
+    }
+
+    const { supabase, venueId } = context;
+    const eventRow = await fetchEventForVenue(supabase, venueId, input.event_id);
+
+    if (!eventRow) {
+      return { success: false, error: "Event not found." };
+    }
+
+    const event = toMockEvent(eventRow);
+
+    const timestamps = resolveShiftTimestamps(
+      event.date,
+      input.start_time,
+      input.finish_time,
+      { finishIsNextDay: input.finish_is_next_day },
+    );
+
+    if ("error" in timestamps) {
+      return { success: false, error: timestamps.error };
+    }
+
+    const { data: teamMember, error: memberError } = await supabase
+      .from("team_members")
+      .select("id, hourly_rate")
+      .eq("id", input.team_member_id)
+      .eq("venue_id", venueId)
+      .maybeSingle();
+
+    if (memberError || !teamMember) {
+      return { success: false, error: "Team member not found." };
+    }
+
+    const hourlyRate =
+      teamMember.hourly_rate !== null && teamMember.hourly_rate !== undefined
+        ? Number(teamMember.hourly_rate)
+        : null;
+
+    const shiftId = randomUUID();
+    const notes = encodeArrivalInNotes(
+      input.arrival_time,
+      input.start_time,
+      input.notes?.trim() || null,
+    );
+
+    const { error } = await supabase.from("rota_shifts").insert({
+      id: shiftId,
+      venue_id: venueId,
+      event_id: input.event_id,
+      team_member_id: input.team_member_id,
+      role_label: input.role_label.trim(),
+      section: input.section.trim() || null,
+      starts_at: timestamps.startsAt,
+      ends_at: timestamps.endsAt,
+      break_minutes: input.break_minutes,
+      hourly_rate: hourlyRate,
+      notes,
+      status: "scheduled",
+    });
+
+    if (error) {
+      return { success: false, error: dbErrorMessage(error) };
+    }
+
+    return { success: true, shiftId };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to add shift.";
+    return { success: false, error: message };
+  }
+}
+
+export async function deleteRotaShiftAction(
+  shiftId: string,
+  eventId: string,
+): Promise<RotaActionResult<{ ok: true }>> {
+  if (!isSupabaseConfigured()) {
+    return { success: false, error: "Supabase is not configured." };
+  }
+
+  try {
+    const context = await loadVenueContext(`/sign-in?redirect=/dashboard/rota/${eventId}`);
+
+    if (!("supabase" in context)) {
+      return { success: false, error: "Set up your venue before building rotas." };
+    }
+
+    const { supabase, venueId } = context;
+
+    const { error } = await supabase
+      .from("rota_shifts")
+      .delete()
+      .eq("id", shiftId)
+      .eq("venue_id", venueId)
+      .eq("event_id", eventId);
+
+    if (error) {
+      return { success: false, error: dbErrorMessage(error) };
+    }
+
+    return { success: true, ok: true as const };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to remove shift.";
+    return { success: false, error: message };
+  }
+}
+
+export async function publishRotaAction(
+  eventId: string,
+): Promise<RotaActionResult<{ ok: true }>> {
+  if (!isSupabaseConfigured()) {
+    return { success: false, error: "Supabase is not configured." };
+  }
+
+  try {
+    const context = await loadVenueContext(`/sign-in?redirect=/dashboard/rota/${eventId}`);
+
+    if (!("supabase" in context)) {
+      return { success: false, error: "Set up your venue before building rotas." };
+    }
+
+    const { supabase, venueId } = context;
+
+    const { error } = await supabase
+      .from("rota_shifts")
+      .update({ status: "confirmed" })
+      .eq("venue_id", venueId)
+      .eq("event_id", eventId)
+      .neq("status", "cancelled");
+
+    if (error) {
+      return { success: false, error: dbErrorMessage(error) };
+    }
+
+    return { success: true, ok: true as const };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to publish rota.";
+    return { success: false, error: message };
+  }
+}

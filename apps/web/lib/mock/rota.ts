@@ -17,6 +17,7 @@ export interface RotaEventSummary {
   date: string;
   startTime: string;
   endTime: string;
+  endsNextDay?: boolean;
   space: string;
   guestCount: number;
   rotaStatus: RotaStatus;
@@ -24,6 +25,7 @@ export interface RotaEventSummary {
   requiredStaffCount: number;
   gapCount: number;
   estimatedLabourCost: number;
+  totalScheduledHours: number;
 }
 
 export interface StaffingRequirement {
@@ -41,6 +43,7 @@ export interface AssignedShift {
   arrivalTime: string;
   startTime: string;
   finishTime: string;
+  finishIsNextDay?: boolean;
   breakMinutes: number;
   hourlyRate: number;
   estimatedCost: number;
@@ -71,6 +74,7 @@ export interface RotaBuilderData {
   date: string;
   startTime: string;
   endTime: string;
+  endsNextDay?: boolean;
   space: string;
   guestCount: number;
   clientName: string;
@@ -347,6 +351,11 @@ export const mockRotaEventSummaries: RotaEventSummary[] = [
     requiredStaffCount: event.requiredStaffCount,
     gapCount,
     estimatedLabourCost: labourCost,
+    totalScheduledHours: shifts.reduce(
+      (total, shift) =>
+        total + calculateShiftHours(shift.startTime, shift.finishTime, shift.breakMinutes),
+      0,
+    ),
   };
 });
 

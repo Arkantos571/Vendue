@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Send } from "lucide-react";
 import { AddShiftForm, type NewShiftInput } from "@/components/rota/add-shift-form";
 import { AssignedShiftsList } from "@/components/rota/assigned-shifts-list";
@@ -8,115 +8,221 @@ import { AvailableStaffPanel } from "@/components/rota/available-staff-panel";
 import { EventSummaryHeader } from "@/components/rota/event-summary-header";
 import { LabourCostSummary } from "@/components/rota/labour-cost-summary";
 import { StaffingRequirementsSummary } from "@/components/rota/staffing-requirements-summary";
+import { VenueRequiredEmptyState } from "@/components/events/venue-required-empty-state";
 import { Button } from "@/components/ui/button";
+import type { AvailableStaffMember, RotaBuilderData } from "@/lib/mock/rota";
+import { buildLabourSummary } from "@/lib/rota/mappers";
 import {
-  calculateShiftCost,
-  type AssignedShift,
-  type AvailableStaffMember,
-  type RotaBuilderData,
-} from "@/lib/mock/rota";
+  createRotaShiftAction,
+  deleteRotaShiftAction,
+  loadRotaBuilderAction,
+  publishRotaAction,
+} from "@/lib/rota/actions";
 
 interface RotaBuilderProps {
-  initialData: RotaBuilderData;
+  eventId: string;
+  initialData?: RotaBuilderData | null;
 }
 
-function createShiftId(): string {
-  return `shift-new-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-}
+export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
+  const [data, setData] = useState<RotaBuilderData | null>(initialData);
+  const [isLoading, setIsLoading] = useState(!initialData);
+  const [error, setError] = useState<string | null>(null);
+  const [noVenue, setNoVenue] = useState(false);
+  const [isSubmittingShift, setIsSubmittingShift] = useState(false);
+  const [deletingShiftId, setDeletingShiftId] = useState<string | null>(null);
+  const [isPublishing, setIsPublishing] = useState(false);
 
-function buildShiftFromInput(input: NewShiftInput): AssignedShift {
-  return {
-    id: createShiftId(),
-    staffMemberId: input.staffMemberId,
-    staffName: input.staffName,
-    role: input.role,
-    section: input.section,
-    arrivalTime: input.arrivalTime,
-    startTime: input.startTime,
-    finishTime: input.finishTime,
-    breakMinutes: input.breakMinutes,
-    hourlyRate: input.hourlyRate,
-    estimatedCost: calculateShiftCost(
-      input.startTime,
-      input.finishTime,
-      input.breakMinutes,
-      input.hourlyRate,
-    ),
-    notes: input.notes,
-    status: "draft",
-  };
-}
+  const reload = useCallback(async () => {
+    setError(null);
+    const result = await loadRotaBuilderAction(eventId);
 
-export function RotaBuilder({ initialData }: RotaBuilderProps) {
-  const [shifts, setShifts] = useState<AssignedShift[]>(initialData.assignedShifts);
-  const [published, setPublished] = useState(initialData.rotaStatus === "published");
+    if (!result.success) {
+      setError(result.error);
+      setData(null);
+      setNoVenue(false);
+      return;
+    }
+
+    if (result.noVenue) {
+      setNoVenue(true);
+      setData(null);
+      return;
+    }
+
+    setData(result.data);
+    setNoVenue(false);
+  }, [eventId]);
+
+  useEffect(() => {
+    if (initialData) {
+      setData(initialData);
+      setIsLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function load() {
+      setIsLoading(true);
+      await reload();
+      if (!cancelled) {
+        setIsLoading(false);
+      }
+    }
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [eventId, initialData, reload]);
 
   const assignedStaffIds = useMemo(
-    () => new Set(shifts.map((shift) => shift.staffMemberId)),
-    [shifts],
+    () => new Set((data?.assignedShifts ?? []).map((shift) => shift.staffMemberId)),
+    [data?.assignedShifts],
   );
 
   const availableStaff = useMemo(
-    () => initialData.availableStaff.filter((member) => !assignedStaffIds.has(member.id)),
-    [initialData.availableStaff, assignedStaffIds],
+    () => (data?.availableStaff ?? []).filter((member) => !assignedStaffIds.has(member.id)),
+    [data?.availableStaff, assignedStaffIds],
   );
 
   const labourSummary = useMemo(() => {
-    const totalScheduledHours = shifts.reduce((total, shift) => {
-      const start = shift.startTime.split(":").map(Number);
-      const finish = shift.finishTime.split(":").map(Number);
-      let startMin = start[0] * 60 + start[1];
-      let finishMin = finish[0] * 60 + finish[1];
-      if (finishMin < startMin) finishMin += 24 * 60;
-      return total + Math.max(0, (finishMin - startMin - shift.breakMinutes) / 60);
-    }, 0);
+    if (!data) {
+      return buildLabourSummary([], 0);
+    }
+    return buildLabourSummary(data.assignedShifts, data.labourSummary.requiredStaff);
+  }, [data]);
 
-    const estimatedLabourCost = shifts.reduce((total, shift) => total + shift.estimatedCost, 0);
+  async function addShift(input: NewShiftInput) {
+    setIsSubmittingShift(true);
+    setError(null);
 
-    return {
-      totalScheduledHours,
-      estimatedLabourCost,
-      requiredStaff: initialData.labourSummary.requiredStaff,
-      assignedStaff: shifts.length,
-      remainingGaps: Math.max(0, initialData.labourSummary.requiredStaff - shifts.length),
-    };
-  }, [shifts, initialData.labourSummary.requiredStaff]);
+    const result = await createRotaShiftAction({
+      event_id: eventId,
+      team_member_id: input.staffMemberId,
+      role_label: input.role,
+      section: input.section,
+      arrival_time: input.arrivalTime,
+      start_time: input.startTime,
+      finish_time: input.finishTime,
+      finish_is_next_day: input.finishIsNextDay,
+      break_minutes: input.breakMinutes,
+      notes: input.notes ?? undefined,
+    });
 
-  function addShift(input: NewShiftInput) {
-    setShifts((current) => [...current, buildShiftFromInput(input)]);
+    setIsSubmittingShift(false);
+
+    if (!result.success) {
+      setError(result.error);
+      throw new Error(result.error);
+    }
+
+    await reload();
   }
 
-  function addStaffQuick(member: AvailableStaffMember) {
-    if (member.hourlyRate === null) return;
+  async function addStaffQuick(member: AvailableStaffMember) {
+    if (member.hourlyRate === null || !data) return;
 
-    addShift({
+    await addShift({
       staffMemberId: member.id,
       staffName: member.name,
       role: member.role,
       section: "Main floor",
-      arrivalTime: initialData.startTime,
-      startTime: initialData.startTime,
-      finishTime: initialData.endTime,
+      arrivalTime: data.startTime,
+      startTime: data.startTime,
+      finishTime: data.endTime,
+      finishIsNextDay: data.endsNextDay ?? false,
       breakMinutes: 30,
       hourlyRate: member.hourlyRate,
       notes: null,
     });
   }
 
-  function handlePublish() {
-    setPublished(true);
+  async function deleteShift(shiftId: string) {
+    setDeletingShiftId(shiftId);
+    setError(null);
+
+    const result = await deleteRotaShiftAction(shiftId, eventId);
+
+    setDeletingShiftId(null);
+
+    if (!result.success) {
+      setError(result.error);
+      return;
+    }
+
+    await reload();
   }
 
-  const canPublish = labourSummary.remainingGaps === 0 && !published;
+  async function handlePublish() {
+    setIsPublishing(true);
+    setError(null);
+
+    const result = await publishRotaAction(eventId);
+
+    setIsPublishing(false);
+
+    if (!result.success) {
+      setError(result.error);
+      return;
+    }
+
+    await reload();
+  }
+
+  if (isLoading) {
+    return (
+      <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+        <p className="text-sm text-stone-500">Loading rota…</p>
+      </div>
+    );
+  }
+
+  if (noVenue) {
+    return (
+      <VenueRequiredEmptyState
+        message="Set up your venue before building rotas"
+        description="Add your venue in Settings before scheduling event staff."
+        href="/dashboard/settings"
+        buttonLabel="Go to settings"
+      />
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+        <p className="text-sm font-medium text-stone-900">Event not found</p>
+        <p className="mt-1 text-sm text-stone-500">
+          This event may not exist or is not in your venue.
+        </p>
+      </div>
+    );
+  }
+
+  const published = data.rotaStatus === "published";
+  const canPublish = data.assignedShifts.length > 0 && !published;
 
   return (
     <div className="space-y-6">
-      <EventSummaryHeader data={initialData} />
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {error}
+        </div>
+      )}
+
+      <EventSummaryHeader data={data} />
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-6">
-          <StaffingRequirementsSummary requirements={initialData.staffingRequirements} />
-          <AssignedShiftsList shifts={shifts} />
+        <div className="space-y-6 lg:col-span-2">
+          <StaffingRequirementsSummary requirements={data.staffingRequirements} />
+          <AssignedShiftsList
+            shifts={data.assignedShifts}
+            onDeleteShift={deleteShift}
+            isDeletingShiftId={deletingShiftId}
+          />
         </div>
 
         <div className="space-y-6">
@@ -126,19 +232,19 @@ export function RotaBuilder({ initialData }: RotaBuilderProps) {
             <h3 className="text-sm font-semibold text-stone-900">Publish rota</h3>
             <p className="mt-1 text-sm text-stone-500">
               {published
-                ? "This rota has been published. Staff can view shifts in the mobile app when connected."
+                ? "This rota has been published. Staff notifications are not sent yet."
                 : canPublish
-                  ? "All required positions are filled. Ready to publish."
-                  : "Fill remaining gaps before publishing."}
+                  ? "Mark all shifts as confirmed and publish this rota."
+                  : "Add at least one shift before publishing."}
             </p>
             <Button
               type="button"
               className="mt-4 w-full"
-              disabled={!canPublish}
+              disabled={!canPublish || isPublishing}
               onClick={handlePublish}
             >
               <Send className="mr-2 h-4 w-4" />
-              {published ? "Published" : "Publish rota"}
+              {isPublishing ? "Publishing…" : published ? "Published" : "Publish rota"}
             </Button>
           </div>
         </div>
@@ -148,8 +254,10 @@ export function RotaBuilder({ initialData }: RotaBuilderProps) {
         <AvailableStaffPanel staff={availableStaff} onAddToRota={addStaffQuick} />
         <AddShiftForm
           staffOptions={availableStaff}
-          defaultStartTime={initialData.startTime}
-          defaultFinishTime={initialData.endTime}
+          defaultStartTime={data.startTime}
+          defaultFinishTime={data.endTime}
+          defaultFinishIsNextDay={data.endsNextDay}
+          isSubmitting={isSubmittingShift}
           onAddShift={addShift}
         />
       </div>

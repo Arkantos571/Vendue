@@ -13,6 +13,7 @@ interface EventSummaryHeaderProps {
     | "date"
     | "startTime"
     | "endTime"
+    | "endsNextDay"
     | "space"
     | "guestCount"
     | "clientName"
