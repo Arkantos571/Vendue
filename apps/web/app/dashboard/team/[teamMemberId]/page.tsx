@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { TeamMemberDetailView } from "@/components/team/team-member-detail-view";
-import { getTeamMemberById } from "@/lib/mock/team";
+import { loadTeamMemberForPage } from "@/lib/team/data";
 
 interface TeamMemberDetailPageProps {
   params: Promise<{ teamMemberId: string }>;
@@ -12,7 +12,7 @@ interface TeamMemberDetailPageProps {
 
 export async function generateMetadata({ params }: TeamMemberDetailPageProps): Promise<Metadata> {
   const { teamMemberId } = await params;
-  const member = getTeamMemberById(teamMemberId);
+  const member = await loadTeamMemberForPage(teamMemberId);
 
   return {
     title: member?.fullName ?? "Team member",
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: TeamMemberDetailPageProps): P
 
 export default async function TeamMemberDetailPage({ params }: TeamMemberDetailPageProps) {
   const { teamMemberId } = await params;
-  const member = getTeamMemberById(teamMemberId);
+  const member = await loadTeamMemberForPage(teamMemberId);
 
   if (!member) {
     notFound();

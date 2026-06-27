@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { Plus, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AvailabilityBadge } from "@/components/team/availability-badge";
 import { TeamRoleBadge } from "@/components/team/team-role-badge";
 import { TeamStatusBadge } from "@/components/team/team-status-badge";
+import { VenueRequiredEmptyState } from "@/components/events/venue-required-empty-state";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import {
@@ -15,9 +16,9 @@ import {
   type TeamStatusFilter,
   formatEmploymentType,
   formatHourlyRate,
-  mockTeamMembers,
   teamRoleOptions,
 } from "@/lib/mock/team";
+import { loadTeamMembersAction } from "@/lib/team/actions";
 
 const statusFilters: { value: TeamStatusFilter; label: string }[] = [
   { value: "all", label: "All" },
@@ -57,14 +58,50 @@ function FilterChip({
 }
 
 export function TeamList() {
+  const [members, setMembers] = useState<MockTeamMember[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [noVenue, setNoVenue] = useState(false);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<TeamRoleFilter>("all");
   const [statusFilter, setStatusFilter] = useState<TeamStatusFilter>("all");
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setIsLoading(true);
+      setError(null);
+
+      const result = await loadTeamMembersAction();
+
+      if (cancelled) {
+        return;
+      }
+
+      if (!result.success) {
+        setError(result.error);
+        setMembers([]);
+        setNoVenue(false);
+      } else {
+        setMembers(result.members);
+        setNoVenue(Boolean(result.noVenue));
+      }
+
+      setIsLoading(false);
+    }
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const filteredMembers = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    return mockTeamMembers.filter((member) => {
+    return members.filter((member) => {
       const matchesRole = roleFilter === "all" || member.role === roleFilter;
       const matchesStatus = statusFilter === "all" || member.status === statusFilter;
       const matchesSearch =
@@ -75,10 +112,34 @@ export function TeamList() {
 
       return matchesRole && matchesStatus && matchesSearch;
     });
-  }, [search, roleFilter, statusFilter]);
+  }, [members, search, roleFilter, statusFilter]);
+
+  if (isLoading) {
+    return (
+      <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+        <p className="text-sm text-stone-500">Loading team…</p>
+      </div>
+    );
+  }
+
+  if (noVenue) {
+    return (
+      <VenueRequiredEmptyState
+        message="Set up your venue before adding team members"
+        description="Add your venue in Settings before building your team roster."
+        href="/dashboard/settings"
+        buttonLabel="Go to settings"
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {error}
+        </div>
+      )}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative max-w-md flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
