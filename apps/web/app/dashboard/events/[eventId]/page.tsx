@@ -5,6 +5,8 @@ import { ArrowLeft } from "lucide-react";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { EventDetailView } from "@/components/events/event-detail-view";
 import { getEventById } from "@/lib/mock/events";
+import { getFunctionSheetByEventId } from "@/lib/mock/function-sheet";
+import { getRotaBuilderByEventId } from "@/lib/mock/rota";
 
 interface EventDetailPageProps {
   params: Promise<{ eventId: string }>;
@@ -27,20 +29,28 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
     notFound();
   }
 
+  const functionSheet = getFunctionSheetByEventId(eventId);
+  const hasRotaBuilder = Boolean(getRotaBuilderByEventId(eventId));
+
+  if (!functionSheet) {
+    notFound();
+  }
+
   return (
-    <DashboardShell
-      title="Event detail"
-      description={event.title}
-    >
-      <div className="mx-auto max-w-5xl space-y-6">
+    <DashboardShell title="Event detail" description={event.title}>
+      <div className="mx-auto max-w-7xl space-y-6">
         <Link
           href="/dashboard/events"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-stone-600 hover:text-stone-900"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-stone-600 hover:text-stone-900 print:hidden"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to events
         </Link>
-        <EventDetailView event={event} />
+        <EventDetailView
+          event={event}
+          functionSheet={functionSheet}
+          hasRotaBuilder={hasRotaBuilder}
+        />
       </div>
     </DashboardShell>
   );
