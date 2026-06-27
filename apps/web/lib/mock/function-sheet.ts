@@ -1,4 +1,4 @@
-import { getEventById } from "@/lib/mock/events";
+import { getEventById, type MockEvent } from "@/lib/mock/events";
 
 export interface RunningOrderItem {
   time: string;
@@ -374,12 +374,9 @@ const functionSheets: Record<string, FunctionSheet> = {
   },
 };
 
-function buildDefaultSheet(eventId: string): FunctionSheet | undefined {
-  const event = getEventById(eventId);
-  if (!event) return undefined;
-
+export function buildPlaceholderFunctionSheetFromEvent(event: MockEvent): FunctionSheet {
   return {
-    eventId,
+    eventId: event.id,
     runningOrder: [
       { time: event.startTime, activity: "Guest arrival", owner: "Events team", notes: null },
       { time: event.endTime, activity: "Event close", owner: "Manager on duty", notes: null },
@@ -415,6 +412,12 @@ function buildDefaultSheet(eventId: string): FunctionSheet | undefined {
       clientPreferences: "To be captured during client briefing.",
     },
   };
+}
+
+function buildDefaultSheet(eventId: string): FunctionSheet | undefined {
+  const event = getEventById(eventId);
+  if (!event) return undefined;
+  return buildPlaceholderFunctionSheetFromEvent(event);
 }
 
 export function getFunctionSheetByEventId(eventId: string): FunctionSheet | undefined {

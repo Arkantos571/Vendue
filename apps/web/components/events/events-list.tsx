@@ -2,17 +2,15 @@
 
 import Link from "next/link";
 import { Plus, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { RotaCompletionIndicator } from "@/components/events/rota-completion-indicator";
+import { VenueRequiredEmptyState } from "@/components/events/venue-required-empty-state";
 import { Input } from "@/components/ui/input";
 import { cn, formatDate } from "@/lib/utils";
-import {
-  type EventStatusFilter,
-  type MockEvent,
-  mockEvents,
-} from "@/lib/mock/events";
+import { loadEventsAction } from "@/lib/events/actions";
+import { type EventStatusFilter, type MockEvent } from "@/lib/mock/events";
 
 const statusFilters: { value: EventStatusFilter; label: string }[] = [
   { value: "all", label: "All" },
@@ -23,13 +21,49 @@ const statusFilters: { value: EventStatusFilter; label: string }[] = [
 ];
 
 export function EventsList() {
+  const [events, setEvents] = useState<MockEvent[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [noVenue, setNoVenue] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<EventStatusFilter>("all");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setIsLoading(true);
+      setError(null);
+
+      const result = await loadEventsAction();
+
+      if (cancelled) {
+        return;
+      }
+
+      if (!result.success) {
+        setError(result.error);
+        setEvents([]);
+        setNoVenue(false);
+      } else {
+        setEvents(result.events);
+        setNoVenue(Boolean(result.noVenue));
+      }
+
+      setIsLoading(false);
+    }
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filteredEvents = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    return mockEvents.filter((event) => {
+    return events.filter((event) => {
       const matchesStatus =
         statusFilter === "all" || event.status === statusFilter;
 
@@ -41,7 +75,28 @@ export function EventsList() {
 
       return matchesStatus && matchesSearch;
     });
-  }, [search, statusFilter]);
+  }, [events, search, statusFilter]);
+
+  if (isLoading) {
+    return (
+      <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+        <p className="text-sm text-stone-500">Loading events…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 px-6 py-12 text-center shadow-sm">
+        <p className="text-sm font-medium text-red-900">Could not load events</p>
+        <p className="mt-1 text-sm text-red-700">{error}</p>
+      </div>
+    );
+  }
+
+  if (noVenue) {
+    return <VenueRequiredEmptyState />;
+  }
 
   return (
     <div className="space-y-6">

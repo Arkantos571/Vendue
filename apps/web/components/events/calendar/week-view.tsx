@@ -1,17 +1,23 @@
 import Link from "next/link";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { cn, formatDate } from "@/lib/utils";
-import { getEventsOnDate, getWeekDates, mockToday } from "@/lib/mock/event-calendar";
+import { dateToKey, getEventsOnDate, getWeekDates } from "@/lib/events/calendar";
+import type { MockEvent } from "@/lib/mock/events";
 
-export function EventCalendarWeekView() {
-  const weekDates = getWeekDates(mockToday);
-  const todayKey = mockToday.toISOString().slice(0, 10);
+interface EventCalendarWeekViewProps {
+  events: MockEvent[];
+  referenceDate: Date;
+}
+
+export function EventCalendarWeekView({ events, referenceDate }: EventCalendarWeekViewProps) {
+  const weekDates = getWeekDates(referenceDate);
+  const todayKey = dateToKey(new Date());
 
   return (
     <div className="grid gap-4 lg:grid-cols-7">
       {weekDates.map((date) => {
-        const key = date.toISOString().slice(0, 10);
-        const events = getEventsOnDate(key);
+        const key = dateToKey(date);
+        const dayEvents = getEventsOnDate(events, key);
         const isToday = key === todayKey;
 
         return (
@@ -31,10 +37,10 @@ export function EventCalendarWeekView() {
               </p>
             </div>
             <div className="space-y-2 p-2">
-              {events.length === 0 ? (
+              {dayEvents.length === 0 ? (
                 <p className="px-2 py-4 text-xs text-stone-400">No events</p>
               ) : (
-                events.map(({ event }) => (
+                dayEvents.map(({ event }) => (
                   <Link
                     key={event.id}
                     href={`/dashboard/events/${event.id}`}

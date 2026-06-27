@@ -1,26 +1,32 @@
 import Link from "next/link";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { formatDate } from "@/lib/utils";
-import { getEventsOnDate, mockToday } from "@/lib/mock/event-calendar";
+import { dateToKey, getEventsOnDate } from "@/lib/events/calendar";
+import type { MockEvent } from "@/lib/mock/events";
 
-export function EventCalendarDayView() {
-  const dayKey = mockToday.toISOString().slice(0, 10);
-  const events = getEventsOnDate(dayKey);
+interface EventCalendarDayViewProps {
+  events: MockEvent[];
+  referenceDate: Date;
+}
+
+export function EventCalendarDayView({ events, referenceDate }: EventCalendarDayViewProps) {
+  const dayKey = dateToKey(referenceDate);
+  const dayEvents = getEventsOnDate(events, dayKey);
 
   return (
     <div className="rounded-xl border border-stone-200 bg-white shadow-sm">
       <div className="border-b border-stone-100 px-6 py-4">
         <p className="text-sm font-medium text-stone-900">{formatDate(dayKey)}</p>
         <p className="mt-1 text-sm text-stone-500">
-          {events.length} event{events.length === 1 ? "" : "s"} scheduled
+          {dayEvents.length} event{dayEvents.length === 1 ? "" : "s"} scheduled
         </p>
       </div>
 
-      {events.length === 0 ? (
+      {dayEvents.length === 0 ? (
         <p className="px-6 py-10 text-sm text-stone-500">No events scheduled for this day.</p>
       ) : (
         <div className="divide-y divide-stone-100">
-          {events.map(({ event, setupTime }) => (
+          {dayEvents.map(({ event, setupTime }) => (
             <Link
               key={event.id}
               href={`/dashboard/events/${event.id}`}

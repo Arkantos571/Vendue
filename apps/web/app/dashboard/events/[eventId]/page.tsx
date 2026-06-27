@@ -4,8 +4,8 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { EventDetailView } from "@/components/events/event-detail-view";
-import { getEventById } from "@/lib/mock/events";
-import { getFunctionSheetByEventId } from "@/lib/mock/function-sheet";
+import { loadEventForPage } from "@/lib/events/data";
+import { buildPlaceholderFunctionSheetFromEvent } from "@/lib/mock/function-sheet";
 import { getRotaBuilderByEventId } from "@/lib/mock/rota";
 
 interface EventDetailPageProps {
@@ -14,7 +14,7 @@ interface EventDetailPageProps {
 
 export async function generateMetadata({ params }: EventDetailPageProps): Promise<Metadata> {
   const { eventId } = await params;
-  const event = getEventById(eventId);
+  const event = await loadEventForPage(eventId);
 
   return {
     title: event?.title ?? "Event",
@@ -23,18 +23,14 @@ export async function generateMetadata({ params }: EventDetailPageProps): Promis
 
 export default async function EventDetailPage({ params }: EventDetailPageProps) {
   const { eventId } = await params;
-  const event = getEventById(eventId);
+  const event = await loadEventForPage(eventId);
 
   if (!event) {
     notFound();
   }
 
-  const functionSheet = getFunctionSheetByEventId(eventId);
+  const functionSheet = buildPlaceholderFunctionSheetFromEvent(event);
   const hasRotaBuilder = Boolean(getRotaBuilderByEventId(eventId));
-
-  if (!functionSheet) {
-    notFound();
-  }
 
   return (
     <DashboardShell title="Event detail" description={event.title}>

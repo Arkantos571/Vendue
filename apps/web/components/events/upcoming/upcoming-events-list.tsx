@@ -1,17 +1,20 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle } from "lucide-react";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { FunctionSheetStatusBadge } from "@/components/events/function-sheet-status-badge";
+import { VenueRequiredEmptyState } from "@/components/events/venue-required-empty-state";
 import { RotaStatusBadge } from "@/components/rota/rota-status-badge";
 import { cn, formatDate } from "@/lib/utils";
+import { loadEventsAction } from "@/lib/events/actions";
+import type { MockEvent } from "@/lib/mock/events";
 import {
   groupUpcomingByDate,
   getUpcomingOperationalEvents,
   type UpcomingFilter,
-} from "@/lib/mock/event-calendar";
+} from "@/lib/events/operational";
 
 const filters: { value: UpcomingFilter; label: string }[] = [
   { value: "next_7_days", label: "Next 7 days" },
@@ -23,9 +26,48 @@ const filters: { value: UpcomingFilter; label: string }[] = [
 export function UpcomingEventsList() {
   const router = useRouter();
   const [filter, setFilter] = useState<UpcomingFilter>("next_7_days");
+  const [events, setEvents] = useState<MockEvent[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [noVenue, setNoVenue] = useState(false);
 
-  const events = useMemo(() => getUpcomingOperationalEvents(filter), [filter]);
-  const grouped = useMemo(() => groupUpcomingByDate(events), [events]);
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setIsLoading(true);
+      setError(null);
+
+      const result = await loadEventsAction();
+
+      if (cancelled) {
+        return;
+      }
+
+      if (!result.success) {
+        setError(result.error);
+        setEvents([]);
+        setNoVenue(false);
+      } else {
+        setEvents(result.events);
+        setNoVenue(Boolean(result.noVenue));
+      }
+
+      setIsLoading(false);
+    }
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const operationalEvents = useMemo(
+    () => getUpcomingOperationalEvents(events, filter),
+    [events, filter],
+  );
+  const grouped = useMemo(() => groupUpcomingByDate(operationalEvents), [operationalEvents]);
 
   function navigate(eventId: string) {
     router.push(`/dashboard/events/${eventId}`);
@@ -36,6 +78,29 @@ export function UpcomingEventsList() {
       e.preventDefault();
       navigate(eventId);
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+        <p className="text-sm text-stone-500">Loading upcoming events…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 px-6 py-12 text-center shadow-sm">
+        <p className="text-sm font-medium text-red-900">Could not load upcoming events</p>
+        <p className="mt-1 text-sm text-red-700">{error}</p>
+      </div>
+    );
+  }
+
+  if (noVenue) {
+    return (
+      <VenueRequiredEmptyState message="Set up your venue before viewing upcoming events" />
+    );
   }
 
   return (

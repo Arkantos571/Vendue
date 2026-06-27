@@ -2,28 +2,115 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { mockEventTypes, mockSpaces } from "@/lib/mock/events";
+import { VenueRequiredEmptyState } from "@/components/events/venue-required-empty-state";
+import {
+  createEventAction,
+  loadEventFormOptionsAction,
+} from "@/lib/events/actions";
 
 export function NewEventForm() {
   const router = useRouter();
+  const [spaces, setSpaces] = useState<{ id: string; name: string }[]>([]);
+  const [eventTypes, setEventTypes] = useState<{ id: string; name: string }[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [noVenue, setNoVenue] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setIsLoading(true);
+      setError(null);
+
+      const result = await loadEventFormOptionsAction();
+
+      if (cancelled) {
+        return;
+      }
+
+      if (!result.success) {
+        setError(result.error);
+        setSpaces([]);
+        setEventTypes([]);
+        setNoVenue(false);
+      } else {
+        setSpaces(result.spaces);
+        setEventTypes(result.eventTypes);
+        setNoVenue(Boolean(result.noVenue));
+      }
+
+      setIsLoading(false);
+    }
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    setError(null);
+
+    const formData = new FormData(event.currentTarget);
+
+    const guestCountRaw = String(formData.get("guest_count") ?? "").trim();
+    const guestCount = Number(guestCountRaw);
+
+    const result = await createEventAction({
+      title: String(formData.get("title") ?? ""),
+      client_name: String(formData.get("client_name") ?? ""),
+      event_date: String(formData.get("event_date") ?? ""),
+      start_time: String(formData.get("start_time") ?? ""),
+      end_time: String(formData.get("end_time") ?? ""),
+      space_id: String(formData.get("space") ?? ""),
+      event_type_id: String(formData.get("event_type") ?? ""),
+      guest_count: guestCount,
+      client_email: String(formData.get("client_email") ?? "") || undefined,
+      client_phone: String(formData.get("client_phone") ?? "") || undefined,
+      notes: String(formData.get("notes") ?? "") || undefined,
+    });
+
     setIsSubmitting(false);
-    router.push("/dashboard/events");
+
+    if (!result.success) {
+      setError(result.error);
+      return;
+    }
+
+    router.push(`/dashboard/events/${result.eventId}`);
+  }
+
+  if (isLoading) {
+    return (
+      <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+        <p className="text-sm text-stone-500">Loading form…</p>
+      </div>
+    );
+  }
+
+  if (noVenue) {
+    return <VenueRequiredEmptyState />;
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {error}
+        </div>
+      )}
+
       <section className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
         <h2 className="text-base font-semibold text-stone-900">Event details</h2>
         <p className="mt-1 text-sm text-stone-500">Core information for this booking.</p>
@@ -38,7 +125,7 @@ export function NewEventForm() {
               <option value="" disabled>
                 Select type
               </option>
-              {mockEventTypes.map((type) => (
+              {eventTypes.map((type) => (
                 <option key={type.id} value={type.id}>
                   {type.name}
                 </option>
@@ -47,7 +134,7 @@ export function NewEventForm() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="guest_count">Guest count</Label>
-            <Input id="guest_count" name="guest_count" type="number" min={1} placeholder="120" />
+            <Input id="guest_count" name="guest_count" type="number" min={1} required placeholder="120" />
           </div>
         </div>
       </section>
@@ -85,7 +172,7 @@ export function NewEventForm() {
               <option value="" disabled>
                 Select space
               </option>
-              {mockSpaces.map((space) => (
+              {spaces.map((space) => (
                 <option key={space.id} value={space.id}>
                   {space.name}
                 </option>

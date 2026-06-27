@@ -1,14 +1,16 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import {
-  getEventsOnDate,
-  getMonthGrid,
-  mockToday,
-} from "@/lib/mock/event-calendar";
+import { dateToKey, getEventsOnDate, getMonthGrid } from "@/lib/events/calendar";
+import type { MockEvent } from "@/lib/mock/events";
 
-export function EventCalendarMonthView() {
-  const grid = getMonthGrid(mockToday);
-  const todayKey = mockToday.toISOString().slice(0, 10);
+interface EventCalendarMonthViewProps {
+  events: MockEvent[];
+  referenceDate: Date;
+}
+
+export function EventCalendarMonthView({ events, referenceDate }: EventCalendarMonthViewProps) {
+  const grid = getMonthGrid(referenceDate);
+  const todayKey = dateToKey(new Date());
   const weekdayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   return (
@@ -25,8 +27,8 @@ export function EventCalendarMonthView() {
       </div>
       <div className="grid grid-cols-7">
         {grid.map(({ date, inMonth }) => {
-          const key = date.toISOString().slice(0, 10);
-          const events = getEventsOnDate(key);
+          const key = dateToKey(date);
+          const dayEvents = getEventsOnDate(events, key);
           const isToday = key === todayKey;
 
           return (
@@ -52,7 +54,7 @@ export function EventCalendarMonthView() {
                 </span>
               </div>
               <div className="space-y-1">
-                {events.map(({ event }) => (
+                {dayEvents.map(({ event }) => (
                   <Link
                     key={event.id}
                     href={`/dashboard/events/${event.id}`}

@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   formatDayHeading,
   formatMonthYear,
   formatWeekRange,
   getWeekDates,
-  mockToday,
   type CalendarViewMode,
-} from "@/lib/mock/event-calendar";
+} from "@/lib/events/calendar";
+import { loadEventsAction } from "@/lib/events/actions";
+import type { MockEvent } from "@/lib/mock/events";
+import { VenueRequiredEmptyState } from "@/components/events/venue-required-empty-state";
 import { CalendarNavControls } from "@/components/events/calendar/calendar-nav-controls";
 import { EventCalendarDayView } from "@/components/events/calendar/day-view";
 import { EventCalendarMonthView } from "@/components/events/calendar/month-view";
@@ -23,13 +25,71 @@ const viewModes: { value: CalendarViewMode; label: string }[] = [
 
 export function EventCalendar() {
   const [viewMode, setViewMode] = useState<CalendarViewMode>("month");
+  const [referenceDate] = useState(() => new Date());
+  const [events, setEvents] = useState<MockEvent[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [noVenue, setNoVenue] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setIsLoading(true);
+      setError(null);
+
+      const result = await loadEventsAction();
+
+      if (cancelled) {
+        return;
+      }
+
+      if (!result.success) {
+        setError(result.error);
+        setEvents([]);
+        setNoVenue(false);
+      } else {
+        setEvents(result.events);
+        setNoVenue(Boolean(result.noVenue));
+      }
+
+      setIsLoading(false);
+    }
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const periodLabel =
     viewMode === "month"
-      ? formatMonthYear(mockToday)
+      ? formatMonthYear(referenceDate)
       : viewMode === "week"
-        ? formatWeekRange(getWeekDates(mockToday))
-        : formatDayHeading(mockToday);
+        ? formatWeekRange(getWeekDates(referenceDate))
+        : formatDayHeading(referenceDate);
+
+  if (isLoading) {
+    return (
+      <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm">
+        <p className="text-sm text-stone-500">Loading calendar…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 px-6 py-12 text-center shadow-sm">
+        <p className="text-sm font-medium text-red-900">Could not load calendar</p>
+        <p className="mt-1 text-sm text-red-700">{error}</p>
+      </div>
+    );
+  }
+
+  if (noVenue) {
+    return <VenueRequiredEmptyState message="Set up your venue before viewing the calendar" />;
+  }
 
   return (
     <div className="space-y-6">
@@ -56,13 +116,17 @@ export function EventCalendar() {
       <CalendarNavControls label={periodLabel} />
 
       <div className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm">
-        {viewMode === "month" && <EventCalendarMonthView />}
+        {viewMode === "month" && (
+          <EventCalendarMonthView events={events} referenceDate={referenceDate} />
+        )}
         {viewMode === "week" && (
           <div className="p-4">
-            <EventCalendarWeekView />
+            <EventCalendarWeekView events={events} referenceDate={referenceDate} />
           </div>
         )}
-        {viewMode === "day" && <EventCalendarDayView />}
+        {viewMode === "day" && (
+          <EventCalendarDayView events={events} referenceDate={referenceDate} />
+        )}
       </div>
     </div>
   );
