@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { Logo } from "@/components/layout/logo";
+import { ThemeSelector } from "@/components/settings/theme-selector";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -70,7 +71,11 @@ export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProp
         })}
       </nav>
 
-      <div className="border-t border-white/10 p-4">
+      <div className="space-y-3 border-t border-white/10 p-4">
+        <div>
+          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-stone-500">Theme</p>
+          <ThemeSelector compact />
+        </div>
         <div className="rounded-lg bg-white/5 px-3 py-3">
           <p className="text-xs font-medium uppercase tracking-wide text-stone-500">
             Core workflow

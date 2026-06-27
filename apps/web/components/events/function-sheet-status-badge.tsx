@@ -5,9 +5,9 @@ import {
 } from "@/lib/mock/event-calendar";
 
 const styles: Record<FunctionSheetStatus, string> = {
-  draft: "bg-stone-100 text-stone-700",
-  in_progress: "bg-sky-50 text-sky-700",
-  ready: "bg-emerald-50 text-emerald-700",
+  draft: "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300",
+  in_progress: "bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300",
+  ready: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300",
 };
 
 export function FunctionSheetStatusBadge({ status }: { status: FunctionSheetStatus }) {

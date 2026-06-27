@@ -3,8 +3,8 @@ import { enquiryPriorityLabels, type EnquiryPriority } from "@/lib/mock/enquirie
 
 const styles: Record<EnquiryPriority, string> = {
   low: "bg-stone-100 text-stone-600",
-  medium: "bg-amber-50 text-amber-700",
-  high: "bg-red-50 text-red-700",
+  medium: "bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300",
+  high: "bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300",
 };
 
 export function EnquiryPriorityBadge({ priority }: { priority: EnquiryPriority }) {

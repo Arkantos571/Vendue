@@ -7,10 +7,10 @@ const typeConfig: Record<
   ActivityItem["type"],
   { icon: typeof CalendarDays; color: string }
 > = {
-  event: { icon: CalendarDays, color: "bg-sky-50 text-sky-600" },
-  rota: { icon: UserCog, color: "bg-amber-50 text-amber-600" },
-  team: { icon: Users, color: "bg-brand-50 text-brand-700" },
-  onboarding: { icon: ClipboardCheck, color: "bg-violet-50 text-violet-600" },
+  event: { icon: CalendarDays, color: "bg-sky-50 text-sky-600 dark:bg-sky-950/60 dark:text-sky-300" },
+  rota: { icon: UserCog, color: "bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-300" },
+  team: { icon: Users, color: "bg-brand-50 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300" },
+  onboarding: { icon: ClipboardCheck, color: "bg-violet-50 text-violet-600 dark:bg-violet-950/60 dark:text-violet-300" },
 };
 
 interface RecentActivityProps {
@@ -37,8 +37,8 @@ export function RecentActivity({ items }: RecentActivityProps) {
                   <Icon className="h-4 w-4" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm text-stone-900">{item.message}</p>
-                  <p className="mt-1 text-xs text-stone-500">
+                  <p className="text-sm text-stone-900 dark:text-stone-100">{item.message}</p>
+                  <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
                     {item.actor} · {formatDate(item.timestamp)} at {formatTime(item.timestamp)}
                   </p>
                 </div>
