@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { RotaStatusBadge } from "@/components/rota/rota-status-badge";
 import { Input } from "@/components/ui/input";
+import { formatEventTimeRange } from "@/lib/events/event-time";
 import { cn, formatDate } from "@/lib/utils";
 import {
   formatCurrency,
@@ -43,7 +44,7 @@ function RotaTableRow({ event }: { event: RotaEventSummary }) {
       </td>
       <td className="px-4 py-4 text-stone-600">{formatDate(event.date)}</td>
       <td className="px-4 py-4 text-stone-600">
-        {event.startTime} – {event.endTime}
+        {formatEventTimeRange(event)}
       </td>
       <td className="px-4 py-4 text-stone-600">{event.space}</td>
       <td className="px-4 py-4 text-stone-600">{event.guestCount}</td>
@@ -100,7 +101,7 @@ function RotaCard({ event }: { event: RotaEventSummary }) {
         <div>
           <p className="font-medium text-stone-900">{event.eventName}</p>
           <p className="mt-1 text-sm text-stone-500">
-            {formatDate(event.date)} · {event.startTime} – {event.endTime}
+            {formatDate(event.date)} · {formatEventTimeRange(event)}
           </p>
         </div>
         <RotaStatusBadge status={event.rotaStatus} />

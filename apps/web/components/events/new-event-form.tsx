@@ -13,6 +13,10 @@ import {
   createEventAction,
   loadEventFormOptionsAction,
 } from "@/lib/events/actions";
+import {
+  EVENT_END_TIME_OPTIONS,
+  EVENT_START_TIME_OPTIONS,
+} from "@/lib/events/event-time";
 
 export function NewEventForm() {
   const router = useRouter();
@@ -181,11 +185,32 @@ export function NewEventForm() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="start_time">Start time</Label>
-            <Input id="start_time" name="start_time" type="time" required />
+            <Select id="start_time" name="start_time" required defaultValue="">
+              <option value="" disabled>
+                Select start time
+              </option>
+              {EVENT_START_TIME_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="end_time">End time</Label>
-            <Input id="end_time" name="end_time" type="time" required />
+            <Select id="end_time" name="end_time" required defaultValue="">
+              <option value="" disabled>
+                Select end time
+              </option>
+              {EVENT_END_TIME_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
+            <p className="text-xs text-stone-500">
+              For events past midnight, choose a next-day end time (e.g. 00:00 next day).
+            </p>
           </div>
         </div>
       </section>

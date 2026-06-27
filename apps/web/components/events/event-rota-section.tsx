@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Users } from "lucide-react";
 import { RotaCompletionIndicator } from "@/components/events/rota-completion-indicator";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatEventTimeRange } from "@/lib/events/event-time";
 import type { MockEvent } from "@/lib/mock/events";
 
 interface EventRotaSectionProps {
@@ -51,7 +52,7 @@ export function EventRotaSection({ event, hasRotaBuilder }: EventRotaSectionProp
                 <div>
                   <p className="text-sm font-medium text-stone-900">{shift.role}</p>
                   <p className="text-xs text-stone-500">
-                    {event.startTime} – {event.endTime}
+                    {formatEventTimeRange(event)}
                   </p>
                 </div>
                 <span

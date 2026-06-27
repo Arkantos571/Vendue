@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { StatusBadge } from "@/components/dashboard/status-badge";
+import { formatEventTimeRange } from "@/lib/events/event-time";
 import { cn, formatDate } from "@/lib/utils";
 import { dateToKey, getEventsOnDate, getWeekDates } from "@/lib/events/calendar";
 import type { MockEvent } from "@/lib/mock/events";
@@ -47,7 +48,7 @@ export function EventCalendarWeekView({ events, referenceDate }: EventCalendarWe
                     className="block rounded-lg border border-stone-100 bg-stone-50/50 p-3 transition-all hover:border-stone-200 hover:bg-stone-50"
                   >
                     <p className="text-xs font-medium text-brand-700">
-                      {event.startTime} – {event.endTime}
+                      {formatEventTimeRange(event)}
                     </p>
                     <p className="mt-1 text-sm font-medium text-stone-900">{event.title}</p>
                     <p className="mt-1 text-xs text-stone-500">{event.space}</p>

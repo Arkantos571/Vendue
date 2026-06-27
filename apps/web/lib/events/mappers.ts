@@ -50,6 +50,7 @@ export function combineDateTime(date: string, time: string): string {
 export function toMockEvent(row: EventRowWithJoins): MockEvent {
   const start = splitDateTime(row.starts_at);
   const end = splitDateTime(row.ends_at);
+  const endsNextDay = end.date > start.date;
 
   return {
     id: row.id,
@@ -60,6 +61,7 @@ export function toMockEvent(row: EventRowWithJoins): MockEvent {
     date: start.date,
     startTime: start.time,
     endTime: end.time,
+    endsNextDay,
     space: joinName(row.spaces),
     spaceId: row.space_id ?? "",
     eventType: joinName(row.event_types),

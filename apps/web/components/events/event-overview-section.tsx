@@ -2,6 +2,7 @@ import { CalendarDays, MapPin, Users } from "lucide-react";
 import { EventDetailItem } from "@/components/events/event-detail-item";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { MockEvent } from "@/lib/mock/events";
+import { formatEventTimeRange } from "@/lib/events/event-time";
 import { formatDate } from "@/lib/utils";
 
 export function EventOverviewSection({ event }: { event: MockEvent }) {
@@ -17,7 +18,7 @@ export function EventOverviewSection({ event }: { event: MockEvent }) {
           <EventDetailItem
             icon={CalendarDays}
             label="Time"
-            value={`${event.startTime} – ${event.endTime}`}
+            value={formatEventTimeRange(event)}
           />
           <EventDetailItem icon={MapPin} label="Space" value={event.space} />
           <EventDetailItem icon={Users} label="Guest count" value={String(event.guestCount)} />

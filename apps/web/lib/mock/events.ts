@@ -14,6 +14,8 @@ export interface MockEvent {
   date: string;
   startTime: string;
   endTime: string;
+  /** When true, end time is on the day after event date. Derived from times when omitted. */
+  endsNextDay?: boolean;
   space: string;
   spaceId: string;
   eventType: string;

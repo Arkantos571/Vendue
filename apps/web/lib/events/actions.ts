@@ -2,11 +2,8 @@
 
 import { randomUUID } from "crypto";
 import { getPrimaryVenueId, requireAuthenticatedClient } from "@/lib/auth/session";
-import {
-  combineDateTime,
-  toMockEvent,
-  type EventRowWithJoins,
-} from "@/lib/events/mappers";
+import { resolveEventTimestamps } from "@/lib/events/event-time";
+import { toMockEvent, type EventRowWithJoins } from "@/lib/events/mappers";
 import type { MockEvent } from "@/lib/mock/events";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { EventStatus } from "@/types";
@@ -185,10 +182,6 @@ export async function createEventAction(
       return { success: false, error: "Client name is required." };
     }
 
-    if (!input.event_date || !input.start_time || !input.end_time) {
-      return { success: false, error: "Event date and times are required." };
-    }
-
     if (!input.space_id || !input.event_type_id) {
       return { success: false, error: "Space and event type are required." };
     }
@@ -197,12 +190,17 @@ export async function createEventAction(
       return { success: false, error: "Guest count is required." };
     }
 
-    const startsAt = combineDateTime(input.event_date, input.start_time);
-    const endsAt = combineDateTime(input.event_date, input.end_time);
+    const timestamps = resolveEventTimestamps(
+      input.event_date,
+      input.start_time,
+      input.end_time,
+    );
 
-    if (new Date(endsAt) <= new Date(startsAt)) {
-      return { success: false, error: "End time must be after start time." };
+    if ("error" in timestamps) {
+      return { success: false, error: timestamps.error };
     }
+
+    const { startsAt, endsAt } = timestamps;
 
     const eventId = randomUUID();
 

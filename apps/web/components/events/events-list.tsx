@@ -8,6 +8,7 @@ import { StatusBadge } from "@/components/dashboard/status-badge";
 import { RotaCompletionIndicator } from "@/components/events/rota-completion-indicator";
 import { VenueRequiredEmptyState } from "@/components/events/venue-required-empty-state";
 import { Input } from "@/components/ui/input";
+import { formatEventTimeRange } from "@/lib/events/event-time";
 import { cn, formatDate } from "@/lib/utils";
 import { loadEventsAction } from "@/lib/events/actions";
 import { type EventStatusFilter, type MockEvent } from "@/lib/mock/events";
@@ -210,7 +211,7 @@ function EventTableRow({ event }: { event: MockEvent }) {
       <td className="px-4 py-4 text-stone-600">{event.clientName}</td>
       <td className="px-4 py-4 text-stone-600">{formatDate(event.date)}</td>
       <td className="px-4 py-4 text-stone-600">
-        {event.startTime} – {event.endTime}
+        {formatEventTimeRange(event)}
       </td>
       <td className="px-4 py-4 text-stone-600">{event.space}</td>
       <td className="px-4 py-4 text-stone-600">{event.guestCount}</td>
@@ -250,7 +251,7 @@ function EventCard({ event }: { event: MockEvent }) {
         <div>
           <dt className="text-xs text-stone-400">Time</dt>
           <dd className="mt-0.5 text-stone-700">
-            {event.startTime} – {event.endTime}
+            {formatEventTimeRange(event)}
           </dd>
         </div>
         <div>

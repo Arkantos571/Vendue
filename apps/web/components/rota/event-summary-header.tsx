@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, Calendar, Clock, MapPin, Users } from "lucide-react";
 import { RotaStatusBadge } from "@/components/rota/rota-status-badge";
+import { formatEventTimeRange } from "@/lib/events/event-time";
 import { formatDate } from "@/lib/utils";
 import type { RotaBuilderData } from "@/lib/mock/rota";
 
@@ -51,7 +52,7 @@ export function EventSummaryHeader({ data }: EventSummaryHeaderProps) {
               <div>
                 <dt className="text-xs font-medium uppercase tracking-wide text-stone-500">Time</dt>
                 <dd className="text-sm text-stone-900">
-                  {data.startTime} – {data.endTime}
+                  {formatEventTimeRange(data)}
                 </dd>
               </div>
             </div>

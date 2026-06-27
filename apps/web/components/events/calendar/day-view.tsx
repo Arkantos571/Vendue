@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { StatusBadge } from "@/components/dashboard/status-badge";
+import { formatEventEndTime, eventEndsNextDay } from "@/lib/events/event-time";
 import { formatDate } from "@/lib/utils";
 import { dateToKey, getEventsOnDate } from "@/lib/events/calendar";
 import type { MockEvent } from "@/lib/mock/events";
@@ -53,7 +54,7 @@ export function EventCalendarDayView({ events, referenceDate }: EventCalendarDay
                     </div>
                     <div className="flex gap-4 text-sm">
                       <dt className="w-24 shrink-0 font-medium text-stone-500">Event end</dt>
-                      <dd className="text-stone-700">{event.endTime}</dd>
+                      <dd className="text-stone-700">{formatEventEndTime(event.endTime, eventEndsNextDay(event))}</dd>
                     </div>
                     <div className="flex gap-4 text-sm">
                       <dt className="w-24 shrink-0 font-medium text-stone-500">Guests</dt>

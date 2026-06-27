@@ -1,6 +1,7 @@
 import { CalendarDays, MapPin, Users } from "lucide-react";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatEventTimeRange } from "@/lib/events/event-time";
 import type { MockEvent } from "@/lib/mock/events";
 import { formatDate } from "@/lib/utils";
 
@@ -16,8 +17,7 @@ export function FunctionSheetEventSummary({ event }: { event: MockEvent }) {
           <SummaryItem label="Event name" value={event.title} />
           <SummaryItem label="Client name" value={event.clientName} />
           <SummaryItem label="Date" value={formatDate(event.date)} icon={CalendarDays} />
-          <SummaryItem label="Start time" value={event.startTime} />
-          <SummaryItem label="End time" value={event.endTime} />
+          <SummaryItem label="Time" value={formatEventTimeRange(event)} />
           <SummaryItem label="Space" value={event.space} icon={MapPin} />
           <SummaryItem label="Guest count" value={String(event.guestCount)} icon={Users} />
           <SummaryItem label="Event type" value={event.eventType} />

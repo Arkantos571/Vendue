@@ -7,6 +7,7 @@ import { StatusBadge } from "@/components/dashboard/status-badge";
 import { FunctionSheetStatusBadge } from "@/components/events/function-sheet-status-badge";
 import { VenueRequiredEmptyState } from "@/components/events/venue-required-empty-state";
 import { RotaStatusBadge } from "@/components/rota/rota-status-badge";
+import { formatEventTimeRange } from "@/lib/events/event-time";
 import { cn, formatDate } from "@/lib/utils";
 import { loadEventsAction } from "@/lib/events/actions";
 import type { MockEvent } from "@/lib/mock/events";
@@ -163,7 +164,7 @@ export function UpcomingEventsList() {
                         <td className="px-6 py-4 font-medium text-stone-900">{event.title}</td>
                         <td className="px-4 py-4 text-stone-600">{event.clientName}</td>
                         <td className="px-4 py-4 text-stone-600">
-                          {event.startTime} – {event.endTime}
+                          {formatEventTimeRange(event)}
                         </td>
                         <td className="px-4 py-4 text-stone-600">{event.space}</td>
                         <td className="px-4 py-4 text-stone-600">{event.guestCount}</td>
@@ -221,7 +222,7 @@ export function UpcomingEventsList() {
                       <div>
                         <dt className="text-xs text-stone-500">Time</dt>
                         <dd className="text-stone-700">
-                          {event.startTime} – {event.endTime}
+                          {formatEventTimeRange(event)}
                         </dd>
                       </div>
                       <div>
