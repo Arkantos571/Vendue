@@ -8,6 +8,7 @@ export const MAX_NEXT_DAY_END_MINUTES = 5 * 60 + 30;
 export interface TimeOption {
   value: string;
   label: string;
+  nextDay?: boolean;
 }
 
 function pad(value: number): string {
@@ -32,21 +33,76 @@ function buildSameDayHalfHourOptions(): TimeOption[] {
 
 export const EVENT_START_TIME_OPTIONS = buildSameDayHalfHourOptions();
 
+/** @deprecated Use getEndTimeOptionsForStart for filtered options. */
 export const EVENT_END_TIME_OPTIONS: TimeOption[] = [
   ...EVENT_START_TIME_OPTIONS,
   ...EVENT_START_TIME_OPTIONS.filter(
     (option) => timeToMinutes(option.value) <= MAX_NEXT_DAY_END_MINUTES,
   ).map((option) => ({
-    value: `next:${option.value}`,
+    value: option.value,
     label: `${option.label} next day`,
+    nextDay: true,
   })),
 ];
 
-export function parseEndTimeValue(value: string): { time: string; nextDay: boolean } {
-  if (value.startsWith("next:")) {
-    return { time: value.slice(5), nextDay: true };
+export function getEndTimeOptionsForStart(startTime: string): {
+  sameDay: TimeOption[];
+  nextDay: TimeOption[];
+} {
+  const startMinutes = timeToMinutes(startTime);
+
+  const sameDay = EVENT_START_TIME_OPTIONS.filter(
+    (option) => timeToMinutes(option.value) > startMinutes,
+  ).map((option) => ({
+    value: option.value,
+    label: option.label,
+    nextDay: false,
+  }));
+
+  const nextDay = EVENT_START_TIME_OPTIONS.filter(
+    (option) => timeToMinutes(option.value) <= MAX_NEXT_DAY_END_MINUTES,
+  ).map((option) => ({
+    value: option.value,
+    label: `${option.label} next day`,
+    nextDay: true,
+  }));
+
+  return { sameDay, nextDay };
+}
+
+export function parseEndTimeSelection(
+  endTime: string,
+  endIsNextDay?: boolean,
+): { time: string; nextDay: boolean } {
+  const trimmed = endTime.trim();
+
+  if (endIsNextDay === true) {
+    return { time: stripEndTimePrefix(trimmed), nextDay: true };
   }
-  return { time: value, nextDay: false };
+
+  if (endIsNextDay === false) {
+    return { time: stripEndTimePrefix(trimmed), nextDay: false };
+  }
+
+  if (trimmed.startsWith("next|") || trimmed.startsWith("next:")) {
+    return { time: trimmed.slice(5), nextDay: true };
+  }
+
+  if (trimmed.startsWith("same|")) {
+    return { time: trimmed.slice(5), nextDay: false };
+  }
+
+  return { time: trimmed, nextDay: false };
+}
+
+function stripEndTimePrefix(value: string): string {
+  if (value.startsWith("next|") || value.startsWith("next:")) {
+    return value.slice(5);
+  }
+  if (value.startsWith("same|")) {
+    return value.slice(5);
+  }
+  return value;
 }
 
 export function addDaysToDate(date: string, days: number): string {
@@ -99,15 +155,24 @@ export function calculateEventDurationMinutes(
 export function resolveEventTimestamps(
   eventDate: string,
   startTime: string,
-  endTimeValue: string,
+  endTime: string,
+  options?: { endIsNextDay?: boolean },
 ): { startsAt: string; endsAt: string } | { error: string } {
-  if (!eventDate || !startTime || !endTimeValue) {
+  if (!eventDate || !startTime || !endTime) {
     return { error: "Event date and times are required." };
   }
 
-  const { time: endTime, nextDay } = parseEndTimeValue(endTimeValue);
+  const { time: normalizedEndTime, nextDay } = parseEndTimeSelection(
+    endTime,
+    options?.endIsNextDay,
+  );
+
+  if (!/^\d{2}:\d{2}$/.test(normalizedEndTime)) {
+    return { error: "Event date and times are required." };
+  }
+
   const startMinutes = timeToMinutes(startTime);
-  const endMinutesOnDay = timeToMinutes(endTime);
+  const endMinutesOnDay = timeToMinutes(normalizedEndTime);
 
   if (nextDay) {
     if (endMinutesOnDay > MAX_NEXT_DAY_END_MINUTES) {
@@ -119,7 +184,7 @@ export function resolveEventTimestamps(
     };
   }
 
-  const duration = calculateEventDurationMinutes(startTime, endTime, nextDay);
+  const duration = calculateEventDurationMinutes(startTime, normalizedEndTime, nextDay);
 
   if (duration < MIN_EVENT_DURATION_MINUTES) {
     return { error: "Event must be at least 30 minutes long." };
@@ -133,6 +198,6 @@ export function resolveEventTimestamps(
 
   return {
     startsAt: combineDateTime(eventDate, startTime),
-    endsAt: combineDateTime(endDate, endTime),
+    endsAt: combineDateTime(endDate, normalizedEndTime),
   };
 }

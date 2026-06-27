@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,9 +14,24 @@ import {
   loadEventFormOptionsAction,
 } from "@/lib/events/actions";
 import {
-  EVENT_END_TIME_OPTIONS,
   EVENT_START_TIME_OPTIONS,
+  getEndTimeOptionsForStart,
+  resolveEventTimestamps,
 } from "@/lib/events/event-time";
+
+function endSelectionKey(time: string, nextDay: boolean): string {
+  return nextDay ? `next|${time}` : `same|${time}`;
+}
+
+function parseEndSelectionKey(key: string): { time: string; nextDay: boolean } {
+  if (key.startsWith("next|")) {
+    return { time: key.slice(5), nextDay: true };
+  }
+  if (key.startsWith("same|")) {
+    return { time: key.slice(5), nextDay: false };
+  }
+  return { time: key, nextDay: false };
+}
 
 export function NewEventForm() {
   const router = useRouter();
@@ -26,6 +41,30 @@ export function NewEventForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [noVenue, setNoVenue] = useState(false);
+  const [startTime, setStartTime] = useState("");
+  const [endSelection, setEndSelection] = useState("");
+
+  const endOptions = useMemo(() => {
+    if (!startTime) {
+      return { sameDay: [], nextDay: [] };
+    }
+    return getEndTimeOptionsForStart(startTime);
+  }, [startTime]);
+
+  useEffect(() => {
+    if (!endSelection) {
+      return;
+    }
+
+    const { time, nextDay } = parseEndSelectionKey(endSelection);
+    const isStillValid =
+      endOptions.sameDay.some((option) => option.value === time && !nextDay) ||
+      endOptions.nextDay.some((option) => option.value === time && nextDay);
+
+    if (!isStillValid) {
+      setEndSelection("");
+    }
+  }, [endOptions, endSelection]);
 
   useEffect(() => {
     let cancelled = false;
@@ -67,6 +106,18 @@ export function NewEventForm() {
     setError(null);
 
     const formData = new FormData(event.currentTarget);
+    const eventDate = String(formData.get("event_date") ?? "");
+    const { time: endTime, nextDay: endIsNextDay } = parseEndSelectionKey(endSelection);
+
+    const clientValidation = resolveEventTimestamps(eventDate, startTime, endTime, {
+      endIsNextDay,
+    });
+
+    if ("error" in clientValidation) {
+      setIsSubmitting(false);
+      setError(clientValidation.error);
+      return;
+    }
 
     const guestCountRaw = String(formData.get("guest_count") ?? "").trim();
     const guestCount = Number(guestCountRaw);
@@ -74,9 +125,10 @@ export function NewEventForm() {
     const result = await createEventAction({
       title: String(formData.get("title") ?? ""),
       client_name: String(formData.get("client_name") ?? ""),
-      event_date: String(formData.get("event_date") ?? ""),
-      start_time: String(formData.get("start_time") ?? ""),
-      end_time: String(formData.get("end_time") ?? ""),
+      event_date: eventDate,
+      start_time: startTime,
+      end_time: endTime,
+      end_is_next_day: endIsNextDay,
       space_id: String(formData.get("space") ?? ""),
       event_type_id: String(formData.get("event_type") ?? ""),
       guest_count: guestCount,
@@ -185,7 +237,13 @@ export function NewEventForm() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="start_time">Start time</Label>
-            <Select id="start_time" name="start_time" required defaultValue="">
+            <Select
+              id="start_time"
+              name="start_time"
+              required
+              value={startTime}
+              onChange={(event) => setStartTime(event.target.value)}
+            >
               <option value="" disabled>
                 Select start time
               </option>
@@ -198,18 +256,44 @@ export function NewEventForm() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="end_time">End time</Label>
-            <Select id="end_time" name="end_time" required defaultValue="">
+            <Select
+              id="end_time"
+              name="end_time"
+              required
+              value={endSelection}
+              disabled={!startTime}
+              onChange={(event) => setEndSelection(event.target.value)}
+            >
               <option value="" disabled>
-                Select end time
+                {startTime ? "Select end time" : "Select start time first"}
               </option>
-              {EVENT_END_TIME_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
+              {endOptions.sameDay.length > 0 && (
+                <optgroup label="Same day">
+                  {endOptions.sameDay.map((option) => (
+                    <option
+                      key={endSelectionKey(option.value, false)}
+                      value={endSelectionKey(option.value, false)}
+                    >
+                      {option.label}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+              {endOptions.nextDay.length > 0 && (
+                <optgroup label="Next day">
+                  {endOptions.nextDay.map((option) => (
+                    <option
+                      key={endSelectionKey(option.value, true)}
+                      value={endSelectionKey(option.value, true)}
+                    >
+                      {option.label}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
             </Select>
             <p className="text-xs text-stone-500">
-              For events past midnight, choose a next-day end time (e.g. 00:00 next day).
+              For events past midnight, pick an option under Next day (e.g. 00:00 next day).
             </p>
           </div>
         </div>
@@ -235,7 +319,7 @@ export function NewEventForm() {
         >
           Cancel
         </Link>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting || !startTime || !endSelection}>
           {isSubmitting ? "Creating…" : "Create event"}
         </Button>
       </div>

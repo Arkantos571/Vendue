@@ -26,6 +26,7 @@ export type CreateEventInput = {
   event_date: string;
   start_time: string;
   end_time: string;
+  end_is_next_day?: boolean;
   space_id: string;
   event_type_id: string;
   guest_count: number;
@@ -194,6 +195,7 @@ export async function createEventAction(
       input.event_date,
       input.start_time,
       input.end_time,
+      { endIsNextDay: input.end_is_next_day },
     );
 
     if ("error" in timestamps) {
