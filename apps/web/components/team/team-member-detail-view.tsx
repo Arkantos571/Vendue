@@ -1,0 +1,153 @@
+import Link from "next/link";
+import { Briefcase, CalendarDays, Clock, Mail, Pencil, Phone, Send, UserPlus } from "lucide-react";
+import { AvailabilityBadge } from "@/components/team/availability-badge";
+import { TeamRoleBadge } from "@/components/team/team-role-badge";
+import { TeamStatusBadge } from "@/components/team/team-status-badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { type MockTeamMember, type TeamRole, formatEmploymentType, formatHourlyRate, formatTeamRole } from "@/lib/mock/team";
+import { formatDate, formatTime } from "@/lib/utils";
+
+interface TeamMemberDetailViewProps { member: MockTeamMember; }
+
+export function TeamMemberDetailView({ member }: TeamMemberDetailViewProps) {
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-start gap-4">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-lg font-semibold text-brand-800">
+            {member.firstName[0]}{member.lastName[0]}
+          </div>
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-xl font-semibold text-stone-900">{member.fullName}</h2>
+              <TeamStatusBadge status={member.status} />
+            </div>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <TeamRoleBadge role={member.role} />
+              <AvailabilityBadge status={member.availabilityStatus} />
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" disabled className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-stone-300 bg-white px-4 text-sm font-medium text-stone-400">
+            <Pencil className="h-4 w-4" />Edit profile
+          </button>
+          <Link href="/dashboard/events" className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-stone-300 bg-white px-4 text-sm font-medium text-stone-900 hover:bg-stone-50">
+            <UserPlus className="h-4 w-4" />Assign to event
+          </Link>
+          <button type="button" disabled={member.status === "active"} className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-brand-700 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800 disabled:opacity-50">
+            <Send className="h-4 w-4" />Send invite
+          </button>
+        </div>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Profile summary</CardTitle>
+            <CardDescription>Role, employment, and compensation.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <dl className="grid gap-4 sm:grid-cols-2">
+              <DetailItem icon={Briefcase} label="Role" value={formatTeamRole(member.role)} />
+              <DetailItem icon={Briefcase} label="Employment type" value={formatEmploymentType(member.employmentType)} />
+              <DetailItem icon={Briefcase} label="Hourly rate" value={formatHourlyRate(member.hourlyRate)} />
+              <DetailItem icon={CalendarDays} label="Upcoming shifts" value={String(member.upcomingShiftsCount)} />
+            </dl>
+            {member.notes && (
+              <div className="mt-6 rounded-lg border border-stone-200 bg-stone-50/50 px-4 py-3">
+                <p className="text-xs font-medium uppercase tracking-wide text-stone-500">Notes</p>
+                <p className="mt-2 text-sm leading-relaxed text-stone-700">{member.notes}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader><CardTitle>Contact details</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            <DetailItem icon={Mail} label="Email" value={member.email} />
+            <DetailItem icon={Phone} label="Phone" value={member.phone ?? "Not provided"} />
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Upcoming shifts</CardTitle>
+          <CardDescription>Assigned rota slots for this team member.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {member.upcomingShifts.length === 0 ? (
+            <p className="text-sm text-stone-500">No upcoming shifts assigned.</p>
+          ) : (
+            <ul className="divide-y divide-stone-100 rounded-lg border border-stone-200">
+              {member.upcomingShifts.map((shift) => (
+                <li key={shift.id} className="flex items-center justify-between gap-4 px-4 py-3">
+                  <div>
+                    <p className="text-sm font-medium text-stone-900">{shift.eventTitle}</p>
+                    <p className="text-xs text-stone-500">{shift.roleLabel}</p>
+                  </div>
+                  <p className="text-sm text-stone-600">{formatDate(shift.date)} · {shift.startTime} – {shift.endTime}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card className="border-dashed">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-stone-100 text-stone-600"><Clock className="h-4 w-4" /></div>
+              <div>
+                <CardTitle>Availability</CardTitle>
+                <CardDescription>Regular availability and blackout dates.</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-stone-500">Availability calendar coming soon — set weekly patterns and mark unavailability.</p>
+          </CardContent>
+        </Card>
+        <Card className="border-dashed">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-stone-100 text-stone-600"><CalendarDays className="h-4 w-4" /></div>
+              <div>
+                <CardTitle>Recent activity</CardTitle>
+                <CardDescription>Changes and rota updates for this member.</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {member.recentActivity.length === 0 ? (
+              <p className="text-sm text-stone-500">No recent activity.</p>
+            ) : (
+              <ul className="space-y-3">
+                {member.recentActivity.map((item) => (
+                  <li key={item.id} className="text-sm">
+                    <p className="text-stone-900">{item.message}</p>
+                    <p className="mt-0.5 text-xs text-stone-500">{formatDate(item.timestamp)} at {formatTime(item.timestamp)}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function DetailItem({ icon: Icon, label, value }: { icon?: typeof Mail; label: string; value: string }) {
+  return (
+    <div className="flex gap-3">
+      {Icon && <Icon className="mt-0.5 h-4 w-4 shrink-0 text-stone-400" />}
+      <div>
+        <dt className="text-xs font-medium uppercase tracking-wide text-stone-500">{label}</dt>
+        <dd className="mt-1 text-sm text-stone-900">{value}</dd>
+      </div>
+    </div>
+  );
+}
