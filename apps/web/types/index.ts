@@ -135,6 +135,7 @@ export interface RotaShift {
 }
 
 export interface VenueOnboardingDraft {
+  venue_id: string | null;
   name: string;
   venue_type: VenueType;
   accent_colour: string;

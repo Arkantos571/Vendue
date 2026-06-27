@@ -1,13 +1,18 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { mockEventTypes, mockSpaces } from "@/lib/mock/events";
+import {
+  createEmptyVenueDraft,
+  emptyEventType,
+  emptySpace,
+} from "@/lib/venue-setup/defaults";
+import { loadVenueSetupAction, saveVenueSetupAction } from "@/lib/venue-setup/actions";
 import type { VenueOnboardingDraft, VenueType } from "@/types";
 
 const venueTypeOptions: { value: VenueType; label: string }[] = [
@@ -20,30 +25,42 @@ const venueTypeOptions: { value: VenueType; label: string }[] = [
   { value: "other", label: "Other" },
 ];
 
-const emptySpace = () => ({ name: "", capacity: null as number | null, description: "" });
-const emptyEventType = () => ({ name: "", description: "", default_duration_minutes: 180 as number | null });
-
-const initialDraft: VenueOnboardingDraft = {
-  name: "The Grand Assembly",
-  venue_type: "wedding_venue",
-  accent_colour: "#5c4b8a",
-  default_opening_hours: "Mon–Fri 09:00–23:00, Sat–Sun 10:00–00:00",
-  spaces: mockSpaces.map((space) => ({
-    name: space.name,
-    capacity: space.name === "Main Ballroom" ? 250 : space.name === "Garden Terrace" ? 120 : 40,
-    description: "",
-  })),
-  event_types: mockEventTypes.map((type) => ({
-    name: type.name,
-    description: "",
-    default_duration_minutes: 180,
-  })),
-};
-
 export function VenueOnboardingForm() {
-  const [draft, setDraft] = useState<VenueOnboardingDraft>(initialDraft);
+  const [draft, setDraft] = useState<VenueOnboardingDraft>(createEmptyVenueDraft);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setIsLoading(true);
+      setError(null);
+
+      const result = await loadVenueSetupAction();
+
+      if (cancelled) {
+        return;
+      }
+
+      if (!result.success) {
+        setError(result.error);
+        setDraft(createEmptyVenueDraft());
+      } else {
+        setDraft(result.draft);
+      }
+
+      setIsLoading(false);
+    }
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function updateSpace(index: number, field: keyof VenueOnboardingDraft["spaces"][number], value: string) {
     setDraft((prev) => ({
@@ -85,14 +102,41 @@ export function VenueOnboardingForm() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSubmitting(true);
-    setSaved(false);
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    setError(null);
+    setSuccessMessage(null);
+
+    const result = await saveVenueSetupAction(draft);
+
+    if (!result.success) {
+      setError(result.error);
+      setIsSubmitting(false);
+      return;
+    }
+
+    setDraft(result.draft);
+    setSuccessMessage(result.message ?? "Venue setup saved.");
     setIsSubmitting(false);
-    setSaved(true);
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <p className="text-sm text-stone-500 dark:text-stone-400">Loading venue setup…</p>
+      </div>
+    );
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+      {error && (
+        <div
+          className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/50 dark:text-red-300"
+          role="alert"
+        >
+          {error}
+        </div>
+      )}
+
       <section className="space-y-4">
         <div>
           <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Venue details</h3>
@@ -166,7 +210,7 @@ export function VenueOnboardingForm() {
 
         <div className="space-y-4">
           {draft.spaces.map((space, index) => (
-            <div key={index} className="rounded-lg border border-stone-200 bg-stone-50/50 dark:border-stone-700 dark:bg-stone-800/50 p-4">
+            <div key={index} className="rounded-lg border border-stone-200 bg-stone-50/50 p-4 dark:border-stone-700 dark:bg-stone-800/50">
               <div className="mb-3 flex items-center justify-between">
                 <p className="text-sm font-medium text-stone-700 dark:text-stone-300">Space {index + 1}</p>
                 {draft.spaces.length > 1 && (
@@ -178,7 +222,7 @@ export function VenueOnboardingForm() {
                         spaces: prev.spaces.filter((_, i) => i !== index),
                       }))
                     }
-                    className="rounded p-1.5 text-stone-400 hover:bg-stone-200 hover:text-stone-700 dark:hover:bg-stone-700 dark:text-stone-300"
+                    className="rounded p-1.5 text-stone-400 hover:bg-stone-200 hover:text-stone-700 dark:hover:bg-stone-700 dark:hover:text-stone-200"
                     aria-label={`Remove space ${index + 1}`}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -243,7 +287,7 @@ export function VenueOnboardingForm() {
 
         <div className="space-y-4">
           {draft.event_types.map((eventType, index) => (
-            <div key={index} className="rounded-lg border border-stone-200 bg-stone-50/50 dark:border-stone-700 dark:bg-stone-800/50 p-4">
+            <div key={index} className="rounded-lg border border-stone-200 bg-stone-50/50 p-4 dark:border-stone-700 dark:bg-stone-800/50">
               <div className="mb-3 flex items-center justify-between">
                 <p className="text-sm font-medium text-stone-700 dark:text-stone-300">Event type {index + 1}</p>
                 {draft.event_types.length > 1 && (
@@ -255,7 +299,7 @@ export function VenueOnboardingForm() {
                         event_types: prev.event_types.filter((_, i) => i !== index),
                       }))
                     }
-                    className="rounded p-1.5 text-stone-400 hover:bg-stone-200 hover:text-stone-700 dark:hover:bg-stone-700 dark:text-stone-300"
+                    className="rounded p-1.5 text-stone-400 hover:bg-stone-200 hover:text-stone-700 dark:hover:bg-stone-700 dark:hover:text-stone-200"
                     aria-label={`Remove event type ${index + 1}`}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -300,12 +344,11 @@ export function VenueOnboardingForm() {
         </div>
       </section>
 
-
       <section className="space-y-4 border-t border-stone-100 dark:border-stone-800 pt-8">
         <div>
           <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Default opening hours</h3>
           <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
-            Placeholder for venue-wide hours used when scheduling events.
+            Venue-wide hours used when scheduling events.
           </p>
         </div>
         <div className="space-y-2">
@@ -322,8 +365,8 @@ export function VenueOnboardingForm() {
       </section>
 
       <div className="flex flex-col gap-3 border-t border-stone-100 dark:border-stone-800 pt-6 sm:flex-row sm:items-center sm:justify-between">
-        {saved && (
-          <p className="text-sm text-brand-700 dark:text-brand-300">Changes saved locally. Database sync coming next.</p>
+        {successMessage && (
+          <p className="text-sm text-brand-700 dark:text-brand-300">{successMessage}</p>
         )}
         <Button type="submit" className="sm:ml-auto" disabled={isSubmitting}>
           {isSubmitting ? "Saving…" : "Save changes"}

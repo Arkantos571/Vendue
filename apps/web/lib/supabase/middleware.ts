@@ -34,7 +34,15 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/sign-up") ||
     request.nextUrl.pathname.startsWith("/forgot-password");
 
-  // Stage 1: refresh session cookies only. Dashboard auth guard comes in a later stage.
+  const isDashboardRoute = request.nextUrl.pathname.startsWith("/dashboard");
+
+  if (!user && isDashboardRoute) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/sign-in";
+    url.searchParams.set("redirect", request.nextUrl.pathname + request.nextUrl.search);
+    return NextResponse.redirect(url);
+  }
+
   if (user && isAuthRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
