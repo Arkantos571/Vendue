@@ -292,7 +292,11 @@ const rotaStatuses: Record<string, RotaStatus> = {
 
 function buildAvailableStaff(excludeIds: Set<string>): AvailableStaffMember[] {
   return mockTeamMembers
-    .filter((member) => member.status === "active" && !excludeIds.has(member.id))
+    .filter(
+      (member) =>
+        (member.status === "active" || member.status === "invited") &&
+        !excludeIds.has(member.id),
+    )
     .map((member) => ({
       id: member.id,
       name: member.fullName,

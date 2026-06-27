@@ -20,7 +20,7 @@ export function AvailableStaffPanel({ staff, onAddToRota }: AvailableStaffPanelP
 
       {staff.length === 0 ? (
         <p className="px-6 py-8 text-sm text-stone-500">
-          All active staff are already assigned to this rota.
+          All roster-eligible staff are already assigned to this rota.
         </p>
       ) : (
         <ul className="divide-y divide-stone-100">

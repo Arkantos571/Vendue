@@ -83,9 +83,11 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
     [data?.assignedShifts],
   );
 
-  const availableStaff = useMemo(
-    () => (data?.availableStaff ?? []).filter((member) => !assignedStaffIds.has(member.id)),
-    [data?.availableStaff, assignedStaffIds],
+  const rosterStaff = data?.availableStaff ?? [];
+
+  const unassignedStaff = useMemo(
+    () => rosterStaff.filter((member) => !assignedStaffIds.has(member.id)),
+    [rosterStaff, assignedStaffIds],
   );
 
   const labourSummary = useMemo(() => {
@@ -251,9 +253,9 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <AvailableStaffPanel staff={availableStaff} onAddToRota={addStaffQuick} />
+        <AvailableStaffPanel staff={unassignedStaff} onAddToRota={addStaffQuick} />
         <AddShiftForm
-          staffOptions={availableStaff}
+          staffOptions={rosterStaff}
           defaultStartTime={data.startTime}
           defaultFinishTime={data.endTime}
           defaultFinishIsNextDay={data.endsNextDay}

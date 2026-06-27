@@ -160,10 +160,15 @@ export function AddShiftForm({
               value={staffMemberId}
               onChange={(e) => setStaffMemberId(e.target.value)}
             >
-              <option value="">Select staff member…</option>
+              <option value="">
+                {staffOptions.length === 0
+                  ? "No team members available — add staff on the Team page"
+                  : "Select staff member…"}
+              </option>
               {staffOptions.map((member) => (
                 <option key={member.id} value={member.id}>
                   {member.name} — {member.role}
+                  {member.hourlyRate === null ? " (no hourly rate)" : ""}
                 </option>
               ))}
             </Select>

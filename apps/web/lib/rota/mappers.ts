@@ -166,6 +166,10 @@ export function toRotaEventSummary(
   };
 }
 
+export function isRosterEligible(status: MockTeamMember["status"]): boolean {
+  return status === "active" || status === "invited";
+}
+
 export function toAvailableStaffMember(
   member: MockTeamMember,
   assignedShiftCount: number,
@@ -194,7 +198,7 @@ export function buildRotaBuilderData(
   }
 
   const availableStaff = teamMembers
-    .filter((member) => member.status === "active")
+    .filter((member) => isRosterEligible(member.status))
     .map((member) => toAvailableStaffMember(member, shiftCounts.get(member.id) ?? 0));
 
   const labourSummary = buildLabourSummary(shifts, staffingRequirements.reduce((t, r) => t + r.required, 0) || shifts.length);
