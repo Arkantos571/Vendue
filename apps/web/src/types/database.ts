@@ -26,9 +26,42 @@ export type EventStatus =
 
 export type TeamMemberStatus = "active" | "invited" | "inactive";
 
+export type TeamRole =
+  | "manager"
+  | "supervisor"
+  | "bartender"
+  | "waiter"
+  | "runner"
+  | "reception"
+  | "kitchen"
+  | "security";
+
+export type EmploymentType = "full_time" | "part_time" | "casual" | "agency";
+
+export type AvailabilityStatus = "available" | "limited" | "unavailable";
+
 export type RotaShiftStatus = "scheduled" | "confirmed" | "completed" | "cancelled";
 
 export type InvitationStatus = "pending" | "accepted" | "expired" | "revoked";
+
+export type EnquiryStatus =
+  | "new"
+  | "contacted"
+  | "proposal_sent"
+  | "confirmed"
+  | "lost";
+
+export type EnquiryPriority = "low" | "medium" | "high";
+
+export type EnquirySource =
+  | "website"
+  | "phone"
+  | "email"
+  | "referral"
+  | "walk_in"
+  | "agency";
+
+export type FunctionSheetStatus = "draft" | "in_progress" | "ready";
 
 export interface Database {
   public: {
@@ -74,6 +107,8 @@ export interface Database {
           country: string;
           timezone: string;
           logo_url: string | null;
+          accent_colour: string | null;
+          default_opening_hours: string | null;
           onboarding_completed_at: string | null;
           created_at: string;
           updated_at: string;
@@ -90,6 +125,8 @@ export interface Database {
           country?: string;
           timezone?: string;
           logo_url?: string | null;
+          accent_colour?: string | null;
+          default_opening_hours?: string | null;
           onboarding_completed_at?: string | null;
         };
         Update: {
@@ -103,6 +140,8 @@ export interface Database {
           country?: string;
           timezone?: string;
           logo_url?: string | null;
+          accent_colour?: string | null;
+          default_opening_hours?: string | null;
           onboarding_completed_at?: string | null;
         };
         Relationships: [];
@@ -199,10 +238,100 @@ export interface Database {
         };
         Relationships: [];
       };
+      enquiries: {
+        Row: {
+          id: string;
+          venue_id: string;
+          event_name: string;
+          client_name: string;
+          client_email: string;
+          client_phone: string | null;
+          company: string | null;
+          client_preferences: string | null;
+          requested_date: string | null;
+          preferred_start_time: string | null;
+          preferred_end_time: string | null;
+          event_type_id: string | null;
+          space_id: string | null;
+          guest_count: number | null;
+          budget_estimate: number | null;
+          estimated_value: number | null;
+          status: EnquiryStatus;
+          source: EnquirySource;
+          priority: EnquiryPriority;
+          assigned_profile_id: string | null;
+          last_contact_at: string | null;
+          next_follow_up_at: string | null;
+          notes: string | null;
+          internal_notes: string | null;
+          activity: Json;
+          converted_event_id: string | null;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          venue_id: string;
+          event_name: string;
+          client_name: string;
+          client_email: string;
+          client_phone?: string | null;
+          company?: string | null;
+          client_preferences?: string | null;
+          requested_date?: string | null;
+          preferred_start_time?: string | null;
+          preferred_end_time?: string | null;
+          event_type_id?: string | null;
+          space_id?: string | null;
+          guest_count?: number | null;
+          budget_estimate?: number | null;
+          estimated_value?: number | null;
+          status?: EnquiryStatus;
+          source?: EnquirySource;
+          priority?: EnquiryPriority;
+          assigned_profile_id?: string | null;
+          last_contact_at?: string | null;
+          next_follow_up_at?: string | null;
+          notes?: string | null;
+          internal_notes?: string | null;
+          activity?: Json;
+          converted_event_id?: string | null;
+          created_by?: string | null;
+        };
+        Update: {
+          event_name?: string;
+          client_name?: string;
+          client_email?: string;
+          client_phone?: string | null;
+          company?: string | null;
+          client_preferences?: string | null;
+          requested_date?: string | null;
+          preferred_start_time?: string | null;
+          preferred_end_time?: string | null;
+          event_type_id?: string | null;
+          space_id?: string | null;
+          guest_count?: number | null;
+          budget_estimate?: number | null;
+          estimated_value?: number | null;
+          status?: EnquiryStatus;
+          source?: EnquirySource;
+          priority?: EnquiryPriority;
+          assigned_profile_id?: string | null;
+          last_contact_at?: string | null;
+          next_follow_up_at?: string | null;
+          notes?: string | null;
+          internal_notes?: string | null;
+          activity?: Json;
+          converted_event_id?: string | null;
+        };
+        Relationships: [];
+      };
       events: {
         Row: {
           id: string;
           venue_id: string;
+          enquiry_id: string | null;
           space_id: string | null;
           event_type_id: string | null;
           title: string;
@@ -213,6 +342,7 @@ export interface Database {
           guest_count: number | null;
           client_name: string | null;
           client_email: string | null;
+          client_phone: string | null;
           notes: string | null;
           created_by: string | null;
           created_at: string;
@@ -221,6 +351,7 @@ export interface Database {
         Insert: {
           id?: string;
           venue_id: string;
+          enquiry_id?: string | null;
           space_id?: string | null;
           event_type_id?: string | null;
           title: string;
@@ -231,10 +362,12 @@ export interface Database {
           guest_count?: number | null;
           client_name?: string | null;
           client_email?: string | null;
+          client_phone?: string | null;
           notes?: string | null;
           created_by?: string | null;
         };
         Update: {
+          enquiry_id?: string | null;
           space_id?: string | null;
           event_type_id?: string | null;
           title?: string;
@@ -245,6 +378,7 @@ export interface Database {
           guest_count?: number | null;
           client_name?: string | null;
           client_email?: string | null;
+          client_phone?: string | null;
           notes?: string | null;
         };
         Relationships: [];
@@ -257,10 +391,14 @@ export interface Database {
           full_name: string;
           email: string;
           phone: string | null;
+          role: TeamRole | null;
           job_title: string | null;
           department: string | null;
+          employment_type: EmploymentType | null;
+          availability_status: AvailabilityStatus;
           status: TeamMemberStatus;
           hourly_rate: number | null;
+          notes: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -271,20 +409,28 @@ export interface Database {
           full_name: string;
           email: string;
           phone?: string | null;
+          role?: TeamRole | null;
           job_title?: string | null;
           department?: string | null;
+          employment_type?: EmploymentType | null;
+          availability_status?: AvailabilityStatus;
           status?: TeamMemberStatus;
           hourly_rate?: number | null;
+          notes?: string | null;
         };
         Update: {
           profile_id?: string | null;
           full_name?: string;
           email?: string;
           phone?: string | null;
+          role?: TeamRole | null;
           job_title?: string | null;
           department?: string | null;
+          employment_type?: EmploymentType | null;
+          availability_status?: AvailabilityStatus;
           status?: TeamMemberStatus;
           hourly_rate?: number | null;
+          notes?: string | null;
         };
         Relationships: [];
       };
@@ -329,9 +475,12 @@ export interface Database {
           event_id: string | null;
           team_member_id: string;
           role_label: string | null;
+          section: string | null;
           starts_at: string;
           ends_at: string;
+          break_minutes: number;
           status: RotaShiftStatus;
+          hourly_rate: number | null;
           notes: string | null;
           created_at: string;
           updated_at: string;
@@ -342,19 +491,63 @@ export interface Database {
           event_id?: string | null;
           team_member_id: string;
           role_label?: string | null;
+          section?: string | null;
           starts_at: string;
           ends_at: string;
+          break_minutes?: number;
           status?: RotaShiftStatus;
+          hourly_rate?: number | null;
           notes?: string | null;
         };
         Update: {
           event_id?: string | null;
           team_member_id?: string;
           role_label?: string | null;
+          section?: string | null;
           starts_at?: string;
           ends_at?: string;
+          break_minutes?: number;
           status?: RotaShiftStatus;
+          hourly_rate?: number | null;
           notes?: string | null;
+        };
+        Relationships: [];
+      };
+      event_function_sheets: {
+        Row: {
+          id: string;
+          venue_id: string;
+          event_id: string;
+          status: FunctionSheetStatus;
+          running_order: Json;
+          setup: Json;
+          food_and_beverage: Json;
+          staffing_plan: Json;
+          checklist: Json;
+          internal_notes: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          venue_id: string;
+          event_id: string;
+          status?: FunctionSheetStatus;
+          running_order?: Json;
+          setup?: Json;
+          food_and_beverage?: Json;
+          staffing_plan?: Json;
+          checklist?: Json;
+          internal_notes?: Json;
+        };
+        Update: {
+          status?: FunctionSheetStatus;
+          running_order?: Json;
+          setup?: Json;
+          food_and_beverage?: Json;
+          staffing_plan?: Json;
+          checklist?: Json;
+          internal_notes?: Json;
         };
         Relationships: [];
       };
@@ -429,8 +622,15 @@ export interface Database {
       venue_type: VenueType;
       event_status: EventStatus;
       team_member_status: TeamMemberStatus;
+      team_role: TeamRole;
+      employment_type: EmploymentType;
+      availability_status: AvailabilityStatus;
       rota_shift_status: RotaShiftStatus;
       invitation_status: InvitationStatus;
+      enquiry_status: EnquiryStatus;
+      enquiry_priority: EnquiryPriority;
+      enquiry_source: EnquirySource;
+      function_sheet_status: FunctionSheetStatus;
     };
     CompositeTypes: Record<string, never>;
   };
@@ -441,9 +641,11 @@ export type Venue = Database["public"]["Tables"]["venues"]["Row"];
 export type VenueMember = Database["public"]["Tables"]["venue_members"]["Row"];
 export type Space = Database["public"]["Tables"]["spaces"]["Row"];
 export type EventType = Database["public"]["Tables"]["event_types"]["Row"];
+export type Enquiry = Database["public"]["Tables"]["enquiries"]["Row"];
 export type Event = Database["public"]["Tables"]["events"]["Row"];
 export type TeamMember = Database["public"]["Tables"]["team_members"]["Row"];
 export type Invitation = Database["public"]["Tables"]["invitations"]["Row"];
 export type RotaShift = Database["public"]["Tables"]["rota_shifts"]["Row"];
+export type EventFunctionSheet = Database["public"]["Tables"]["event_function_sheets"]["Row"];
 export type Notification = Database["public"]["Tables"]["notifications"]["Row"];
 export type AuditLogEntry = Database["public"]["Tables"]["audit_log"]["Row"];
