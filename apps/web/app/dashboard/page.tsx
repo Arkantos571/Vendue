@@ -1,4 +1,5 @@
 import { DashboardShell } from "@/components/layout/dashboard-shell";
+import { EnquiriesDashboardWidget } from "@/components/enquiries/enquiries-dashboard-widget";
 import { OnboardingChecklist } from "@/components/dashboard/onboarding-checklist";
 import { OverviewCards } from "@/components/dashboard/overview-cards";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
@@ -11,6 +12,7 @@ import {
   rotaGaps,
   upcomingEvents,
 } from "@/lib/mock/dashboard";
+import { enquiryPipelineStats } from "@/lib/mock/enquiries";
 
 export default function DashboardPage() {
   return (
@@ -20,6 +22,8 @@ export default function DashboardPage() {
     >
       <div className="mx-auto max-w-7xl space-y-6">
         <OverviewCards stats={dashboardStats} />
+
+        <EnquiriesDashboardWidget stats={enquiryPipelineStats} />
 
         <div className="grid gap-6 xl:grid-cols-3">
           <div className="xl:col-span-2">

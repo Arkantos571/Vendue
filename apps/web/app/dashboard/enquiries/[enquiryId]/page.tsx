@@ -1,0 +1,44 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+import { DashboardShell } from "@/components/layout/dashboard-shell";
+import { EnquiryDetailView } from "@/components/enquiries/enquiry-detail-view";
+import { getEnquiryById } from "@/lib/mock/enquiries";
+
+interface EnquiryDetailPageProps {
+  params: Promise<{ enquiryId: string }>;
+}
+
+export async function generateMetadata({ params }: EnquiryDetailPageProps): Promise<Metadata> {
+  const { enquiryId } = await params;
+  const enquiry = getEnquiryById(enquiryId);
+
+  return {
+    title: enquiry?.eventName ?? "Enquiry",
+  };
+}
+
+export default async function EnquiryDetailPage({ params }: EnquiryDetailPageProps) {
+  const { enquiryId } = await params;
+  const enquiry = getEnquiryById(enquiryId);
+
+  if (!enquiry) {
+    notFound();
+  }
+
+  return (
+    <DashboardShell title="Enquiry detail" description={enquiry.eventName}>
+      <div className="mx-auto max-w-5xl space-y-6">
+        <Link
+          href="/dashboard/enquiries"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-stone-600 hover:text-stone-900"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to enquiries
+        </Link>
+        <EnquiryDetailView enquiry={enquiry} />
+      </div>
+    </DashboardShell>
+  );
+}

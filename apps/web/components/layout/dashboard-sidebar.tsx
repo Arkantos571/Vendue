@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   CalendarDays,
   ClipboardList,
+  Inbox,
   LayoutDashboard,
   Settings,
   Users,
@@ -15,6 +16,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/dashboard/enquiries", label: "Enquiries", icon: Inbox },
   { href: "/dashboard/events", label: "Events", icon: CalendarDays },
   { href: "/dashboard/rota", label: "Rota", icon: ClipboardList },
   { href: "/dashboard/team", label: "Team", icon: Users },
