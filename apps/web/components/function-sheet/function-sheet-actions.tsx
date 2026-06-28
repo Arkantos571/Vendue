@@ -2,35 +2,52 @@
 
 import Link from "next/link";
 import { FileDown, Printer, Save, Users } from "lucide-react";
+import {
+  FunctionSheetSaveStatus,
+  type FunctionSheetSaveStatus as SaveStatus,
+} from "@/components/function-sheet/function-sheet-save-status";
 import { Button } from "@/components/ui/button";
 
 interface FunctionSheetActionsProps {
   eventId: string;
   hasRotaBuilder: boolean;
+  saveStatus: SaveStatus;
+  saveError?: string | null;
   isSaving: boolean;
-  onSave: () => void;
+  onSaveNow: () => void;
 }
 
 export function FunctionSheetActions({
   eventId,
   hasRotaBuilder,
+  saveStatus,
+  saveError,
   isSaving,
-  onSave,
+  onSaveNow,
 }: FunctionSheetActionsProps) {
   return (
-    <div className="space-y-3 print:hidden">
+    <div className="flex flex-col gap-3 print:hidden sm:flex-row sm:items-center sm:justify-between">
+      <FunctionSheetSaveStatus status={saveStatus} error={saveError} />
       <div className="flex flex-wrap gap-2">
-        <Button type="button" className="gap-2" disabled={isSaving} onClick={onSave}>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          disabled={isSaving || saveStatus === "saved"}
+          onClick={onSaveNow}
+        >
           <Save className="h-4 w-4" />
-          {isSaving ? "Saving…" : "Save function sheet"}
+          Save now
         </Button>
-        <Button type="button" variant="outline" disabled className="gap-2">
+        <Button type="button" variant="outline" size="sm" disabled className="gap-2">
           <FileDown className="h-4 w-4" />
           Export PDF
         </Button>
         <Button
           type="button"
           variant="outline"
+          size="sm"
           className="gap-2"
           onClick={() => window.print()}
         >
@@ -40,13 +57,13 @@ export function FunctionSheetActions({
         {hasRotaBuilder ? (
           <Link
             href={`/dashboard/rota/${eventId}`}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-stone-300 bg-white px-4 text-sm font-medium text-stone-900 transition-colors hover:bg-stone-50 dark:border-stone-600 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800"
+            className="inline-flex h-8 items-center justify-center gap-2 rounded-lg border border-stone-300 bg-white px-3 text-sm font-medium text-stone-900 transition-colors hover:bg-stone-50 dark:border-stone-600 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800"
           >
             <Users className="h-4 w-4" />
             Build rota
           </Link>
         ) : (
-          <Button type="button" variant="outline" disabled className="gap-2">
+          <Button type="button" variant="outline" size="sm" disabled className="gap-2">
             <Users className="h-4 w-4" />
             Build rota
           </Button>

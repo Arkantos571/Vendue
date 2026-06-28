@@ -24,21 +24,33 @@ function parseRunningOrder(value: Json): RunningOrderItem[] {
     return [];
   }
 
-  return value
-    .map((item) => {
+  const items = value
+    .map((item, index) => {
       const row = asObject(item);
       if (!row) {
         return null;
       }
 
+      const sortOrder =
+        typeof row.sort_order === "number" && Number.isFinite(row.sort_order)
+          ? row.sort_order
+          : index;
+
       return {
-        time: asString(row.time),
-        activity: asString(row.activity),
-        owner: asString(row.owner ?? row.owner_team),
-        notes: row.notes == null ? null : asString(row.notes),
+        sortOrder,
+        item: {
+          time: asString(row.time),
+          activity: asString(row.activity),
+          owner: asString(row.owner ?? row.owner_team),
+          notes: row.notes == null ? null : asString(row.notes),
+        },
       };
     })
-    .filter((item): item is RunningOrderItem => item !== null);
+    .filter((entry): entry is { sortOrder: number; item: RunningOrderItem } => entry !== null);
+
+  return items
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .map((entry) => entry.item);
 }
 
 function parseSetup(value: Json): SetupRequirements {
@@ -133,11 +145,12 @@ export function toFunctionSheetInsertPayload(
     venue_id: venueId,
     event_id: eventId,
     status: functionSheet.status ?? "draft",
-    running_order: functionSheet.runningOrder.map((item) => ({
+    running_order: functionSheet.runningOrder.map((item, index) => ({
       time: item.time,
       activity: item.activity,
       owner: item.owner,
       notes: item.notes,
+      sort_order: index,
     })),
     setup: functionSheet.setup,
     food_and_beverage: functionSheet.foodAndBeverage,
