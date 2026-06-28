@@ -4,9 +4,10 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { EventDetailView } from "@/components/events/event-detail-view";
+import { buildDefaultFunctionSheet } from "@/lib/function-sheets/defaults";
+import { loadFunctionSheetForPage } from "@/lib/function-sheets/data";
 import { loadEventForPage } from "@/lib/events/data";
-import { buildPlaceholderFunctionSheetFromEvent } from "@/lib/mock/function-sheet";
-import { getRotaBuilderByEventId } from "@/lib/mock/rota";
+import { eventExistsForVenue } from "@/lib/rota/data";
 
 interface EventDetailPageProps {
   params: Promise<{ eventId: string }>;
@@ -29,22 +30,30 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
     notFound();
   }
 
-  const functionSheet = buildPlaceholderFunctionSheetFromEvent(event);
-  const hasRotaBuilder = Boolean(getRotaBuilderByEventId(eventId));
+  const [functionSheetData, hasRotaBuilder] = await Promise.all([
+    loadFunctionSheetForPage(eventId, event),
+    eventExistsForVenue(eventId),
+  ]);
+
+  const sheetBundle = functionSheetData ?? {
+    functionSheet: buildDefaultFunctionSheet(event),
+    staffingPlan: buildDefaultFunctionSheet(event).staffingPlan,
+    isPersisted: false,
+  };
 
   return (
     <DashboardShell title="Event detail" description={event.title}>
       <div className="mx-auto max-w-7xl space-y-6">
         <Link
           href="/dashboard/events"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-stone-600 hover:text-stone-900 print:hidden"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-stone-600 hover:text-stone-900 print:hidden dark:text-stone-400 dark:hover:text-stone-100"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to events
         </Link>
         <EventDetailView
           event={event}
-          functionSheet={functionSheet}
+          functionSheetData={sheetBundle}
           hasRotaBuilder={hasRotaBuilder}
         />
       </div>

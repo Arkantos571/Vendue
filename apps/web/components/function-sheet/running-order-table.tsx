@@ -1,57 +1,101 @@
+"use client";
+
+import { Plus, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { RunningOrderItem } from "@/lib/mock/function-sheet";
 
 interface RunningOrderTableProps {
   items: RunningOrderItem[];
+  onChange: (items: RunningOrderItem[]) => void;
 }
 
-export function RunningOrderTable({ items }: RunningOrderTableProps) {
+export function RunningOrderTable({ items, onChange }: RunningOrderTableProps) {
+  function updateItem(index: number, patch: Partial<RunningOrderItem>) {
+    onChange(items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
+  }
+
+  function removeItem(index: number) {
+    onChange(items.filter((_, i) => i !== index));
+  }
+
+  function addItem() {
+    onChange([
+      ...items,
+      { time: "", activity: "", owner: "", notes: null },
+    ]);
+  }
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Timeline / running order</CardTitle>
-        <CardDescription>Chronological plan for the event day.</CardDescription>
+      <CardHeader className="flex flex-row items-start justify-between gap-4">
+        <div>
+          <CardTitle>Timeline / running order</CardTitle>
+          <CardDescription>Chronological plan for the event day.</CardDescription>
+        </div>
+        <Button type="button" variant="outline" size="sm" className="gap-1.5" onClick={addItem}>
+          <Plus className="h-4 w-4" />
+          Add row
+        </Button>
       </CardHeader>
-      <CardContent className="p-0 sm:px-0">
+      <CardContent className="space-y-3">
         {items.length === 0 ? (
-          <p className="px-6 pb-5 text-sm text-stone-500">No running order items yet.</p>
+          <p className="text-sm text-stone-500 dark:text-stone-400">No running order items yet.</p>
         ) : (
-          <>
-            <div className="hidden overflow-x-auto sm:block">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-stone-100 bg-stone-50/50 text-xs font-medium uppercase tracking-wide text-stone-500">
-                    <th className="px-6 py-3">Time</th>
-                    <th className="px-4 py-3">Item / activity</th>
-                    <th className="px-4 py-3">Owner / team</th>
-                    <th className="px-6 py-3">Notes</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-stone-100">
-                  {items.map((item, index) => (
-                    <tr key={`${item.time}-${index}`} className="hover:bg-stone-50/50">
-                      <td className="whitespace-nowrap px-6 py-4 font-medium text-stone-900">{item.time}</td>
-                      <td className="px-4 py-4 text-stone-900">{item.activity}</td>
-                      <td className="px-4 py-4 text-stone-600">{item.owner}</td>
-                      <td className="px-6 py-4 text-stone-500">{item.notes ?? "—"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          items.map((item, index) => (
+            <div
+              key={`running-order-${index}`}
+              className="grid gap-3 rounded-lg border border-stone-200 bg-stone-50/50 p-4 dark:border-stone-700 dark:bg-stone-800/40 sm:grid-cols-12"
+            >
+              <div className="sm:col-span-2">
+                <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-stone-500">Time</label>
+                <Input
+                  value={item.time}
+                  onChange={(event) => updateItem(index, { time: event.target.value })}
+                  placeholder="18:00"
+                />
+              </div>
+              <div className="sm:col-span-3">
+                <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-stone-500">Activity</label>
+                <Input
+                  value={item.activity}
+                  onChange={(event) => updateItem(index, { activity: event.target.value })}
+                  placeholder="Guest arrival"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-stone-500">Owner / team</label>
+                <Input
+                  value={item.owner}
+                  onChange={(event) => updateItem(index, { owner: event.target.value })}
+                  placeholder="Events team"
+                />
+              </div>
+              <div className="sm:col-span-4">
+                <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-stone-500">Notes</label>
+                <Input
+                  value={item.notes ?? ""}
+                  onChange={(event) =>
+                    updateItem(index, { notes: event.target.value.trim() ? event.target.value : null })
+                  }
+                  placeholder="Optional notes"
+                />
+              </div>
+              <div className="flex items-end sm:col-span-1">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="text-stone-500 hover:text-red-600"
+                  onClick={() => removeItem(index)}
+                  aria-label="Remove row"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-            <div className="space-y-3 p-4 sm:hidden">
-              {items.map((item, index) => (
-                <div key={`${item.time}-${index}`} className="rounded-lg border border-stone-100 p-4">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <span className="font-medium text-stone-900">{item.time}</span>
-                    <span className="text-xs text-stone-500">{item.owner}</span>
-                  </div>
-                  <p className="mt-1 text-sm text-stone-900">{item.activity}</p>
-                  {item.notes && <p className="mt-2 text-sm text-stone-500">{item.notes}</p>}
-                </div>
-              ))}
-            </div>
-          </>
+          ))
         )}
       </CardContent>
     </Card>

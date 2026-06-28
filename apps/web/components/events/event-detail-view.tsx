@@ -11,7 +11,7 @@ import { EventRotaSection } from "@/components/events/event-rota-section";
 import { FunctionSheetView } from "@/components/function-sheet/function-sheet-view";
 import { cn } from "@/lib/utils";
 import type { MockEvent } from "@/lib/mock/events";
-import type { FunctionSheet } from "@/lib/mock/function-sheet";
+import type { FunctionSheetPageData } from "@/lib/function-sheets/data";
 
 const tabs = [
   { id: "overview", label: "Overview" },
@@ -25,11 +25,11 @@ type EventDetailTab = (typeof tabs)[number]["id"];
 
 interface EventDetailViewProps {
   event: MockEvent;
-  functionSheet: FunctionSheet;
+  functionSheetData: FunctionSheetPageData;
   hasRotaBuilder: boolean;
 }
 
-export function EventDetailView({ event, functionSheet, hasRotaBuilder }: EventDetailViewProps) {
+export function EventDetailView({ event, functionSheetData, hasRotaBuilder }: EventDetailViewProps) {
   const [activeTab, setActiveTab] = useState<EventDetailTab>("overview");
 
   return (
@@ -111,7 +111,9 @@ export function EventDetailView({ event, functionSheet, hasRotaBuilder }: EventD
       {activeTab === "function-sheet" && (
         <FunctionSheetView
           event={event}
-          functionSheet={functionSheet}
+          initialFunctionSheet={functionSheetData.functionSheet}
+          initialStaffingPlan={functionSheetData.staffingPlan}
+          isPersisted={functionSheetData.isPersisted}
           hasRotaBuilder={hasRotaBuilder}
         />
       )}

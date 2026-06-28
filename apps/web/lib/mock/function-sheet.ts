@@ -47,7 +47,9 @@ export interface InternalNotes {
 }
 
 export interface FunctionSheet {
+  id?: string | null;
   eventId: string;
+  status?: import("@/src/types/database").FunctionSheetStatus;
   runningOrder: RunningOrderItem[];
   setup: SetupRequirements;
   foodAndBeverage: FoodAndBeverage;
