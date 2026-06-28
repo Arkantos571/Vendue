@@ -3,27 +3,85 @@ import { toAppNotification, type AppNotification } from "@/lib/notifications/map
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { Notification } from "@/src/types/database";
 
-export async function loadNotificationsForPage(): Promise<AppNotification[]> {
-  if (!isSupabaseConfigured()) {
-    return [];
-  }
+const NOTIFICATION_SELECT =
+  "id, venue_id, profile_id, recipient_team_member_id, type, title, body, metadata, related_event_id, related_shift_id, read_at, created_at";
 
-  const { supabase, user } = await requireAuthenticatedClient(
-    "/sign-in?redirect=/dashboard/notifications",
-  );
+function isNotificationsSchemaMissing(error: { message?: string } | null): boolean {
+  const message = (error?.message ?? "").toLowerCase();
+  return (
+    message.includes("recipient_team_member_id") ||
+    message.includes("related_event_id") ||
+    message.includes("related_shift_id")
+  ) && message.includes("does not exist");
+}
 
-  const { data, error } = await supabase
+const NOTIFICATION_SELECT_LEGACY =
+  "id, venue_id, profile_id, type, title, body, metadata, read_at, created_at";
+
+async function fetchNotifications(
+  supabase: Awaited<ReturnType<typeof requireAuthenticatedClient>>["supabase"],
+): Promise<{ notifications: AppNotification[]; migrationRequired: boolean }> {
+  let { data, error } = await supabase
     .from("notifications")
-    .select("id, venue_id, profile_id, type, title, body, metadata, read_at, created_at")
-    .eq("profile_id", user.id)
+    .select(NOTIFICATION_SELECT)
     .order("created_at", { ascending: false })
     .limit(100);
+
+  if (error && isNotificationsSchemaMissing(error)) {
+    const legacy = await supabase
+      .from("notifications")
+      .select(NOTIFICATION_SELECT_LEGACY)
+      .order("created_at", { ascending: false })
+      .limit(100);
+
+    if (legacy.error) {
+      throw new Error(legacy.error.message);
+    }
+
+    return {
+      notifications: ((legacy.data as Notification[] | null) ?? []).map(toAppNotification),
+      migrationRequired: true,
+    };
+  }
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return ((data as Notification[] | null) ?? []).map(toAppNotification);
+  return {
+    notifications: ((data as Notification[] | null) ?? []).map(toAppNotification),
+    migrationRequired: false,
+  };
+}
+
+export async function loadNotificationsForPage(): Promise<{
+  notifications: AppNotification[];
+  migrationRequired: boolean;
+}> {
+  if (!isSupabaseConfigured()) {
+    return { notifications: [], migrationRequired: false };
+  }
+
+  const { supabase } = await requireAuthenticatedClient(
+    "/sign-in?redirect=/dashboard/notifications",
+  );
+
+  return fetchNotifications(supabase);
+}
+
+export async function loadStaffNotificationsForPage(): Promise<{
+  notifications: AppNotification[];
+  migrationRequired: boolean;
+}> {
+  if (!isSupabaseConfigured()) {
+    return { notifications: [], migrationRequired: false };
+  }
+
+  const { supabase } = await requireAuthenticatedClient(
+    "/sign-in?redirect=/staff/notifications",
+  );
+
+  return fetchNotifications(supabase);
 }
 
 export async function loadUnreadNotificationCount(): Promise<number> {
@@ -31,12 +89,11 @@ export async function loadUnreadNotificationCount(): Promise<number> {
     return 0;
   }
 
-  const { supabase, user } = await requireAuthenticatedClient("/sign-in");
+  const { supabase } = await requireAuthenticatedClient("/sign-in");
 
   const { count, error } = await supabase
     .from("notifications")
     .select("id", { count: "exact", head: true })
-    .eq("profile_id", user.id)
     .is("read_at", null);
 
   if (error) {

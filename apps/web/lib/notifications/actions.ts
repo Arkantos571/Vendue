@@ -1,6 +1,7 @@
 "use server";
 
 import { requireAuthenticatedClient } from "@/lib/auth/session";
+import { loadUnreadNotificationCount } from "@/lib/notifications/data";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
 export type NotificationActionResult<T> =
@@ -11,6 +12,22 @@ function dbErrorMessage(error: { message?: string } | null): string {
   return error?.message ?? "Something went wrong. Please try again.";
 }
 
+export async function loadUnreadNotificationCountAction(): Promise<
+  NotificationActionResult<{ count: number }>
+> {
+  if (!isSupabaseConfigured()) {
+    return { success: true, count: 0 };
+  }
+
+  try {
+    const count = await loadUnreadNotificationCount();
+    return { success: true, count };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to load unread count.";
+    return { success: false, error: message };
+  }
+}
+
 export async function markNotificationReadAction(
   notificationId: string,
 ): Promise<NotificationActionResult<{ ok: true }>> {
@@ -19,7 +36,7 @@ export async function markNotificationReadAction(
   }
 
   try {
-    const { supabase, user } = await requireAuthenticatedClient(
+    const { supabase } = await requireAuthenticatedClient(
       "/sign-in?redirect=/dashboard/notifications",
     );
 
@@ -27,7 +44,6 @@ export async function markNotificationReadAction(
       .from("notifications")
       .update({ read_at: new Date().toISOString() })
       .eq("id", notificationId)
-      .eq("profile_id", user.id)
       .is("read_at", null);
 
     if (error) {
@@ -49,14 +65,13 @@ export async function markAllNotificationsReadAction(): Promise<
   }
 
   try {
-    const { supabase, user } = await requireAuthenticatedClient(
+    const { supabase } = await requireAuthenticatedClient(
       "/sign-in?redirect=/dashboard/notifications",
     );
 
     const { error } = await supabase
       .from("notifications")
       .update({ read_at: new Date().toISOString() })
-      .eq("profile_id", user.id)
       .is("read_at", null);
 
     if (error) {

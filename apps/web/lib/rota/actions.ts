@@ -322,6 +322,14 @@ export async function createRotaShiftAction(
       return { success: false, error: dbErrorMessage(error) };
     }
 
+    const { error: notifyError } = await supabase.rpc("notify_staff_shift_added", {
+      p_shift_id: shiftId,
+    });
+
+    if (notifyError) {
+      console.error("Failed to notify staff of shift added:", notifyError.message);
+    }
+
     return { success: true, shiftId };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to add shift.";
@@ -345,6 +353,42 @@ export async function deleteRotaShiftAction(
     }
 
     const { supabase, venueId } = context;
+
+    const { data: shiftRow, error: shiftLoadError } = await supabase
+      .from("rota_shifts")
+      .select("id, team_member_id, event_id, events(title, rota_status)")
+      .eq("id", shiftId)
+      .eq("venue_id", venueId)
+      .eq("event_id", eventId)
+      .maybeSingle();
+
+    if (shiftLoadError) {
+      return { success: false, error: dbErrorMessage(shiftLoadError) };
+    }
+
+    if (!shiftRow) {
+      return { success: false, error: "Shift not found." };
+    }
+
+    const eventRelation = shiftRow.events as
+      | { title: string | null; rota_status: string | null }
+      | { title: string | null; rota_status: string | null }[]
+      | null;
+    const eventMeta = Array.isArray(eventRelation) ? eventRelation[0] ?? null : eventRelation;
+
+    if (eventMeta?.rota_status === "published") {
+      const { error: notifyError } = await supabase.rpc("notify_staff_shift_updated", {
+        p_shift_id: shiftId,
+        p_team_member_id: shiftRow.team_member_id,
+        p_event_id: shiftRow.event_id,
+        p_venue_id: venueId,
+        p_event_title: eventMeta.title ?? "an event",
+      });
+
+      if (notifyError) {
+        console.error("Failed to notify staff of shift update:", notifyError.message);
+      }
+    }
 
     const { error } = await supabase
       .from("rota_shifts")

@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, Clock, Home } from "lucide-react";
+import { Bell, CalendarDays, Clock, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/staff", label: "Home", icon: Home, exact: true },
   { href: "/staff/shifts", label: "Shifts", icon: CalendarDays, exact: false },
   { href: "/staff/availability", label: "Availability", icon: Clock, exact: false },
+  { href: "/staff/notifications", label: "Notifications", icon: Bell, exact: false },
 ];
 
 export function StaffNav() {
@@ -16,7 +17,7 @@ export function StaffNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-stone-200 bg-white/95 backdrop-blur-sm dark:border-stone-800 dark:bg-stone-900/95">
-      <div className="mx-auto grid max-w-lg grid-cols-3">
+      <div className="mx-auto grid max-w-lg grid-cols-4">
         {links.map(({ href, label, icon: Icon, exact }) => {
           const active = exact ? pathname === href : pathname.startsWith(href);
 

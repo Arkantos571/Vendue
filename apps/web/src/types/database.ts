@@ -586,11 +586,14 @@ export interface Database {
         Row: {
           id: string;
           venue_id: string;
-          profile_id: string;
+          profile_id: string | null;
+          recipient_team_member_id: string | null;
           type: string;
           title: string;
           body: string | null;
           metadata: Json;
+          related_event_id: string | null;
+          related_shift_id: string | null;
           read_at: string | null;
           created_at: string;
           updated_at: string;
@@ -598,17 +601,22 @@ export interface Database {
         Insert: {
           id?: string;
           venue_id: string;
-          profile_id: string;
+          profile_id?: string | null;
+          recipient_team_member_id?: string | null;
           type: string;
           title: string;
           body?: string | null;
           metadata?: Json;
+          related_event_id?: string | null;
+          related_shift_id?: string | null;
           read_at?: string | null;
         };
         Update: {
           read_at?: string | null;
           body?: string | null;
           metadata?: Json;
+          related_event_id?: string | null;
+          related_shift_id?: string | null;
         };
         Relationships: [];
       };
@@ -683,7 +691,19 @@ export interface Database {
       };
       user_venue_ids: { Args: Record<string, never>; Returns: string[] };
       notify_managers_shift_confirmed: { Args: { p_shift_id: string }; Returns: undefined };
+      notify_managers_shift_declined: { Args: { p_shift_id: string }; Returns: undefined };
       notify_staff_rota_published: { Args: { p_event_id: string }; Returns: undefined };
+      notify_staff_shift_added: { Args: { p_shift_id: string }; Returns: undefined };
+      notify_staff_shift_updated: {
+        Args: {
+          p_shift_id: string;
+          p_team_member_id: string;
+          p_event_id: string;
+          p_venue_id: string;
+          p_event_title: string;
+        };
+        Returns: undefined;
+      };
     };
     Enums: {
       venue_member_role: VenueMemberRole;

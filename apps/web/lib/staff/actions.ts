@@ -174,6 +174,14 @@ export async function declineStaffShiftAction(
       return { success: false, error: dbErrorMessage(error) };
     }
 
+    const { error: notifyError } = await supabase.rpc("notify_managers_shift_declined", {
+      p_shift_id: shiftId,
+    });
+
+    if (notifyError) {
+      console.error("Failed to notify managers of shift decline:", notifyError.message);
+    }
+
     return loadStaffShift(supabase, shiftId);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to decline shift.";

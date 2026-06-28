@@ -5,11 +5,12 @@ export interface AppNotification {
   venueId: string;
   type: string;
   title: string;
-  body: string;
+  message: string;
   createdAt: string;
   readAt: string | null;
   eventId: string | null;
   shiftId: string | null;
+  teamMemberId: string | null;
 }
 
 function metadataString(metadata: unknown, key: string): string | null {
@@ -27,10 +28,12 @@ export function toAppNotification(row: Notification): AppNotification {
     venueId: row.venue_id,
     type: row.type,
     title: row.title,
-    body: row.body ?? "",
+    message: row.body ?? "",
     createdAt: row.created_at,
     readAt: row.read_at,
-    eventId: metadataString(row.metadata, "event_id"),
-    shiftId: metadataString(row.metadata, "shift_id"),
+    eventId: row.related_event_id ?? metadataString(row.metadata, "event_id"),
+    shiftId: row.related_shift_id ?? metadataString(row.metadata, "shift_id"),
+    teamMemberId:
+      row.recipient_team_member_id ?? metadataString(row.metadata, "team_member_id"),
   };
 }

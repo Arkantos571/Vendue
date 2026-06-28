@@ -8,11 +8,14 @@ export const metadata: Metadata = {
 };
 
 export default async function NotificationsPage() {
-  let notifications: Awaited<ReturnType<typeof loadNotificationsForPage>> = [];
+  let notifications: Awaited<ReturnType<typeof loadNotificationsForPage>>["notifications"] = [];
+  let migrationRequired = false;
   let loadError: string | null = null;
 
   try {
-    notifications = await loadNotificationsForPage();
+    const result = await loadNotificationsForPage();
+    notifications = result.notifications;
+    migrationRequired = result.migrationRequired;
   } catch (error) {
     loadError = error instanceof Error ? error.message : "Failed to load notifications.";
   }
@@ -22,7 +25,12 @@ export default async function NotificationsPage() {
       title="Notifications"
       description="Shift confirmations and venue updates"
     >
-      <NotificationsList initialNotifications={notifications} loadError={loadError} />
+      <NotificationsList
+        initialNotifications={notifications}
+        loadError={loadError}
+        migrationRequired={migrationRequired}
+        audience="manager"
+      />
     </DashboardShell>
   );
 }

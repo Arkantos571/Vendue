@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { Bell, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useState } from "react";
 import { DashboardSidebar } from "@/components/layout/dashboard-sidebar";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 
 interface DashboardShellProps {
   title: string;
@@ -37,13 +37,7 @@ export function DashboardShell({ title, description, children }: DashboardShellP
             )}
           </div>
           <div className="flex items-center gap-2">
-            <Link
-              href="/dashboard/notifications"
-              className="rounded-lg p-2 text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-800"
-              aria-label="Notifications"
-            >
-              <Bell className="h-5 w-5" />
-            </Link>
+            <NotificationBell />
             <span className="hidden rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-800 dark:bg-brand-950 dark:text-brand-200 sm:inline">
               The Grand Assembly
             </span>
