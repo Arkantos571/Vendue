@@ -4,8 +4,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ConvertEnquiryModal } from "@/components/enquiries/convert-enquiry-modal";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { updateEnquiryStatusAction } from "@/lib/enquiries/actions";
+import { markProposalSentAction, updateEnquiryStatusAction } from "@/lib/enquiries/actions";
 import type { EnquiryStatus, MockEnquiry } from "@/lib/mock/enquiries";
 
 interface EnquiryActionsProps {
@@ -13,36 +14,51 @@ interface EnquiryActionsProps {
   onUpdated?: (enquiry: MockEnquiry) => void;
 }
 
-const convertibleStatuses: EnquiryStatus[] = ["new", "contacted", "proposal_sent", "confirmed"];
-
 function canConvertEnquiry(enquiry: MockEnquiry): boolean {
-  return !enquiry.convertedEventId && convertibleStatuses.includes(enquiry.status);
+  return (
+    !enquiry.convertedEventId &&
+    enquiry.status !== "lost" &&
+    ["new", "contacted", "proposal_sent", "confirmed"].includes(enquiry.status)
+  );
 }
 
-function convertButtonLabel(status: EnquiryStatus): string {
-  return status === "confirmed" ? "Create event from enquiry" : "Convert to event";
+function canReopenEnquiry(enquiry: MockEnquiry): boolean {
+  return (
+    !enquiry.convertedEventId &&
+    (enquiry.status === "lost" || enquiry.status === "confirmed")
+  );
 }
 
 export function EnquiryActions({ enquiry, onUpdated }: EnquiryActionsProps) {
   const router = useRouter();
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [placeholderMessage, setPlaceholderMessage] = useState<string | null>(null);
+  const [proposalNotice, setProposalNotice] = useState<string | null>(null);
   const [convertOpen, setConvertOpen] = useState(false);
+  const [lostOpen, setLostOpen] = useState(false);
+  const [lostReason, setLostReason] = useState(enquiry.lostReason ?? "");
 
   const isConverted = Boolean(enquiry.convertedEventId);
   const showConvert = canConvertEnquiry(enquiry);
+  const showReopen = canReopenEnquiry(enquiry);
   const isConfirmedConvert = enquiry.status === "confirmed" && showConvert;
+  const isLost = enquiry.status === "lost";
+  const isTerminal = isLost || isConverted;
 
-  async function updateStatus(status: EnquiryStatus, setLastContact = false) {
+  async function updateStatus(
+    status: EnquiryStatus,
+    options: { setLastContact?: boolean; lostReason?: string | null; reopen?: boolean } = {},
+  ) {
     setIsUpdating(true);
     setError(null);
-    setPlaceholderMessage(null);
+    setProposalNotice(null);
 
     const result = await updateEnquiryStatusAction({
       enquiry_id: enquiry.id,
       status,
-      set_last_contact: setLastContact,
+      set_last_contact: options.setLastContact,
+      lost_reason: options.lostReason,
+      reopen: options.reopen,
     });
 
     setIsUpdating(false);
@@ -54,15 +70,42 @@ export function EnquiryActions({ enquiry, onUpdated }: EnquiryActionsProps) {
 
     onUpdated?.(result.enquiry);
     router.refresh();
+    setLostOpen(false);
+  }
+
+  async function handleMarkProposalSent() {
+    setIsUpdating(true);
+    setError(null);
+    setProposalNotice(null);
+
+    const result = await markProposalSentAction({
+      enquiry_id: enquiry.id,
+      estimated_value: enquiry.estimatedValue,
+      proposal_notes: enquiry.proposalNotes,
+      proposed_package: enquiry.proposedPackage,
+      proposal_valid_until: enquiry.proposalValidUntil,
+      next_follow_up_date: enquiry.nextFollowUpDate,
+    });
+
+    setIsUpdating(false);
+
+    if (!result.success) {
+      setError(result.error);
+      return;
+    }
+
+    onUpdated?.(result.enquiry);
+    router.refresh();
+    setProposalNotice("Email sending will be connected later.");
   }
 
   return (
     <>
       <div className="space-y-3">
         {error && <p className="text-sm text-red-700 dark:text-red-300">{error}</p>}
-        {placeholderMessage && (
+        {proposalNotice && (
           <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
-            {placeholderMessage}
+            {proposalNotice}
           </p>
         )}
         {isConverted && (
@@ -70,68 +113,116 @@ export function EnquiryActions({ enquiry, onUpdated }: EnquiryActionsProps) {
             Converted to event
           </p>
         )}
+        {isLost && enquiry.lostReason && (
+          <p className="rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-300">
+            Lost reason: {enquiry.lostReason}
+          </p>
+        )}
+
         <div className="flex flex-wrap gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            disabled={isUpdating || enquiry.status === "contacted" || isConverted}
-            onClick={() => updateStatus("contacted", true)}
-          >
-            Mark contacted
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            disabled={isUpdating || isConverted}
-            onClick={async () => {
-              setIsUpdating(true);
-              setError(null);
+          {!isTerminal && enquiry.status === "new" && (
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isUpdating}
+              onClick={() => updateStatus("contacted", { setLastContact: true })}
+            >
+              {isUpdating ? "Updating…" : "Mark contacted"}
+            </Button>
+          )}
 
-              const result = await updateEnquiryStatusAction({
-                enquiry_id: enquiry.id,
-                status: "proposal_sent",
-                set_last_contact: true,
-              });
+          {!isTerminal && enquiry.status !== "proposal_sent" && enquiry.status !== "confirmed" && (
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isUpdating}
+              onClick={handleMarkProposalSent}
+            >
+              Mark proposal sent
+            </Button>
+          )}
 
-              setIsUpdating(false);
+          {!isTerminal && enquiry.status !== "confirmed" && (
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isUpdating}
+              onClick={() => updateStatus("confirmed", { setLastContact: true })}
+            >
+              Mark confirmed
+            </Button>
+          )}
 
-              if (!result.success) {
-                setError(result.error);
-                return;
-              }
-
-              onUpdated?.(result.enquiry);
-              router.refresh();
-              setPlaceholderMessage(
-                "Proposal sending is not connected yet — status updated to proposal sent.",
-              );
-            }}
-          >
-            Send proposal
-          </Button>
           {showConvert && (
             <Button
               type="button"
               size={isConfirmedConvert ? "lg" : "md"}
+              variant={isConfirmedConvert ? "primary" : "outline"}
               disabled={isUpdating}
-              className={cn(isConfirmedConvert && "shadow-md")}
+              className={cn(
+                isConfirmedConvert && "shadow-md",
+                isLost && "opacity-50",
+              )}
               onClick={() => {
                 setError(null);
                 setConvertOpen(true);
               }}
             >
-              {convertButtonLabel(enquiry.status)}
+              {enquiry.status === "confirmed" ? "Create event from enquiry" : "Convert to event"}
             </Button>
           )}
-          <Button
-            type="button"
-            variant="outline"
-            disabled={isUpdating || enquiry.status === "lost" || isConverted}
-            onClick={() => updateStatus("lost")}
-          >
-            Mark lost
-          </Button>
+
+          {!isTerminal && !lostOpen && (
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isUpdating}
+              onClick={() => setLostOpen(true)}
+            >
+              Mark lost
+            </Button>
+          )}
+
+          {showReopen && (
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isUpdating}
+              onClick={() => updateStatus("contacted", { reopen: true })}
+            >
+              Reopen enquiry
+            </Button>
+          )}
         </div>
+
+        {lostOpen && !isConverted && (
+          <div className="rounded-lg border border-stone-200 bg-stone-50 p-4 dark:border-stone-700 dark:bg-stone-900/50">
+            <label htmlFor="lost-reason" className="text-sm font-medium text-stone-700 dark:text-stone-300">
+              Lost reason (optional)
+            </label>
+            <Textarea
+              id="lost-reason"
+              value={lostReason}
+              onChange={(e) => setLostReason(e.target.value)}
+              rows={2}
+              className="mt-2"
+              placeholder="e.g. Chose another venue, budget mismatch"
+            />
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                disabled={isUpdating}
+                onClick={() => updateStatus("lost", { lostReason })}
+              >
+                Confirm lost
+              </Button>
+              <Button type="button" variant="ghost" disabled={isUpdating} onClick={() => setLostOpen(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       <ConvertEnquiryModal

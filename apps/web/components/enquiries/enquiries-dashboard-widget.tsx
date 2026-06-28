@@ -20,7 +20,7 @@ export function EnquiriesDashboardWidget({ stats }: EnquiriesDashboardWidgetProp
           <div>
             <p className="text-sm font-semibold text-stone-900">Enquiries pipeline</p>
             <p className="mt-1 text-sm text-stone-500">
-              {stats.newEnquiries} new · {stats.awaitingReply} awaiting reply · {stats.proposalSent} proposals out
+              {stats.openEnquiries} open · {stats.proposalSent} proposals out · {stats.newEnquiries} new
             </p>
           </div>
         </div>

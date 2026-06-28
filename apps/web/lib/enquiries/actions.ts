@@ -8,7 +8,12 @@ import {
   type EnquiryRowWithJoins,
 } from "@/lib/enquiries/mappers";
 import { parseEndTimeSelection, resolveEventTimestamps } from "@/lib/events/event-time";
-import type { EnquiryPipelineStats, EnquirySource, MockEnquiry } from "@/lib/mock/enquiries";
+import type {
+  EnquiryActivityItem,
+  EnquiryPipelineStats,
+  EnquirySource,
+  MockEnquiry,
+} from "@/lib/mock/enquiries";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { EnquiryPriority, EnquiryStatus, EventStatus } from "@/types";
 
@@ -17,7 +22,8 @@ const ENQUIRY_SELECT = `
   company, client_preferences, requested_date, preferred_start_time,
   preferred_end_time, event_type_id, space_id, guest_count, budget_estimate,
   estimated_value, status, source, priority, assigned_profile_id,
-  last_contact_at, next_follow_up_at, notes, internal_notes, activity,
+  last_contact_at, next_follow_up_at, proposal_notes, proposed_package,
+  proposal_valid_until, lost_reason, notes, internal_notes, activity,
   converted_event_id, converted_at, created_at,
   event_types ( name ),
   spaces ( name ),
@@ -70,6 +76,123 @@ export type CreateEnquiryInput = {
   notes?: string;
   status?: EnquiryStatus;
 };
+
+
+export type EnquiryProposalInput = {
+  enquiry_id: string;
+  estimated_value?: number;
+  proposal_notes?: string | null;
+  proposed_package?: string | null;
+  proposal_valid_until?: string | null;
+  next_follow_up_date?: string | null;
+};
+
+function dateToTimestamp(date: string | null | undefined): string | null {
+  if (!date?.trim()) return null;
+  return `${date.trim()}T12:00:00.000Z`;
+}
+
+function appendEnquiryActivity(
+  existing: unknown,
+  entry: EnquiryActivityItem,
+): EnquiryActivityItem[] {
+  const current = Array.isArray(existing)
+    ? existing.filter(
+        (item): item is EnquiryActivityItem =>
+          typeof item === "object" &&
+          item !== null &&
+          "id" in item &&
+          "title" in item,
+      )
+    : [];
+  return [...current, entry];
+}
+
+function buildStatusActivity(
+  status: EnquiryStatus,
+  actorName: string,
+  lostReason?: string | null,
+  reopen = false,
+): EnquiryActivityItem {
+  const now = new Date().toISOString();
+  const map: Record<
+    EnquiryStatus,
+    { title: string; description: string; type: EnquiryActivityItem["type"] }
+  > = {
+    new: {
+      title: "Enquiry reopened",
+      description: "Enquiry returned to the pipeline.",
+      type: "reopened",
+    },
+    contacted: {
+      title: "Marked as contacted",
+      description: "Client has been contacted.",
+      type: "contacted",
+    },
+    proposal_sent: {
+      title: "Proposal sent",
+      description: "Proposal marked as sent.",
+      type: "proposal_sent",
+    },
+    confirmed: {
+      title: "Enquiry confirmed",
+      description: "Client confirmed the enquiry.",
+      type: "confirmed",
+    },
+    lost: {
+      title: "Marked as lost",
+      description: lostReason?.trim() || "Enquiry marked as lost.",
+      type: "lost",
+    },
+  };
+
+  const details = reopen && status === "contacted"
+    ? {
+        title: "Enquiry reopened",
+        description: "Enquiry returned to active follow-up.",
+        type: "reopened" as const,
+      }
+    : map[status];
+
+  return {
+    id: randomUUID(),
+    type: details.type,
+    title: details.title,
+    description: details.description,
+    timestamp: now,
+    actor: actorName,
+  };
+}
+
+async function getActorName(
+  supabase: Awaited<ReturnType<typeof requireAuthenticatedClient>>["supabase"],
+  userId: string,
+): Promise<string> {
+  const { data } = await supabase.from("profiles").select("full_name").eq("id", userId).maybeSingle();
+  return data?.full_name?.trim() || "Team";
+}
+
+function buildProposalUpdate(input: EnquiryProposalInput) {
+  const update: Record<string, unknown> = {};
+
+  if (input.estimated_value !== undefined) {
+    update.estimated_value = input.estimated_value;
+  }
+  if (input.proposal_notes !== undefined) {
+    update.proposal_notes = input.proposal_notes?.trim() || null;
+  }
+  if (input.proposed_package !== undefined) {
+    update.proposed_package = input.proposed_package?.trim() || null;
+  }
+  if (input.proposal_valid_until !== undefined) {
+    update.proposal_valid_until = input.proposal_valid_until?.trim() || null;
+  }
+  if (input.next_follow_up_date !== undefined) {
+    update.next_follow_up_at = dateToTimestamp(input.next_follow_up_date);
+  }
+
+  return update;
+}
 
 function dbErrorMessage(error: { message?: string } | null): string {
   return error?.message ?? "Something went wrong. Please try again.";
@@ -321,6 +444,8 @@ export async function updateEnquiryStatusAction(input: {
   enquiry_id: string;
   status: EnquiryStatus;
   set_last_contact?: boolean;
+  lost_reason?: string | null;
+  reopen?: boolean;
 }): Promise<EnquiriesActionResult<{ enquiry: MockEnquiry }>> {
   if (!isSupabaseConfigured()) {
     return {
@@ -339,15 +464,56 @@ export async function updateEnquiryStatusAction(input: {
       return { success: false, error: "Set up your venue before managing enquiries." };
     }
 
-    const update: {
-      status: EnquiryStatus;
-      last_contact_at?: string;
-    } = {
-      status: input.status,
+    const { data: existing, error: loadError } = await supabase
+      .from("enquiries")
+      .select("id, status, activity, converted_event_id")
+      .eq("id", input.enquiry_id)
+      .eq("venue_id", venueId)
+      .maybeSingle();
+
+    if (loadError) {
+      return { success: false, error: dbErrorMessage(loadError) };
+    }
+
+    if (!existing) {
+      return { success: false, error: "Enquiry not found." };
+    }
+
+    let nextStatus = input.status;
+
+    if (input.reopen) {
+      const canReopen =
+        existing.status === "lost" ||
+        (existing.status === "confirmed" && !existing.converted_event_id);
+
+      if (!canReopen) {
+        return { success: false, error: "This enquiry cannot be reopened." };
+      }
+
+      nextStatus = "contacted";
+    }
+
+    const actorName = await getActorName(supabase, user.id);
+    const activity = appendEnquiryActivity(
+      existing.activity,
+      buildStatusActivity(nextStatus, actorName, input.lost_reason, Boolean(input.reopen)),
+    );
+
+    const update: Record<string, unknown> = {
+      status: nextStatus,
+      activity,
     };
 
     if (input.set_last_contact) {
       update.last_contact_at = new Date().toISOString();
+    }
+
+    if (nextStatus === "lost" && input.lost_reason !== undefined) {
+      update.lost_reason = input.lost_reason?.trim() || null;
+    }
+
+    if (input.reopen) {
+      update.lost_reason = null;
     }
 
     const { data, error } = await supabase
@@ -369,6 +535,159 @@ export async function updateEnquiryStatusAction(input: {
     return { success: true, enquiry: toMockEnquiry(data as EnquiryRowWithJoins) };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to update enquiry.";
+    return { success: false, error: message };
+  }
+}
+
+export async function updateEnquiryProposalAction(
+  input: EnquiryProposalInput,
+): Promise<EnquiriesActionResult<{ enquiry: MockEnquiry }>> {
+  if (!isSupabaseConfigured()) {
+    return { success: false, error: "Supabase is not configured." };
+  }
+
+  try {
+    const { supabase, user } = await requireAuthenticatedClient(
+      `/sign-in?redirect=/dashboard/enquiries/${input.enquiry_id}`,
+    );
+    const venueId = await getPrimaryVenueId(supabase, user.id);
+
+    if (!venueId) {
+      return { success: false, error: "Set up your venue before managing enquiries." };
+    }
+
+    const update = buildProposalUpdate(input);
+
+    if (Object.keys(update).length === 0) {
+      return { success: false, error: "No proposal details to save." };
+    }
+
+    const { data, error } = await supabase
+      .from("enquiries")
+      .update(update)
+      .eq("id", input.enquiry_id)
+      .eq("venue_id", venueId)
+      .select(ENQUIRY_SELECT)
+      .maybeSingle();
+
+    if (error) {
+      return { success: false, error: dbErrorMessage(error) };
+    }
+
+    if (!data) {
+      return { success: false, error: "Enquiry not found." };
+    }
+
+    return { success: true, enquiry: toMockEnquiry(data as EnquiryRowWithJoins) };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to save proposal.";
+    return { success: false, error: message };
+  }
+}
+
+export async function markProposalSentAction(
+  input: EnquiryProposalInput,
+): Promise<EnquiriesActionResult<{ enquiry: MockEnquiry }>> {
+  if (!isSupabaseConfigured()) {
+    return { success: false, error: "Supabase is not configured." };
+  }
+
+  try {
+    const { supabase, user } = await requireAuthenticatedClient(
+      `/sign-in?redirect=/dashboard/enquiries/${input.enquiry_id}`,
+    );
+    const venueId = await getPrimaryVenueId(supabase, user.id);
+
+    if (!venueId) {
+      return { success: false, error: "Set up your venue before managing enquiries." };
+    }
+
+    const { data: existing, error: loadError } = await supabase
+      .from("enquiries")
+      .select("id, activity, converted_event_id, status")
+      .eq("id", input.enquiry_id)
+      .eq("venue_id", venueId)
+      .maybeSingle();
+
+    if (loadError) {
+      return { success: false, error: dbErrorMessage(loadError) };
+    }
+
+    if (!existing) {
+      return { success: false, error: "Enquiry not found." };
+    }
+
+    if (existing.converted_event_id) {
+      return { success: false, error: "Converted enquiries cannot be updated." };
+    }
+
+    const actorName = await getActorName(supabase, user.id);
+    const activity = appendEnquiryActivity(
+      existing.activity,
+      buildStatusActivity("proposal_sent", actorName),
+    );
+
+    const update = {
+      ...buildProposalUpdate(input),
+      status: "proposal_sent" as EnquiryStatus,
+      last_contact_at: new Date().toISOString(),
+      activity,
+    };
+
+    const { data, error } = await supabase
+      .from("enquiries")
+      .update(update)
+      .eq("id", input.enquiry_id)
+      .eq("venue_id", venueId)
+      .select(ENQUIRY_SELECT)
+      .maybeSingle();
+
+    if (error) {
+      return { success: false, error: dbErrorMessage(error) };
+    }
+
+    if (!data) {
+      return { success: false, error: "Enquiry not found." };
+    }
+
+    return { success: true, enquiry: toMockEnquiry(data as EnquiryRowWithJoins) };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to mark proposal sent.";
+    return { success: false, error: message };
+  }
+}
+
+export async function loadEnquiryPipelineStatsAction(): Promise<
+  EnquiriesActionResult<{ pipelineStats: EnquiryPipelineStats }>
+> {
+  if (!isSupabaseConfigured()) {
+    return {
+      success: true,
+      pipelineStats: buildEnquiryPipelineStats([]),
+      noVenue: true,
+    };
+  }
+
+  try {
+    const { supabase, user } = await requireAuthenticatedClient("/sign-in?redirect=/dashboard");
+    const venueId = await getPrimaryVenueId(supabase, user.id);
+
+    if (!venueId) {
+      return {
+        success: true,
+        pipelineStats: buildEnquiryPipelineStats([]),
+        noVenue: true,
+      };
+    }
+
+    const enquiries = await fetchVenueEnquiries(supabase, venueId);
+
+    return {
+      success: true,
+      pipelineStats: buildEnquiryPipelineStats(enquiries),
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to load pipeline stats.";
     return { success: false, error: message };
   }
 }

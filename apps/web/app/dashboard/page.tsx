@@ -12,9 +12,20 @@ import {
   rotaGaps,
   upcomingEvents,
 } from "@/lib/mock/dashboard";
-import { enquiryPipelineStats } from "@/lib/mock/enquiries";
+import { loadEnquiryPipelineStatsAction } from "@/lib/enquiries/actions";
+import { enquiryPipelineStats as mockEnquiryPipelineStats } from "@/lib/mock/enquiries";
 
-export default function DashboardPage() {
+async function getEnquiryPipelineStats() {
+  const result = await loadEnquiryPipelineStatsAction();
+  if (result.success) {
+    return result.pipelineStats;
+  }
+  return mockEnquiryPipelineStats;
+}
+
+export default async function DashboardPage() {
+  const enquiryStats = await getEnquiryPipelineStats();
+
   return (
     <DashboardShell
       title="Operations overview"
@@ -23,7 +34,7 @@ export default function DashboardPage() {
       <div className="mx-auto max-w-7xl space-y-6">
         <OverviewCards stats={dashboardStats} />
 
-        <EnquiriesDashboardWidget stats={enquiryPipelineStats} />
+        <EnquiriesDashboardWidget stats={enquiryStats} />
 
         <div className="grid gap-6 xl:grid-cols-3">
           <div className="xl:col-span-2">

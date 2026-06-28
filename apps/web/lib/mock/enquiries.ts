@@ -21,7 +21,14 @@ export type EnquirySource =
 
 export interface EnquiryActivityItem {
   id: string;
-  type: "received" | "contacted" | "proposal_sent" | "follow_up" | "confirmed" | "lost";
+  type:
+    | "received"
+    | "contacted"
+    | "proposal_sent"
+    | "follow_up"
+    | "confirmed"
+    | "lost"
+    | "reopened";
   title: string;
   description: string;
   timestamp: string;
@@ -52,6 +59,10 @@ export interface MockEnquiry {
   assignedOwner: string;
   lastContactDate: string | null;
   nextFollowUpDate: string | null;
+  proposalNotes: string | null;
+  proposedPackage: string | null;
+  proposalValidUntil: string | null;
+  lostReason: string | null;
   priority: EnquiryPriority;
   notes: string | null;
   internalNotes: string | null;
@@ -76,6 +87,7 @@ export interface EnquiryPipelineStats {
   newEnquiries: number;
   awaitingReply: number;
   proposalSent: number;
+  openEnquiries: number;
   conversionRate: number;
 }
 
@@ -148,6 +160,10 @@ export const mockEnquiries: MockEnquiry[] = [
     source: "website",
     assignedOwner: "Alex Morgan",
     lastContactDate: null,
+    proposalNotes: null,
+    proposedPackage: null,
+    proposalValidUntil: null,
+    lostReason: null,
     nextFollowUpDate: "2026-06-28",
     priority: "high",
     notes: "Interested in AV package and vegetarian menu for 12 guests.",
@@ -197,6 +213,10 @@ export const mockEnquiries: MockEnquiry[] = [
     source: "referral",
     assignedOwner: "Jordan Lee",
     lastContactDate: "2026-06-25",
+    proposalNotes: null,
+    proposedPackage: null,
+    proposalValidUntil: null,
+    lostReason: null,
     nextFollowUpDate: "2026-06-29",
     priority: "high",
     notes: "Referred by Chen & Walsh wedding. Wants tasting session.",
@@ -254,6 +274,10 @@ export const mockEnquiries: MockEnquiry[] = [
     source: "email",
     assignedOwner: "Alex Morgan",
     lastContactDate: "2026-06-26",
+    proposalNotes: null,
+    proposedPackage: null,
+    proposalValidUntil: null,
+    lostReason: null,
     nextFollowUpDate: "2026-07-01",
     priority: "medium",
     notes: "Wine pairing required. Two board members gluten-free.",
@@ -311,6 +335,10 @@ export const mockEnquiries: MockEnquiry[] = [
     source: "phone",
     assignedOwner: "Jordan Lee",
     lastContactDate: "2026-06-24",
+    proposalNotes: null,
+    proposedPackage: null,
+    proposalValidUntil: null,
+    lostReason: null,
     nextFollowUpDate: null,
     priority: "high",
     notes: "Deposit received. Converted to confirmed booking.",
@@ -368,6 +396,10 @@ export const mockEnquiries: MockEnquiry[] = [
     source: "walk_in",
     assignedOwner: "Sophie Clarke",
     lastContactDate: "2026-06-23",
+    proposalNotes: null,
+    proposedPackage: null,
+    proposalValidUntil: null,
+    lostReason: null,
     nextFollowUpDate: "2026-06-30",
     priority: "medium",
     notes: "Visited venue after anniversary dinner. Interested in similar setup.",
@@ -417,6 +449,10 @@ export const mockEnquiries: MockEnquiry[] = [
     source: "agency",
     assignedOwner: "Alex Morgan",
     lastContactDate: "2026-06-18",
+    proposalNotes: null,
+    proposedPackage: null,
+    proposalValidUntil: null,
+    lostReason: null,
     nextFollowUpDate: null,
     priority: "low",
     notes: "Client chose competitor venue due to date conflict.",
@@ -474,6 +510,10 @@ export const mockEnquiries: MockEnquiry[] = [
     source: "email",
     assignedOwner: "Jordan Lee",
     lastContactDate: "2026-06-26",
+    proposalNotes: null,
+    proposedPackage: null,
+    proposalValidUntil: null,
+    lostReason: null,
     nextFollowUpDate: "2026-07-02",
     priority: "medium",
     notes: "Multi-room setup. AV partner to be confirmed by client.",
@@ -515,6 +555,9 @@ export const enquiryPipelineStats: EnquiryPipelineStats = {
   newEnquiries: mockEnquiries.filter((e) => e.status === "new").length,
   awaitingReply: mockEnquiries.filter((e) => e.status === "new" || e.status === "contacted").length,
   proposalSent: mockEnquiries.filter((e) => e.status === "proposal_sent").length,
+  openEnquiries: mockEnquiries.filter(
+    (e) => e.status !== "lost" && e.status !== "confirmed" && !e.convertedEventId,
+  ).length,
   conversionRate: Math.round(
     (mockEnquiries.filter((e) => e.status === "confirmed").length /
       mockEnquiries.filter((e) => e.status !== "lost").length) *

@@ -11,6 +11,7 @@ const emptyStats: EnquiryPipelineStats = {
   newEnquiries: 0,
   awaitingReply: 0,
   proposalSent: 0,
+  openEnquiries: 0,
   conversionRate: 0,
 };
 

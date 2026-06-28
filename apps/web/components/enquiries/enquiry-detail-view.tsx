@@ -10,6 +10,8 @@ import { EnquiryClientSection } from "@/components/enquiries/enquiry-client-sect
 import { EnquiryEventRequestSection } from "@/components/enquiries/enquiry-event-request-section";
 import { EnquiryNotesSection } from "@/components/enquiries/enquiry-notes-section";
 import { EnquiryOverviewSection } from "@/components/enquiries/enquiry-overview-section";
+import { EnquiryPipelineBar } from "@/components/enquiries/enquiry-pipeline-bar";
+import { EnquiryProposalSection } from "@/components/enquiries/enquiry-proposal-section";
 import { EnquiryStatusBadge } from "@/components/enquiries/enquiry-status-badge";
 import { cn } from "@/lib/utils";
 import type { MockEnquiry } from "@/lib/mock/enquiries";
@@ -54,6 +56,8 @@ export function EnquiryDetailView({ enquiry: initialEnquiry }: { enquiry: MockEn
         </div>
       </div>
 
+      <EnquiryPipelineBar status={enquiry.status} />
+
       {enquiry.linkedEvent && <LinkedEventCard event={enquiry.linkedEvent} />}
 
       <nav className="flex gap-1 overflow-x-auto border-b border-stone-200" aria-label="Enquiry sections">
@@ -74,7 +78,12 @@ export function EnquiryDetailView({ enquiry: initialEnquiry }: { enquiry: MockEn
         ))}
       </nav>
 
-      {activeTab === "overview" && <EnquiryOverviewSection enquiry={enquiry} />}
+      {activeTab === "overview" && (
+        <div className="space-y-6">
+          <EnquiryOverviewSection enquiry={enquiry} />
+          <EnquiryProposalSection enquiry={enquiry} onUpdated={setEnquiry} />
+        </div>
+      )}
       {activeTab === "client" && <EnquiryClientSection enquiry={enquiry} />}
       {activeTab === "event-request" && <EnquiryEventRequestSection enquiry={enquiry} />}
       {activeTab === "activity" && <EnquiryActivitySection enquiry={enquiry} />}

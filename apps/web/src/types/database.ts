@@ -281,6 +281,10 @@ export interface Database {
           assigned_profile_id: string | null;
           last_contact_at: string | null;
           next_follow_up_at: string | null;
+          proposal_notes: string | null;
+          proposed_package: string | null;
+          proposal_valid_until: string | null;
+          lost_reason: string | null;
           notes: string | null;
           internal_notes: string | null;
           activity: Json;
@@ -313,6 +317,10 @@ export interface Database {
           assigned_profile_id?: string | null;
           last_contact_at?: string | null;
           next_follow_up_at?: string | null;
+          proposal_notes?: string | null;
+          proposed_package?: string | null;
+          proposal_valid_until?: string | null;
+          lost_reason?: string | null;
           notes?: string | null;
           internal_notes?: string | null;
           activity?: Json;
@@ -341,6 +349,10 @@ export interface Database {
           assigned_profile_id?: string | null;
           last_contact_at?: string | null;
           next_follow_up_at?: string | null;
+          proposal_notes?: string | null;
+          proposed_package?: string | null;
+          proposal_valid_until?: string | null;
+          lost_reason?: string | null;
           notes?: string | null;
           internal_notes?: string | null;
           activity?: Json;

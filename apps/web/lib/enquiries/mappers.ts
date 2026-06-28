@@ -55,6 +55,10 @@ export interface EnquiryRowWithJoins {
   assigned_profile_id: string | null;
   last_contact_at: string | null;
   next_follow_up_at: string | null;
+  proposal_notes: string | null;
+  proposed_package: string | null;
+  proposal_valid_until: string | null;
+  lost_reason: string | null;
   notes: string | null;
   internal_notes: string | null;
   activity: unknown;
@@ -122,6 +126,26 @@ function toDateOnly(iso: string | null): string | null {
   return iso.slice(0, 10);
 }
 
+function parseActivity(
+  value: unknown,
+  fallback: EnquiryActivityItem[],
+): EnquiryActivityItem[] {
+  if (!Array.isArray(value) || value.length === 0) {
+    return fallback;
+  }
+
+  const parsed = value.filter(
+    (item): item is EnquiryActivityItem =>
+      typeof item === "object" &&
+      item !== null &&
+      "id" in item &&
+      "title" in item &&
+      "timestamp" in item,
+  );
+
+  return parsed.length > 0 ? parsed : fallback;
+}
+
 function buildPlaceholderActivity(enquiry: {
   id: string;
   createdAt: string;
@@ -184,13 +208,20 @@ export function toMockEnquiry(row: EnquiryRowWithJoins): MockEnquiry {
     assignedOwner: joinProfileName(row.profiles),
     lastContactDate: toDateOnly(row.last_contact_at),
     nextFollowUpDate: toDateOnly(row.next_follow_up_at),
+    proposalNotes: row.proposal_notes,
+    proposedPackage: row.proposed_package,
+    proposalValidUntil: row.proposal_valid_until,
+    lostReason: row.lost_reason,
     notes: row.notes,
     internalNotes: row.internal_notes,
-    activity: buildPlaceholderActivity({
-      id: row.id,
-      createdAt: row.created_at,
-      status: row.status as EnquiryStatus,
-    }),
+    activity: parseActivity(
+      row.activity,
+      buildPlaceholderActivity({
+        id: row.id,
+        createdAt: row.created_at,
+        status: row.status as EnquiryStatus,
+      }),
+    ),
     convertedEventId: row.converted_event_id,
     convertedAt: row.converted_at,
     linkedEvent: toLinkedEvent(row.events),
@@ -228,6 +259,12 @@ export function buildEnquiryPipelineStats(enquiries: MockEnquiry[]): EnquiryPipe
       (enquiry) => enquiry.status === "new" || enquiry.status === "contacted",
     ).length,
     proposalSent: enquiries.filter((enquiry) => enquiry.status === "proposal_sent").length,
+    openEnquiries: enquiries.filter(
+      (enquiry) =>
+        enquiry.status !== "lost" &&
+        enquiry.status !== "confirmed" &&
+        !enquiry.convertedEventId,
+    ).length,
     conversionRate:
       active.length === 0
         ? 0
@@ -236,4 +273,11 @@ export function buildEnquiryPipelineStats(enquiries: MockEnquiry[]): EnquiryPipe
               100,
           ),
   };
+}
+
+export function isFollowUpOverdue(enquiry: MockEnquiry): boolean {
+  if (!enquiry.nextFollowUpDate) return false;
+  if (enquiry.status === "confirmed" || enquiry.status === "lost") return false;
+  const today = new Date().toISOString().slice(0, 10);
+  return enquiry.nextFollowUpDate < today;
 }

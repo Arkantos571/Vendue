@@ -6,12 +6,12 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { EnquiryStatusBadge } from "@/components/enquiries/enquiry-status-badge";
 import { Input } from "@/components/ui/input";
+import { isFollowUpOverdue } from "@/lib/enquiries/mappers";
 import { cn, formatDate } from "@/lib/utils";
 import {
   enquirySourceLabels,
   enquiryStatusFilters,
   formatEnquiryCurrency,
-  
   type EnquiryStatusFilter,
   type MockEnquiry,
 } from "@/lib/mock/enquiries";
@@ -20,8 +20,29 @@ interface EnquiriesListProps {
   enquiries: MockEnquiry[];
 }
 
+function FollowUpCell({ enquiry }: { enquiry: MockEnquiry }) {
+  const overdue = isFollowUpOverdue(enquiry);
+
+  if (!enquiry.nextFollowUpDate) {
+    return <span className="text-stone-400">—</span>;
+  }
+
+  return (
+    <span
+      className={cn(
+        overdue && "font-medium text-red-700 dark:text-red-300",
+        !overdue && "text-stone-600",
+      )}
+    >
+      {formatDate(enquiry.nextFollowUpDate)}
+      {overdue && <span className="ml-1.5 text-xs uppercase tracking-wide">Overdue</span>}
+    </span>
+  );
+}
+
 function EnquiryTableRow({ enquiry }: { enquiry: MockEnquiry }) {
   const router = useRouter();
+  const overdue = isFollowUpOverdue(enquiry);
 
   function navigate() {
     router.push(`/dashboard/enquiries/${enquiry.id}`);
@@ -40,27 +61,33 @@ function EnquiryTableRow({ enquiry }: { enquiry: MockEnquiry }) {
       tabIndex={0}
       onClick={navigate}
       onKeyDown={handleKeyDown}
-      className="cursor-pointer transition-colors hover:bg-stone-50/80 focus-visible:bg-stone-50/80 dark:hover:bg-stone-800/50 dark:focus-visible:bg-stone-800/50 focus-visible:outline-none"
+      className={cn(
+        "cursor-pointer transition-colors hover:bg-stone-50/80 focus-visible:bg-stone-50/80 dark:hover:bg-stone-800/50 dark:focus-visible:bg-stone-800/50 focus-visible:outline-none",
+        overdue && "bg-red-50/40 dark:bg-red-950/20",
+      )}
       aria-label={`View ${enquiry.eventName}`}
     >
-      <td className="px-6 py-4 font-medium text-stone-900">{enquiry.eventName}</td>
-      <td className="px-4 py-4 text-stone-700">{enquiry.clientName}</td>
+      <td className="px-6 py-4 font-medium text-stone-900 dark:text-stone-100">{enquiry.eventName}</td>
+      <td className="px-4 py-4 text-stone-700 dark:text-stone-300">{enquiry.clientName}</td>
       <td className="px-4 py-4">
-        <p className="text-stone-700">{enquiry.clientEmail}</p>
+        <p className="text-stone-700 dark:text-stone-300">{enquiry.clientEmail}</p>
         <p className="text-xs text-stone-500">{enquiry.clientPhone ?? "—"}</p>
       </td>
-      <td className="px-4 py-4 text-stone-600">{formatDate(enquiry.requestedDate)}</td>
-      <td className="px-4 py-4 text-stone-600">{enquiry.eventType}</td>
-      <td className="px-4 py-4 text-stone-600">{enquiry.guestCount}</td>
-      <td className="px-4 py-4 font-medium text-stone-900">
+      <td className="px-4 py-4 text-stone-600 dark:text-stone-400">{formatDate(enquiry.requestedDate)}</td>
+      <td className="px-4 py-4 text-stone-600 dark:text-stone-400">{enquiry.eventType}</td>
+      <td className="px-4 py-4 text-stone-600 dark:text-stone-400">{enquiry.guestCount}</td>
+      <td className="px-4 py-4 font-medium text-stone-900 dark:text-stone-100">
         {formatEnquiryCurrency(enquiry.estimatedValue)}
       </td>
       <td className="px-4 py-4">
         <EnquiryStatusBadge status={enquiry.status} />
       </td>
-      <td className="px-4 py-4 text-stone-600">{enquirySourceLabels[enquiry.source]}</td>
-      <td className="px-4 py-4 text-stone-600">{enquiry.assignedOwner}</td>
-      <td className="px-6 py-4 text-stone-600">
+      <td className="px-4 py-4">
+        <FollowUpCell enquiry={enquiry} />
+      </td>
+      <td className="px-4 py-4 text-stone-600 dark:text-stone-400">{enquirySourceLabels[enquiry.source]}</td>
+      <td className="px-4 py-4 text-stone-600 dark:text-stone-400">{enquiry.assignedOwner}</td>
+      <td className="px-6 py-4 text-stone-600 dark:text-stone-400">
         {enquiry.lastContactDate ? formatDate(enquiry.lastContactDate) : "—"}
       </td>
     </tr>
@@ -69,6 +96,7 @@ function EnquiryTableRow({ enquiry }: { enquiry: MockEnquiry }) {
 
 function EnquiryCard({ enquiry }: { enquiry: MockEnquiry }) {
   const router = useRouter();
+  const overdue = isFollowUpOverdue(enquiry);
 
   function navigate() {
     router.push(`/dashboard/enquiries/${enquiry.id}`);
@@ -87,12 +115,15 @@ function EnquiryCard({ enquiry }: { enquiry: MockEnquiry }) {
       tabIndex={0}
       onClick={navigate}
       onKeyDown={handleKeyDown}
-      className="cursor-pointer v-card p-5 transition-all hover:border-stone-300 hover:bg-stone-50/80"
+      className={cn(
+        "cursor-pointer v-card p-5 transition-all hover:border-stone-300 hover:bg-stone-50/80 dark:hover:bg-stone-800/50",
+        overdue && "border-red-200 dark:border-red-900",
+      )}
       aria-label={`View ${enquiry.eventName}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="font-medium text-stone-900">{enquiry.eventName}</p>
+          <p className="font-medium text-stone-900 dark:text-stone-100">{enquiry.eventName}</p>
           <p className="mt-1 text-sm text-stone-500">{enquiry.clientName}</p>
         </div>
         <EnquiryStatusBadge status={enquiry.status} />
@@ -100,19 +131,23 @@ function EnquiryCard({ enquiry }: { enquiry: MockEnquiry }) {
       <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
         <div>
           <dt className="text-xs text-stone-500">Requested date</dt>
-          <dd className="text-stone-700">{formatDate(enquiry.requestedDate)}</dd>
+          <dd className="text-stone-700 dark:text-stone-300">{formatDate(enquiry.requestedDate)}</dd>
         </div>
         <div>
           <dt className="text-xs text-stone-500">Est. value</dt>
-          <dd className="font-medium text-stone-900">{formatEnquiryCurrency(enquiry.estimatedValue)}</dd>
+          <dd className="font-medium text-stone-900 dark:text-stone-100">
+            {formatEnquiryCurrency(enquiry.estimatedValue)}
+          </dd>
         </div>
         <div>
-          <dt className="text-xs text-stone-500">Source</dt>
-          <dd className="text-stone-700">{enquirySourceLabels[enquiry.source]}</dd>
+          <dt className="text-xs text-stone-500">Follow-up</dt>
+          <dd>
+            <FollowUpCell enquiry={enquiry} />
+          </dd>
         </div>
         <div>
           <dt className="text-xs text-stone-500">Owner</dt>
-          <dd className="text-stone-700">{enquiry.assignedOwner}</dd>
+          <dd className="text-stone-700 dark:text-stone-300">{enquiry.assignedOwner}</dd>
         </div>
       </dl>
     </div>
@@ -181,15 +216,15 @@ export function EnquiriesList({ enquiries }: EnquiriesListProps) {
 
       {filteredEnquiries.length === 0 ? (
         <div className="v-empty">
-          <p className="text-sm font-medium text-stone-900">No enquiries found</p>
+          <p className="text-sm font-medium text-stone-900 dark:text-stone-100">No enquiries found</p>
           <p className="mt-1 text-sm text-stone-500">Try adjusting your search or filters.</p>
         </div>
       ) : (
         <>
           <div className="hidden overflow-x-auto v-card lg:block">
-            <table className="w-full min-w-[1100px] text-left text-sm">
+            <table className="w-full min-w-[1180px] text-left text-sm">
               <thead>
-                <tr className="border-b border-stone-100 bg-stone-50/50 text-xs font-medium uppercase tracking-wide text-stone-500">
+                <tr className="border-b border-stone-100 bg-stone-50/50 text-xs font-medium uppercase tracking-wide text-stone-500 dark:border-stone-800 dark:bg-stone-900/50">
                   <th className="px-6 py-3">Enquiry</th>
                   <th className="px-4 py-3">Client</th>
                   <th className="px-4 py-3">Contact</th>
@@ -198,12 +233,13 @@ export function EnquiriesList({ enquiries }: EnquiriesListProps) {
                   <th className="px-4 py-3">Guests</th>
                   <th className="px-4 py-3">Est. value</th>
                   <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Follow-up</th>
                   <th className="px-4 py-3">Source</th>
                   <th className="px-4 py-3">Owner</th>
                   <th className="px-6 py-3">Last contact</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-stone-100">
+              <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
                 {filteredEnquiries.map((enquiry) => (
                   <EnquiryTableRow key={enquiry.id} enquiry={enquiry} />
                 ))}
