@@ -164,6 +164,10 @@ DECLARE
   v_row record;
   v_previous_response text;
   v_message text := nullif(trim(p_message), '');
+  v_proposal_status text;
+  v_proposal_client_response text;
+  v_proposal_client_message text;
+  v_proposal_responded_at timestamptz;
 BEGIN
   IF v_token IS NULL THEN
     RETURN NULL;
@@ -202,7 +206,7 @@ BEGIN
     END
   WHERE id = v_row.id
   RETURNING proposal_status, proposal_client_response, proposal_client_message, proposal_responded_at
-  INTO v_row.proposal_status, v_row.proposal_client_response, v_row.proposal_client_message, v_row.proposal_responded_at;
+  INTO v_proposal_status, v_proposal_client_response, v_proposal_client_message, v_proposal_responded_at;
 
   IF v_previous_response IS DISTINCT FROM p_response THEN
     INSERT INTO public.notifications (
@@ -233,10 +237,10 @@ BEGIN
   END IF;
 
   RETURN jsonb_build_object(
-    'proposal_status', v_row.proposal_status,
-    'proposal_client_response', v_row.proposal_client_response,
-    'proposal_client_message', v_row.proposal_client_message,
-    'proposal_responded_at', v_row.proposal_responded_at
+    'proposal_status', v_proposal_status,
+    'proposal_client_response', v_proposal_client_response,
+    'proposal_client_message', v_proposal_client_message,
+    'proposal_responded_at', v_proposal_responded_at
   );
 END;
 $$;
