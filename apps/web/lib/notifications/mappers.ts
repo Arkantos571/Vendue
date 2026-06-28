@@ -8,6 +8,7 @@ export interface AppNotification {
   message: string;
   createdAt: string;
   readAt: string | null;
+  enquiryId: string | null;
   eventId: string | null;
   shiftId: string | null;
   teamMemberId: string | null;
@@ -31,6 +32,7 @@ export function toAppNotification(row: Notification): AppNotification {
     message: row.body ?? "",
     createdAt: row.created_at,
     readAt: row.read_at,
+    enquiryId: row.related_enquiry_id ?? metadataString(row.metadata, "enquiry_id"),
     eventId: row.related_event_id ?? metadataString(row.metadata, "event_id"),
     shiftId: row.related_shift_id ?? metadataString(row.metadata, "shift_id"),
     teamMemberId:

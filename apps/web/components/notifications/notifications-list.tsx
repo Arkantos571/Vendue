@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import { NotificationTypeBadge } from "@/components/notifications/notification-type-badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import {
   matchesNotificationCategory,
 } from "@/lib/notifications/categories";
 import { NOTIFICATIONS_SCHEMA_HINT } from "@/lib/notifications/constants";
+import { getNotificationHref } from "@/lib/notifications/destinations";
 import { dispatchNotificationsRead } from "@/lib/notifications/events";
 import type { AppNotification } from "@/lib/notifications/mappers";
 import {
@@ -29,34 +30,54 @@ interface NotificationsListProps {
 function NotificationRow({
   notification,
   onMarkRead,
+  onNavigate,
   isMarking,
   audience,
 }: {
   notification: AppNotification;
   onMarkRead: (id: string) => void;
+  onNavigate: (notification: AppNotification, href: string) => void;
   isMarking: string | null;
   audience: "manager" | "staff";
 }) {
   const isUnread = !notification.readAt;
-  const eventHref = notification.eventId
-    ? audience === "staff"
-      ? null
-      : `/dashboard/rota/${notification.eventId}`
-    : null;
-  const shiftHref = notification.shiftId
-    ? `/staff/shifts/${notification.shiftId}`
-    : null;
+  const href = getNotificationHref(notification, audience);
+  const isClickable = Boolean(href);
+
+  function handleCardClick() {
+    if (!href) {
+      return;
+    }
+    onNavigate(notification, href);
+  }
+
+  function handleCardKeyDown(event: React.KeyboardEvent<HTMLElement>) {
+    if (!href) {
+      return;
+    }
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onNavigate(notification, href);
+    }
+  }
 
   return (
     <article
+      role={isClickable ? "button" : undefined}
+      tabIndex={isClickable ? 0 : undefined}
+      onClick={isClickable ? handleCardClick : undefined}
+      onKeyDown={isClickable ? handleCardKeyDown : undefined}
       className={cn(
         "rounded-xl border p-4 transition-colors",
         isUnread
           ? "border-brand-200 bg-brand-50/40 dark:border-brand-900 dark:bg-brand-950/20"
           : "border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900",
+        isClickable &&
+          "cursor-pointer hover:border-brand-300 hover:bg-brand-50/70 hover:shadow-sm dark:hover:border-brand-800 dark:hover:bg-brand-950/40",
       )}
     >
-      <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <p className="font-medium text-stone-900 dark:text-stone-100">{notification.title}</p>
@@ -68,42 +89,32 @@ function NotificationRow({
             ) : null}
           </div>
           <p className="mt-1 text-sm text-stone-600 dark:text-stone-300">{notification.message}</p>
-          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-500 dark:text-stone-400">
-            <span>
-              {formatDate(notification.createdAt)} at {formatTime(notification.createdAt)}
-            </span>
-            {eventHref ? (
-              <Link
-                href={eventHref}
-                className="font-medium text-brand-700 hover:underline dark:text-brand-300"
-              >
-                View event rota
-              </Link>
-            ) : null}
-            {shiftHref && audience === "staff" ? (
-              <Link
-                href={shiftHref}
-                className="font-medium text-brand-700 hover:underline dark:text-brand-300"
-              >
-                View shift
-              </Link>
-            ) : null}
-            {shiftHref && audience === "manager" && notification.type.startsWith("shift_") ? (
-              <span className="text-stone-400">Shift linked</span>
-            ) : null}
-          </div>
+          <p className="mt-2 text-xs text-stone-500 dark:text-stone-400">
+            {formatDate(notification.createdAt)} at {formatTime(notification.createdAt)}
+          </p>
         </div>
-        {isUnread ? (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={isMarking === notification.id}
-            onClick={() => onMarkRead(notification.id)}
-          >
-            {isMarking === notification.id ? "Marking…" : "Mark read"}
-          </Button>
-        ) : null}
+        <div className="flex shrink-0 items-center gap-2">
+          {isUnread ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={isMarking === notification.id}
+              onClick={(event) => {
+                event.stopPropagation();
+                onMarkRead(notification.id);
+              }}
+            >
+              {isMarking === notification.id ? "Marking…" : "Mark read"}
+            </Button>
+          ) : null}
+          {isClickable ? (
+            <ChevronRight
+              className="h-5 w-5 text-stone-400 dark:text-stone-500"
+              aria-hidden
+            />
+          ) : null}
+        </div>
       </div>
     </article>
   );
@@ -135,6 +146,16 @@ export function NotificationsList({
     [notifications, filter],
   );
 
+  function markNotificationReadLocally(notificationId: string) {
+    const now = new Date().toISOString();
+    setNotifications((current) =>
+      current.map((notification) =>
+        notification.id === notificationId ? { ...notification, readAt: now } : notification,
+      ),
+    );
+    dispatchNotificationsRead();
+  }
+
   async function handleMarkRead(notificationId: string) {
     setIsMarking(notificationId);
     setError(null);
@@ -147,15 +168,19 @@ export function NotificationsList({
       return;
     }
 
-    setNotifications((current) =>
-      current.map((notification) =>
-        notification.id === notificationId
-          ? { ...notification, readAt: new Date().toISOString() }
-          : notification,
-      ),
-    );
-    dispatchNotificationsRead();
+    markNotificationReadLocally(notificationId);
     router.refresh();
+  }
+
+  async function handleNavigate(notification: AppNotification, href: string) {
+    if (!notification.readAt) {
+      const result = await markNotificationReadAction(notification.id);
+      if (result.success) {
+        markNotificationReadLocally(notification.id);
+      }
+    }
+
+    router.push(href);
   }
 
   async function handleMarkAllRead() {
@@ -244,6 +269,7 @@ export function NotificationsList({
               key={notification.id}
               notification={notification}
               onMarkRead={handleMarkRead}
+              onNavigate={handleNavigate}
               isMarking={isMarking}
               audience={audience}
             />

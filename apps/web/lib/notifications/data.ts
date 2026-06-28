@@ -4,14 +4,15 @@ import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { Notification } from "@/src/types/database";
 
 const NOTIFICATION_SELECT =
-  "id, venue_id, profile_id, recipient_team_member_id, type, title, body, metadata, related_event_id, related_shift_id, read_at, created_at";
+  "id, venue_id, profile_id, recipient_team_member_id, type, title, body, metadata, related_enquiry_id, related_event_id, related_shift_id, read_at, created_at";
 
 function isNotificationsSchemaMissing(error: { message?: string } | null): boolean {
   const message = (error?.message ?? "").toLowerCase();
   return (
     message.includes("recipient_team_member_id") ||
     message.includes("related_event_id") ||
-    message.includes("related_shift_id")
+    message.includes("related_shift_id") ||
+    message.includes("related_enquiry_id")
   ) && message.includes("does not exist");
 }
 

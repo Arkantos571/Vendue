@@ -592,6 +592,7 @@ export interface Database {
           title: string;
           body: string | null;
           metadata: Json;
+          related_enquiry_id: string | null;
           related_event_id: string | null;
           related_shift_id: string | null;
           read_at: string | null;
@@ -607,6 +608,7 @@ export interface Database {
           title: string;
           body?: string | null;
           metadata?: Json;
+          related_enquiry_id?: string | null;
           related_event_id?: string | null;
           related_shift_id?: string | null;
           read_at?: string | null;
@@ -615,6 +617,7 @@ export interface Database {
           read_at?: string | null;
           body?: string | null;
           metadata?: Json;
+          related_enquiry_id?: string | null;
           related_event_id?: string | null;
           related_shift_id?: string | null;
         };
