@@ -209,8 +209,23 @@ export function SettingsView() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-stone-500 dark:text-stone-400">
-              Notification preferences are mocked for this MVP. Postmark integration comes later.
+              In-app notifications are live. Outbound client emails use Resend or Postmark when
+              configured via server environment variables.
             </p>
+            <dl className="mt-4 space-y-2 rounded-lg border border-stone-200 bg-stone-50/80 p-4 text-sm dark:border-stone-700 dark:bg-stone-800/40">
+              <div>
+                <dt className="font-medium text-stone-700 dark:text-stone-300">RESEND_API_KEY</dt>
+                <dd className="text-stone-500 dark:text-stone-400">Optional. Preferred when set with EMAIL_FROM.</dd>
+              </div>
+              <div>
+                <dt className="font-medium text-stone-700 dark:text-stone-300">POSTMARK_SERVER_TOKEN</dt>
+                <dd className="text-stone-500 dark:text-stone-400">Optional fallback provider.</dd>
+              </div>
+              <div>
+                <dt className="font-medium text-stone-700 dark:text-stone-300">EMAIL_FROM</dt>
+                <dd className="text-stone-500 dark:text-stone-400">Verified sender address, e.g. events@yourvenue.com</dd>
+              </div>
+            </dl>
           </CardContent>
         </Card>
       )}

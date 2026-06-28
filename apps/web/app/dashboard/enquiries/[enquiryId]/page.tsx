@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { EnquiryDetailView } from "@/components/enquiries/enquiry-detail-view";
-import { loadEnquiryForPage } from "@/lib/enquiries/data";
+import { loadEnquiryProposalForPage } from "@/lib/enquiries/data";
 
 interface EnquiryDetailPageProps {
   params: Promise<{ enquiryId: string }>;
@@ -12,23 +12,23 @@ interface EnquiryDetailPageProps {
 
 export async function generateMetadata({ params }: EnquiryDetailPageProps): Promise<Metadata> {
   const { enquiryId } = await params;
-  const enquiry = await loadEnquiryForPage(enquiryId);
+  const data = await loadEnquiryProposalForPage(enquiryId);
 
   return {
-    title: enquiry?.eventName ?? "Enquiry",
+    title: data?.enquiry.eventName ?? "Enquiry",
   };
 }
 
 export default async function EnquiryDetailPage({ params }: EnquiryDetailPageProps) {
   const { enquiryId } = await params;
-  const enquiry = await loadEnquiryForPage(enquiryId);
+  const data = await loadEnquiryProposalForPage(enquiryId);
 
-  if (!enquiry) {
+  if (!data) {
     notFound();
   }
 
   return (
-    <DashboardShell title="Enquiry detail" description={enquiry.eventName}>
+    <DashboardShell title="Enquiry detail" description={data.enquiry.eventName}>
       <div className="mx-auto max-w-5xl space-y-6">
         <Link
           href="/dashboard/enquiries"
@@ -37,7 +37,7 @@ export default async function EnquiryDetailPage({ params }: EnquiryDetailPagePro
           <ArrowLeft className="h-4 w-4" />
           Back to enquiries
         </Link>
-        <EnquiryDetailView enquiry={enquiry} />
+        <EnquiryDetailView enquiry={data.enquiry} venueName={data.venue.name} />
       </div>
     </DashboardShell>
   );

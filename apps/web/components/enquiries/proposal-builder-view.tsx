@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Copy } from "lucide-react";
+import { ArrowLeft, Copy, Mail } from "lucide-react";
 import { ProposalPreviewPanel } from "@/components/enquiries/proposal-preview-panel";
 import { ProposalShareSection } from "@/components/enquiries/proposal-share-section";
+import { EmailComposerModal } from "@/components/enquiries/email-composer-modal";
 import { ProposalResponseSummary } from "@/components/enquiries/proposal-response-summary";
 import { EnquiryStatusBadge } from "@/components/enquiries/enquiry-status-badge";
 import { Button } from "@/components/ui/button";
@@ -56,6 +57,7 @@ export function ProposalBuilderView({ enquiry: initialEnquiry, venue }: Proposal
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [copyState, setCopyState] = useState<"idle" | "copied" | "manual">("idle");
+  const [emailOpen, setEmailOpen] = useState(false);
 
   const isConverted = Boolean(enquiry.convertedEventId);
   const isLost = enquiry.status === "lost";
@@ -188,6 +190,10 @@ export function ProposalBuilderView({ enquiry: initialEnquiry, venue }: Proposal
           <Button type="button" variant="outline" onClick={handleCopy}>
             <Copy className="mr-2 h-4 w-4" />
             {copyState === "copied" ? "Copied" : "Copy proposal text"}
+          </Button>
+          <Button type="button" variant="outline" onClick={() => setEmailOpen(true)}>
+            <Mail className="mr-2 h-4 w-4" />
+            Email proposal link
           </Button>
         </div>
       </div>
@@ -420,6 +426,14 @@ export function ProposalBuilderView({ enquiry: initialEnquiry, venue }: Proposal
           </CardContent>
         </Card>
       )}
+      <EmailComposerModal
+        open={emailOpen}
+        onClose={() => setEmailOpen(false)}
+        enquiry={enquiry}
+        venueName={venue.name}
+        mode="proposal"
+        onUpdated={setEnquiry}
+      />
     </div>
   );
 }

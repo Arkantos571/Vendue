@@ -712,6 +712,43 @@ export interface Database {
         };
         Relationships: [];
       };
+      email_logs: {
+        Row: {
+          id: string;
+          venue_id: string;
+          enquiry_id: string | null;
+          event_id: string | null;
+          recipient_email: string;
+          subject: string;
+          body: string;
+          status: string;
+          provider: string | null;
+          provider_message_id: string | null;
+          sent_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          venue_id: string;
+          enquiry_id?: string | null;
+          event_id?: string | null;
+          recipient_email: string;
+          subject: string;
+          body: string;
+          status?: string;
+          provider?: string | null;
+          provider_message_id?: string | null;
+          sent_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          status?: string;
+          provider?: string | null;
+          provider_message_id?: string | null;
+          sent_at?: string | null;
+        };
+        Relationships: [];
+      };
       audit_log: {
         Row: {
           id: string;

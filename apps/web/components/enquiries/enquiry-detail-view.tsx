@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Pencil } from "lucide-react";
+import { Mail, Pencil } from "lucide-react";
 import { EnquiryActions } from "@/components/enquiries/enquiry-actions";
 import { LinkedEventCard } from "@/components/enquiries/linked-event-card";
 import { EnquiryActivitySection } from "@/components/enquiries/enquiry-activity-section";
@@ -12,6 +12,7 @@ import { EnquiryNotesSection } from "@/components/enquiries/enquiry-notes-sectio
 import { EnquiryOverviewSection } from "@/components/enquiries/enquiry-overview-section";
 import { EnquiryPipelineBar } from "@/components/enquiries/enquiry-pipeline-bar";
 import { EnquiryProposalSection } from "@/components/enquiries/enquiry-proposal-section";
+import { EmailComposerModal } from "@/components/enquiries/email-composer-modal";
 import { ProposalResponseSummary } from "@/components/enquiries/proposal-response-summary";
 import { EnquiryStatusBadge } from "@/components/enquiries/enquiry-status-badge";
 import { cn } from "@/lib/utils";
@@ -27,9 +28,16 @@ const tabs = [
 
 type EnquiryTab = (typeof tabs)[number]["id"];
 
-export function EnquiryDetailView({ enquiry: initialEnquiry }: { enquiry: MockEnquiry }) {
+export function EnquiryDetailView({
+  enquiry: initialEnquiry,
+  venueName,
+}: {
+  enquiry: MockEnquiry;
+  venueName: string;
+}) {
   const [activeTab, setActiveTab] = useState<EnquiryTab>("overview");
   const [enquiry, setEnquiry] = useState(initialEnquiry);
+  const [emailOpen, setEmailOpen] = useState(false);
 
   useEffect(() => {
     setEnquiry(initialEnquiry);
@@ -53,6 +61,14 @@ export function EnquiryDetailView({ enquiry: initialEnquiry }: { enquiry: MockEn
             <Pencil className="h-4 w-4" />
             Edit enquiry
           </Link>
+          <button
+            type="button"
+            onClick={() => setEmailOpen(true)}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-stone-300 bg-white px-4 text-sm font-medium text-stone-900 hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800"
+          >
+            <Mail className="h-4 w-4" />
+            Email client
+          </button>
           <EnquiryActions enquiry={enquiry} onUpdated={setEnquiry} />
         </div>
       </div>
@@ -90,6 +106,14 @@ export function EnquiryDetailView({ enquiry: initialEnquiry }: { enquiry: MockEn
       {activeTab === "event-request" && <EnquiryEventRequestSection enquiry={enquiry} />}
       {activeTab === "activity" && <EnquiryActivitySection enquiry={enquiry} />}
       {activeTab === "notes" && <EnquiryNotesSection enquiry={enquiry} />}
+          <EmailComposerModal
+        open={emailOpen}
+        onClose={() => setEmailOpen(false)}
+        enquiry={enquiry}
+        venueName={venueName}
+        mode="enquiry"
+        onUpdated={setEnquiry}
+      />
     </div>
   );
 }
