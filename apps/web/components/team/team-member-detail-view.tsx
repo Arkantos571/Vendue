@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Briefcase, CalendarDays, Clock, Mail, Pencil, Phone, Send, UserPlus } from "lucide-react";
+import { Briefcase, CalendarDays, Mail, Pencil, Phone, Send, UserPlus } from "lucide-react";
+import { TeamMemberUnavailabilitySection } from "@/components/team/team-member-unavailability-section";
 import { AvailabilityBadge } from "@/components/team/availability-badge";
 import { TeamRoleBadge } from "@/components/team/team-role-badge";
 import { TeamStatusBadge } from "@/components/team/team-status-badge";
@@ -95,22 +96,9 @@ export function TeamMemberDetailView({ member }: TeamMemberDetailViewProps) {
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="border-dashed">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-stone-100 text-stone-600"><Clock className="h-4 w-4" /></div>
-              <div>
-                <CardTitle>Availability</CardTitle>
-                <CardDescription>Regular availability and blackout dates.</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-stone-500">Availability calendar coming soon — set weekly patterns and mark unavailability.</p>
-          </CardContent>
-        </Card>
-        <Card className="border-dashed">
+      <TeamMemberUnavailabilitySection teamMemberId={member.id} />
+
+      <Card>
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-stone-100 text-stone-600"><CalendarDays className="h-4 w-4" /></div>
@@ -135,7 +123,6 @@ export function TeamMemberDetailView({ member }: TeamMemberDetailViewProps) {
             )}
           </CardContent>
         </Card>
-      </div>
     </div>
   );
 }

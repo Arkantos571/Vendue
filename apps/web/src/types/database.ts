@@ -71,6 +71,8 @@ export type EnquirySource =
 
 export type FunctionSheetStatus = "draft" | "in_progress" | "ready";
 
+export type UnavailabilityStatus = "pending" | "approved" | "rejected";
+
 export interface Database {
   public: {
     Tables: {
@@ -607,6 +609,41 @@ export interface Database {
           read_at?: string | null;
           body?: string | null;
           metadata?: Json;
+        };
+        Relationships: [];
+      };
+      unavailability: {
+        Row: {
+          id: string;
+          venue_id: string;
+          team_member_id: string;
+          start_date: string;
+          end_date: string;
+          start_time: string | null;
+          end_time: string | null;
+          reason: string | null;
+          status: UnavailabilityStatus;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          venue_id: string;
+          team_member_id: string;
+          start_date: string;
+          end_date: string;
+          start_time?: string | null;
+          end_time?: string | null;
+          reason?: string | null;
+          status?: UnavailabilityStatus;
+        };
+        Update: {
+          start_date?: string;
+          end_date?: string;
+          start_time?: string | null;
+          end_time?: string | null;
+          reason?: string | null;
+          status?: UnavailabilityStatus;
         };
         Relationships: [];
       };

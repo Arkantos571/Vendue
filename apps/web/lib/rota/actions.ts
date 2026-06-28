@@ -16,6 +16,7 @@ import { toMockTeamMember, type TeamMemberRow } from "@/lib/team/mappers";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { rotaPublishSchemaError } from "@/lib/supabase/schema-errors";
 import { canManageVenue } from "@/lib/rota/venue-access";
+import { fetchVenueUnavailabilityMap } from "@/lib/availability/data";
 
 const ROTA_SHIFT_SELECT = `
   id, venue_id, event_id, team_member_id, role_label, section,
@@ -188,7 +189,7 @@ export async function loadRotaOverviewAction(): Promise<
 
 export async function loadRotaBuilderAction(
   eventId: string,
-): Promise<RotaActionResult<{ data: RotaBuilderData | null; migrationRequired?: boolean }>> {
+): Promise<RotaActionResult<{ data: RotaBuilderData | null; migrationRequired?: boolean; unavailabilityMigrationRequired?: boolean }>> {
   if (!isSupabaseConfigured()) {
     return { success: true, data: null, noVenue: true };
   }
@@ -212,18 +213,26 @@ export async function loadRotaBuilderAction(
     }
 
     const event = toMockEvent(eventRow);
-    const [shiftRows, teamMembers] = await Promise.all([
+    const [shiftRows, teamMembers, unavailabilityResult] = await Promise.all([
       fetchShiftsForEvent(supabase, venueId, eventId),
       fetchTeamMembers(supabase, venueId),
+      fetchVenueUnavailabilityMap(supabase, venueId),
     ]);
 
     const assignedShifts = shiftRows.map((shift) => toAssignedShift(shift, event.date));
-    const data = buildRotaBuilderData(event, assignedShifts, teamMembers);
+    const data = buildRotaBuilderData(
+      event,
+      assignedShifts,
+      teamMembers,
+      [],
+      unavailabilityResult.map,
+    );
 
     return {
       success: true,
       data,
       migrationRequired: !rotaPublishSchemaReady,
+      unavailabilityMigrationRequired: unavailabilityResult.migrationRequired,
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to load rota builder.";

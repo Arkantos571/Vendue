@@ -8,6 +8,7 @@ import {
 } from "@/lib/rota/mappers";
 import { toMockTeamMember, type TeamMemberRow } from "@/lib/team/mappers";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { fetchVenueUnavailabilityMap } from "@/lib/availability/data";
 
 const EVENT_SELECT = `
   id, title, status, starts_at, ends_at, guest_count,
@@ -57,7 +58,7 @@ export async function loadRotaBuilderForPage(eventId: string): Promise<RotaBuild
 
   const event = toMockEvent(eventRow as EventRowWithJoins);
 
-  const [{ data: shiftRows }, { data: teamRows }] = await Promise.all([
+  const [{ data: shiftRows }, { data: teamRows }, unavailabilityResult] = await Promise.all([
     supabase
       .from("rota_shifts")
       .select(ROTA_SHIFT_SELECT)
@@ -69,6 +70,7 @@ export async function loadRotaBuilderForPage(eventId: string): Promise<RotaBuild
       .select(TEAM_MEMBER_SELECT)
       .eq("venue_id", venueId)
       .order("full_name", { ascending: true }),
+    fetchVenueUnavailabilityMap(supabase, venueId),
   ]);
 
   const assignedShifts = ((shiftRows as RotaShiftRow[] | null) ?? []).map((shift) =>
@@ -76,7 +78,13 @@ export async function loadRotaBuilderForPage(eventId: string): Promise<RotaBuild
   );
   const teamMembers = ((teamRows as TeamMemberRow[] | null) ?? []).map(toMockTeamMember);
 
-  return buildRotaBuilderData(event, assignedShifts, teamMembers);
+  return buildRotaBuilderData(
+    event,
+    assignedShifts,
+    teamMembers,
+    [],
+    unavailabilityResult.map,
+  );
 }
 
 export async function eventExistsForVenue(eventId: string): Promise<boolean> {

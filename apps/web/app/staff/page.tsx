@@ -56,15 +56,24 @@ export default async function StaffHomePage() {
           />
         )}
 
-        {upcomingShifts.length > 0 && (
+        <div className="grid gap-3">
           <Link
-            href="/staff/shifts"
+            href="/staff/availability"
             className="flex items-center justify-between rounded-2xl border border-stone-200 bg-white px-4 py-4 text-sm font-medium text-stone-900 shadow-sm transition-colors hover:border-brand-200 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:hover:border-brand-900"
           >
-            View all shifts
+            Manage availability
             <ChevronRight className="h-4 w-4 text-brand-700 dark:text-brand-400" />
           </Link>
-        )}
+          {upcomingShifts.length > 0 && (
+            <Link
+              href="/staff/shifts"
+              className="flex items-center justify-between rounded-2xl border border-stone-200 bg-white px-4 py-4 text-sm font-medium text-stone-900 shadow-sm transition-colors hover:border-brand-200 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:hover:border-brand-900"
+            >
+              View all shifts
+              <ChevronRight className="h-4 w-4 text-brand-700 dark:text-brand-400" />
+            </Link>
+          )}
+        </div>
       </div>
     </StaffShell>
   );

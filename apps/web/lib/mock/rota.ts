@@ -59,6 +59,7 @@ export interface AvailableStaffMember {
   availability: AvailabilityStatus;
   hourlyRate: number | null;
   upcomingShiftsCount: number;
+  isUnavailableForEvent?: boolean;
 }
 
 export interface LabourSummary {

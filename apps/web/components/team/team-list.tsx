@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Plus, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AvailabilityBadge } from "@/components/team/availability-badge";
+import { ScheduleAvailabilityBadge } from "@/components/availability/schedule-availability-badge";
 import { TeamRoleBadge } from "@/components/team/team-role-badge";
 import { TeamStatusBadge } from "@/components/team/team-status-badge";
 import { VenueRequiredEmptyState } from "@/components/events/venue-required-empty-state";
@@ -19,6 +19,8 @@ import {
   teamRoleOptions,
 } from "@/lib/mock/team";
 import { loadTeamMembersAction } from "@/lib/team/actions";
+import { loadTeamScheduleIndicatorsAction } from "@/lib/availability/actions";
+import type { ScheduleAvailabilityIndicator } from "@/lib/availability/types";
 
 const statusFilters: { value: TeamStatusFilter; label: string }[] = [
   { value: "all", label: "All" },
@@ -65,6 +67,7 @@ export function TeamList() {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<TeamRoleFilter>("all");
   const [statusFilter, setStatusFilter] = useState<TeamStatusFilter>("all");
+  const [scheduleIndicators, setScheduleIndicators] = useState<Record<string, ScheduleAvailabilityIndicator>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -73,19 +76,26 @@ export function TeamList() {
       setIsLoading(true);
       setError(null);
 
-      const result = await loadTeamMembersAction();
+      const [membersResult, indicatorsResult] = await Promise.all([
+        loadTeamMembersAction(),
+        loadTeamScheduleIndicatorsAction(),
+      ]);
 
       if (cancelled) {
         return;
       }
 
-      if (!result.success) {
-        setError(result.error);
+      if (!membersResult.success) {
+        setError(membersResult.error);
         setMembers([]);
         setNoVenue(false);
+        setScheduleIndicators({});
       } else {
-        setMembers(result.members);
-        setNoVenue(Boolean(result.noVenue));
+        setMembers(membersResult.members);
+        setNoVenue(Boolean(membersResult.noVenue));
+        setScheduleIndicators(
+          indicatorsResult.success ? indicatorsResult.indicators : {},
+        );
       }
 
       setIsLoading(false);
@@ -214,7 +224,7 @@ export function TeamList() {
               </thead>
               <tbody className="divide-y divide-stone-100">
                 {filteredMembers.map((member) => (
-                  <TeamTableRow key={member.id} member={member} />
+                  <TeamTableRow key={member.id} member={member} scheduleIndicator={scheduleIndicators[member.id] ?? "available"} />
                 ))}
               </tbody>
             </table>
@@ -222,7 +232,7 @@ export function TeamList() {
 
           <div className="grid gap-3 sm:grid-cols-2 lg:hidden">
             {filteredMembers.map((member) => (
-              <TeamMemberCard key={member.id} member={member} />
+              <TeamMemberCard key={member.id} member={member} scheduleIndicator={scheduleIndicators[member.id] ?? "available"} />
             ))}
           </div>
         </>
@@ -231,7 +241,7 @@ export function TeamList() {
   );
 }
 
-function TeamTableRow({ member }: { member: MockTeamMember }) {
+function TeamTableRow({ member, scheduleIndicator }: { member: MockTeamMember; scheduleIndicator: ScheduleAvailabilityIndicator }) {
   const router = useRouter();
 
   function navigate() {
@@ -268,7 +278,7 @@ function TeamTableRow({ member }: { member: MockTeamMember }) {
       <td className="px-4 py-4 text-stone-600">{formatHourlyRate(member.hourlyRate)}</td>
       <td className="px-4 py-4 text-stone-600">{member.upcomingShiftsCount}</td>
       <td className="px-4 py-4">
-        <AvailabilityBadge status={member.availabilityStatus} />
+        <ScheduleAvailabilityBadge indicator={scheduleIndicator} />
       </td>
       <td className="px-6 py-4">
         <TeamStatusBadge status={member.status} />
@@ -277,7 +287,7 @@ function TeamTableRow({ member }: { member: MockTeamMember }) {
   );
 }
 
-export function TeamMemberCard({ member }: { member: MockTeamMember }) {
+export function TeamMemberCard({ member, scheduleIndicator }: { member: MockTeamMember; scheduleIndicator: ScheduleAvailabilityIndicator }) {
   return (
     <Link
       href={`/dashboard/team/${member.id}`}
@@ -292,7 +302,7 @@ export function TeamMemberCard({ member }: { member: MockTeamMember }) {
       </div>
       <div className="mt-4 flex flex-wrap gap-2">
         <TeamRoleBadge role={member.role} />
-        <AvailabilityBadge status={member.availabilityStatus} />
+        <ScheduleAvailabilityBadge indicator={scheduleIndicator} />
       </div>
       <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-stone-100 pt-4 text-sm">
         <div>

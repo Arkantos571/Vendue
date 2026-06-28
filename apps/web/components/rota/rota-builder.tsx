@@ -12,6 +12,7 @@ import { StaffingRequirementsSummary } from "@/components/rota/staffing-requirem
 import { VenueRequiredEmptyState } from "@/components/events/venue-required-empty-state";
 import type { AvailableStaffMember, RotaBuilderData } from "@/lib/mock/rota";
 import { buildLabourSummary } from "@/lib/rota/mappers";
+import { UNAVAILABILITY_SCHEMA_HINT } from "@/lib/availability/constants";
 import {
   createRotaShiftAction,
   deleteRotaShiftAction,
@@ -37,6 +38,7 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [publishMessage, setPublishMessage] = useState<string | null>(null);
   const [migrationRequired, setMigrationRequired] = useState(false);
+  const [unavailabilityMigrationRequired, setUnavailabilityMigrationRequired] = useState(false);
 
   const reload = useCallback(async () => {
     setError(null);
@@ -58,6 +60,7 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
     setData(result.data);
     setNoVenue(false);
     setMigrationRequired(Boolean(result.migrationRequired));
+    setUnavailabilityMigrationRequired(Boolean(result.unavailabilityMigrationRequired));
   }, [eventId]);
 
   useEffect(() => {
@@ -245,6 +248,12 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
 
   return (
     <div className="space-y-6">
+      {unavailabilityMigrationRequired && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+          {UNAVAILABILITY_SCHEMA_HINT}
+        </div>
+      )}
+
       {error && (
         <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
           {error}

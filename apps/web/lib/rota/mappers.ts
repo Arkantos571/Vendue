@@ -20,6 +20,8 @@ import type {
 import type { MockEvent } from "@/lib/mock/events";
 import { buildShiftConfirmationSummary } from "@/lib/rota/shift-confirmation";
 import type { RotaShiftStatus } from "@/src/types/database";
+import type { UnavailabilityPeriod } from "@/lib/availability/types";
+import { overlapsUnavailability } from "@/lib/availability/overlap";
 
 export interface RotaShiftRow {
   id: string;
@@ -165,7 +167,16 @@ export function isRosterEligible(status: MockTeamMember["status"]): boolean {
 export function toAvailableStaffMember(
   member: MockTeamMember,
   assignedShiftCount: number,
+  options?: {
+    eventWindow?: { date: string; startTime: string; endTime: string; endsNextDay?: boolean };
+    unavailabilityByMember?: Map<string, UnavailabilityPeriod[]>;
+  },
 ): AvailableStaffMember {
+  const periods = options?.unavailabilityByMember?.get(member.id) ?? [];
+  const isUnavailableForEvent = options?.eventWindow
+    ? overlapsUnavailability(periods, options.eventWindow)
+    : false;
+
   return {
     id: member.id,
     name: member.fullName,
@@ -173,6 +184,7 @@ export function toAvailableStaffMember(
     availability: member.availabilityStatus,
     hourlyRate: member.hourlyRate,
     upcomingShiftsCount: assignedShiftCount,
+    isUnavailableForEvent,
   };
 }
 
@@ -181,6 +193,7 @@ export function buildRotaBuilderData(
   shifts: AssignedShift[],
   teamMembers: MockTeamMember[],
   staffingRequirements: StaffingRequirement[] = [],
+  unavailabilityByMember: Map<string, UnavailabilityPeriod[]> = new Map(),
 ): RotaBuilderData {
   const assignedIds = new Set(shifts.map((shift) => shift.staffMemberId));
   const shiftCounts = new Map<string, number>();
@@ -189,9 +202,21 @@ export function buildRotaBuilderData(
     shiftCounts.set(shift.staffMemberId, (shiftCounts.get(shift.staffMemberId) ?? 0) + 1);
   }
 
+  const eventWindow = {
+    date: event.date,
+    startTime: event.startTime,
+    endTime: event.endTime,
+    endsNextDay: event.endsNextDay,
+  };
+
   const availableStaff = teamMembers
     .filter((member) => isRosterEligible(member.status))
-    .map((member) => toAvailableStaffMember(member, shiftCounts.get(member.id) ?? 0));
+    .map((member) =>
+      toAvailableStaffMember(member, shiftCounts.get(member.id) ?? 0, {
+        eventWindow,
+        unavailabilityByMember,
+      }),
+    );
 
   const labourSummary = buildLabourSummary(shifts, staffingRequirements.reduce((t, r) => t + r.required, 0) || shifts.length);
 

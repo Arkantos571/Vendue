@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { PublicThemeToggle } from "@/components/layout/public-theme-toggle";
+import { StaffNav } from "@/components/staff/staff-nav";
 
 interface StaffShellProps {
   title?: string;
@@ -37,7 +38,8 @@ export function StaffShell({ title, backHref, children }: StaffShellProps) {
           <PublicThemeToggle />
         </div>
       </header>
-      <main className="mx-auto max-w-lg px-4 py-5 pb-10">{children}</main>
+      <main className="mx-auto max-w-lg px-4 py-5 pb-24">{children}</main>
+      <StaffNav />
     </div>
   );
 }

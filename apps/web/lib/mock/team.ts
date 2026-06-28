@@ -14,6 +14,11 @@ export type EmploymentType = "full_time" | "part_time" | "casual" | "agency";
 
 export type AvailabilityStatus = "available" | "limited" | "unavailable";
 
+export type ScheduleAvailabilityIndicator =
+  | "available"
+  | "unavailable_today"
+  | "unavailable_soon";
+
 export interface MockUpcomingShift {
   id: string;
   eventTitle: string;
@@ -42,6 +47,7 @@ export interface MockTeamMember {
   hourlyRate: number | null;
   upcomingShiftsCount: number;
   availabilityStatus: AvailabilityStatus;
+  scheduleAvailability?: ScheduleAvailabilityIndicator;
   notes: string | null;
   upcomingShifts: MockUpcomingShift[];
   recentActivity: MockTeamActivity[];
