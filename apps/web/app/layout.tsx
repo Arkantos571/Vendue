@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Fraunces, Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
@@ -8,6 +8,12 @@ import "./globals.css";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+});
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -19,11 +25,11 @@ export const metadata: Metadata = {
     template: "%s · Venudue",
   },
   description:
-    "Venudue — hospitality events management from venue setup to staff rota and mobile operations.",
+    "Venudue — enquiries, events, function sheets and rotas in one calm workspace for hospitality venues.",
   openGraph: {
     title: "Venudue",
     description:
-      "Hospitality event operations — enquiries, events, rotas, and function sheets in one workspace.",
+      "Run the room, not the chaos. Hospitality event operations on one screen.",
     url: "https://venudue.app",
     siteName: "Venudue",
     locale: "en_GB",
@@ -33,13 +39,17 @@ export const metadata: Metadata = {
     card: "summary",
     title: "Venudue",
     description:
-      "Hospitality event operations — enquiries, events, rotas, and function sheets in one workspace.",
+      "Run the room, not the chaos. Hospitality event operations on one screen.",
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-GB" className={inter.variable} suppressHydrationWarning>
+    <html
+      lang="en-GB"
+      className={`${inter.variable} ${fraunces.variable}`}
+      suppressHydrationWarning
+    >
       <body>
         <ThemeProvider>{children}</ThemeProvider>
         <SpeedInsights />

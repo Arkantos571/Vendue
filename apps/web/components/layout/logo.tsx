@@ -6,7 +6,6 @@ type LogoSize = "sm" | "md" | "lg";
 interface LogoProps {
   className?: string;
   showWordmark?: boolean;
-  /** Sidebar / dark backgrounds */
   variant?: "default" | "inverse";
   href?: string;
   size?: LogoSize;
@@ -15,33 +14,39 @@ interface LogoProps {
 
 const sizeStyles: Record<
   LogoSize,
-  { icon: string; wordmark: string; gap: string }
+  { box: string; wordmark: string; gap: string; vText: string }
 > = {
-  sm: { icon: "h-7 w-7", wordmark: "text-base", gap: "gap-2" },
-  md: { icon: "h-8 w-8", wordmark: "text-lg", gap: "gap-2.5" },
-  lg: { icon: "h-10 w-10", wordmark: "text-xl", gap: "gap-3" },
+  sm: { box: "h-7 w-7 rounded-[6px]", wordmark: "text-base", gap: "gap-2", vText: "text-[13px]" },
+  md: { box: "h-8 w-8 rounded-[7px]", wordmark: "text-lg", gap: "gap-2.5", vText: "text-[15px]" },
+  lg: { box: "h-10 w-10 rounded-[8px]", wordmark: "text-xl", gap: "gap-3", vText: "text-[18px]" },
 };
 
-function LogoIcon({ className }: { className?: string }) {
+function LogoIcon({ className, size = "md" }: { className?: string; size?: LogoSize }) {
+  const styles = sizeStyles[size];
+
   return (
-    <svg
-      viewBox="0 0 32 32"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
+    <span
+      className={cn(
+        "relative inline-flex shrink-0 items-center justify-center overflow-hidden bg-primary text-primary-foreground",
+        styles.box,
+        className,
+      )}
       aria-hidden
     >
-      <rect x="2" y="4" width="28" height="26" rx="7" className="fill-primary" />
-      <rect x="2" y="4" width="28" height="8" rx="7" className="fill-brand-900/35" />
-      <circle cx="10" cy="8" r="1.25" className="fill-primary-foreground/70" />
-      <circle cx="16" cy="8" r="1.25" className="fill-primary-foreground/70" />
-      <circle cx="22" cy="8" r="1.25" className="fill-primary-foreground/70" />
-      {/* Upright V: open at top, point at bottom */}
-      <path
-        d="M10.5 15.5L16 24.5L21.5 15.5H18.8L16 20.2L13.2 15.5H10.5Z"
-        className="fill-primary-foreground"
-      />
-    </svg>
+      <span className="absolute inset-x-0 top-[20%] flex justify-center gap-[3px]">
+        <span className="h-[3px] w-[3px] rounded-full bg-primary-foreground/60" />
+        <span className="h-[3px] w-[3px] rounded-full bg-primary-foreground/60" />
+        <span className="h-[3px] w-[3px] rounded-full bg-primary-foreground/60" />
+      </span>
+      <span
+        className={cn(
+          "font-display translate-y-[8%] font-medium leading-none",
+          styles.vText,
+        )}
+      >
+        V
+      </span>
+    </span>
   );
 }
 
@@ -58,11 +63,11 @@ export function Logo({
 
   const content = (
     <>
-      <LogoIcon className={cn("shrink-0", styles.icon)} />
+      <LogoIcon size={size} />
       {showWordmark ? (
         <span
           className={cn(
-            "font-semibold tracking-tight",
+            "font-display font-medium tracking-tight",
             styles.wordmark,
             isInverse ? "text-primary-foreground" : "text-foreground",
           )}
@@ -105,5 +110,5 @@ export function LogoIconOnly({
   className?: string;
   size?: LogoSize;
 }) {
-  return <LogoIcon className={cn(sizeStyles[size].icon, className)} />;
+  return <LogoIcon className={className} size={size} />;
 }
