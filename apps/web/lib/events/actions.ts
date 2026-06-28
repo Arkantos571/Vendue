@@ -36,6 +36,10 @@ export type CreateEventInput = {
   status?: EventStatus;
 };
 
+export type UpdateEventInput = CreateEventInput & {
+  event_id: string;
+};
+
 function dbErrorMessage(error: { message?: string } | null): string {
   return error?.message ?? "Something went wrong. Please try again.";
 }
@@ -230,6 +234,90 @@ export async function createEventAction(
     return { success: true, eventId };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to create event.";
+    return { success: false, error: message };
+  }
+}
+
+export async function updateEventAction(
+  input: UpdateEventInput,
+): Promise<EventsActionResult<{ eventId: string }>> {
+  if (!isSupabaseConfigured()) {
+    return { success: false, error: "Supabase is not configured." };
+  }
+
+  try {
+    const { supabase, user } = await requireAuthenticatedClient(
+      `/sign-in?redirect=/dashboard/events/${input.event_id}/edit`,
+    );
+    const venueId = await getPrimaryVenueId(supabase, user.id);
+
+    if (!venueId) {
+      return { success: false, error: "Set up your venue before editing events." };
+    }
+
+    const title = input.title.trim();
+    const clientName = input.client_name.trim();
+
+    if (!title) {
+      return { success: false, error: "Event name is required." };
+    }
+
+    if (!clientName) {
+      return { success: false, error: "Client name is required." };
+    }
+
+    if (!input.space_id || !input.event_type_id) {
+      return { success: false, error: "Space and event type are required." };
+    }
+
+    if (!input.guest_count || input.guest_count < 1) {
+      return { success: false, error: "Guest count is required." };
+    }
+
+    const timestamps = resolveEventTimestamps(
+      input.event_date,
+      input.start_time,
+      input.end_time,
+      { endIsNextDay: input.end_is_next_day },
+    );
+
+    if ("error" in timestamps) {
+      return { success: false, error: timestamps.error };
+    }
+
+    const { startsAt, endsAt } = timestamps;
+
+    const { data, error } = await supabase
+      .from("events")
+      .update({
+        space_id: input.space_id,
+        event_type_id: input.event_type_id,
+        title,
+        status: input.status ?? "draft",
+        starts_at: startsAt,
+        ends_at: endsAt,
+        guest_count: input.guest_count,
+        client_name: clientName,
+        client_email: input.client_email?.trim() || null,
+        client_phone: input.client_phone?.trim() || null,
+        notes: input.notes?.trim() || null,
+      })
+      .eq("id", input.event_id)
+      .eq("venue_id", venueId)
+      .select("id")
+      .maybeSingle();
+
+    if (error) {
+      return { success: false, error: dbErrorMessage(error) };
+    }
+
+    if (!data) {
+      return { success: false, error: "Event not found." };
+    }
+
+    return { success: true, eventId: input.event_id };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to update event.";
     return { success: false, error: message };
   }
 }

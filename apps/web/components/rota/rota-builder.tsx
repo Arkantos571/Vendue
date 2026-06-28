@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AddShiftForm, type NewShiftInput } from "@/components/rota/add-shift-form";
+import type { EditShiftInput } from "@/components/rota/edit-shift-form";
 import { AssignedShiftsList } from "@/components/rota/assigned-shifts-list";
 import { AvailableStaffPanel } from "@/components/rota/available-staff-panel";
 import { EventSummaryHeader } from "@/components/rota/event-summary-header";
@@ -20,6 +21,7 @@ import {
   markRotaReadyAction,
   publishRotaAction,
   revertRotaToDraftAction,
+  updateRotaShiftAction,
 } from "@/lib/rota/actions";
 
 interface RotaBuilderProps {
@@ -34,6 +36,7 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
   const [noVenue, setNoVenue] = useState(false);
   const [isSubmittingShift, setIsSubmittingShift] = useState(false);
   const [deletingShiftId, setDeletingShiftId] = useState<string | null>(null);
+  const [updatingShiftId, setUpdatingShiftId] = useState<string | null>(null);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [publishMessage, setPublishMessage] = useState<string | null>(null);
@@ -167,6 +170,36 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
     await reload();
   }
 
+
+  async function updateShift(input: EditShiftInput) {
+    setUpdatingShiftId(input.shiftId);
+    setError(null);
+
+    const result = await updateRotaShiftAction({
+      shift_id: input.shiftId,
+      event_id: eventId,
+      team_member_id: input.staffMemberId,
+      role_label: input.role,
+      section: input.section,
+      arrival_time: input.arrivalTime,
+      start_time: input.startTime,
+      finish_time: input.finishTime,
+      finish_is_next_day: input.finishIsNextDay,
+      break_minutes: input.breakMinutes,
+      notes: input.notes ?? undefined,
+      status: input.status,
+    });
+
+    setUpdatingShiftId(null);
+
+    if (!result.success) {
+      setError(result.error);
+      throw new Error(result.error);
+    }
+
+    await reload();
+  }
+
   async function handleMarkReady() {
     setIsUpdatingStatus(true);
     setError(null);
@@ -268,8 +301,11 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
           <StaffingRequirementsSummary requirements={data.staffingRequirements} />
           <AssignedShiftsList
             shifts={data.assignedShifts}
+            staffOptions={rosterStaff}
             onDeleteShift={deleteShift}
+            onUpdateShift={updateShift}
             isDeletingShiftId={deletingShiftId}
+            isUpdatingShiftId={updatingShiftId}
           />
         </div>
 

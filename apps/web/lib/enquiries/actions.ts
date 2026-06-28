@@ -47,6 +47,11 @@ export type ConvertEnquiryToEventInput = {
   status?: EventStatus;
 };
 
+export type UpdateEnquiryInput = CreateEnquiryInput & {
+  enquiry_id: string;
+  status: EnquiryStatus;
+};
+
 export type CreateEnquiryInput = {
   event_name: string;
   client_name: string;
@@ -513,3 +518,124 @@ export async function convertEnquiryToEventAction(
   }
 }
 
+export async function updateEnquiryAction(
+  input: UpdateEnquiryInput,
+): Promise<EnquiriesActionResult<{ enquiryId: string }>> {
+  if (!isSupabaseConfigured()) {
+    return { success: false, error: "Supabase is not configured." };
+  }
+
+  try {
+    const { supabase, user } = await requireAuthenticatedClient(
+      `/sign-in?redirect=/dashboard/enquiries/${input.enquiry_id}/edit`,
+    );
+    const venueId = await getPrimaryVenueId(supabase, user.id);
+
+    if (!venueId) {
+      return { success: false, error: "Set up your venue before managing enquiries." };
+    }
+
+    const { data: existing, error: loadError } = await supabase
+      .from("enquiries")
+      .select("id, converted_event_id")
+      .eq("id", input.enquiry_id)
+      .eq("venue_id", venueId)
+      .maybeSingle();
+
+    if (loadError) {
+      return { success: false, error: dbErrorMessage(loadError) };
+    }
+
+    if (!existing) {
+      return { success: false, error: "Enquiry not found." };
+    }
+
+    const eventName = input.event_name.trim();
+    const clientName = input.client_name.trim();
+    const clientEmail = input.client_email.trim();
+
+    if (!eventName) {
+      return { success: false, error: "Event name is required." };
+    }
+
+    if (!clientName) {
+      return { success: false, error: "Client name is required." };
+    }
+
+    if (!clientEmail) {
+      return { success: false, error: "Client email is required." };
+    }
+
+    if (!input.requested_date) {
+      return { success: false, error: "Requested event date is required." };
+    }
+
+    if (!input.event_type_id) {
+      return { success: false, error: "Event type is required." };
+    }
+
+    let preferredStartTime: string | null = null;
+    let preferredEndTime: string | null = null;
+
+    if (input.preferred_start_time && input.preferred_end_time) {
+      const { time: endTime, nextDay } = parseEndTimeSelection(
+        input.preferred_end_time,
+        input.end_is_next_day,
+      );
+
+      preferredStartTime = input.preferred_start_time;
+      preferredEndTime = endTime;
+
+      if (!nextDay && endTime <= input.preferred_start_time) {
+        return {
+          success: false,
+          error: "End time must be after start time, or choose a next-day end time.",
+        };
+      }
+    } else if (input.preferred_start_time) {
+      preferredStartTime = input.preferred_start_time;
+    } else if (input.preferred_end_time) {
+      preferredEndTime = parseEndTimeSelection(
+        input.preferred_end_time,
+        input.end_is_next_day,
+      ).time;
+    }
+
+    const budgetEstimate =
+      input.budget_estimate !== undefined && input.budget_estimate >= 0
+        ? input.budget_estimate
+        : null;
+
+    const { error } = await supabase
+      .from("enquiries")
+      .update({
+        event_name: eventName,
+        client_name: clientName,
+        client_email: clientEmail,
+        client_phone: input.client_phone?.trim() || null,
+        requested_date: input.requested_date,
+        preferred_start_time: preferredStartTime,
+        preferred_end_time: preferredEndTime,
+        event_type_id: input.event_type_id,
+        space_id: input.space_id || null,
+        guest_count: input.guest_count && input.guest_count > 0 ? input.guest_count : null,
+        budget_estimate: budgetEstimate,
+        estimated_value: budgetEstimate,
+        status: input.status,
+        source: input.source,
+        priority: input.priority,
+        notes: input.notes?.trim() || null,
+      })
+      .eq("id", input.enquiry_id)
+      .eq("venue_id", venueId);
+
+    if (error) {
+      return { success: false, error: dbErrorMessage(error) };
+    }
+
+    return { success: true, enquiryId: input.enquiry_id };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to update enquiry.";
+    return { success: false, error: message };
+  }
+}

@@ -43,14 +43,13 @@ export function EventDetailView({ event, functionSheetData, hasRotaBuilder }: Ev
           <p className="mt-1 text-sm text-stone-500">{event.eventType}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            disabled
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-stone-300 bg-white px-4 text-sm font-medium text-stone-400"
+          <Link
+            href={`/dashboard/events/${event.id}/edit`}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-stone-300 bg-white px-4 text-sm font-medium text-stone-900 hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800"
           >
             <Pencil className="h-4 w-4" />
             Edit event
-          </button>
+          </Link>
           {hasRotaBuilder ? (
             <Link
               href={`/dashboard/rota/${event.id}`}

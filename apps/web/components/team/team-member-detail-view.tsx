@@ -30,9 +30,9 @@ export function TeamMemberDetailView({ member }: TeamMemberDetailViewProps) {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button type="button" disabled className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-stone-300 bg-white px-4 text-sm font-medium text-stone-400">
+          <Link href={`/dashboard/team/${member.id}/edit`} className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-stone-300 bg-white px-4 text-sm font-medium text-stone-900 hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800">
             <Pencil className="h-4 w-4" />Edit profile
-          </button>
+          </Link>
           <Link href="/dashboard/events" className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-stone-300 bg-white px-4 text-sm font-medium text-stone-900 hover:bg-stone-50">
             <UserPlus className="h-4 w-4" />Assign to event
           </Link>

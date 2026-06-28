@@ -14,6 +14,7 @@ import {
 import { encodeArrivalInNotes, resolveShiftTimestamps } from "@/lib/rota/shift-time";
 import { toMockTeamMember, type TeamMemberRow } from "@/lib/team/mappers";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import type { RotaShiftStatus } from "@/types";
 import { rotaPublishSchemaError } from "@/lib/supabase/schema-errors";
 import { canManageVenue } from "@/lib/rota/venue-access";
 import { fetchVenueUnavailabilityMap } from "@/lib/availability/data";
@@ -34,6 +35,11 @@ const TEAM_MEMBER_SELECT = `
 export type RotaActionResult<T> =
   | ({ success: true; noVenue?: boolean } & T)
   | { success: false; error: string };
+
+export type UpdateRotaShiftInput = CreateRotaShiftInput & {
+  shift_id: string;
+  status: RotaShiftStatus;
+};
 
 export type CreateRotaShiftInput = {
   event_id: string;
@@ -336,6 +342,114 @@ export async function createRotaShiftAction(
     return { success: false, error: message };
   }
 }
+
+
+export async function updateRotaShiftAction(
+  input: UpdateRotaShiftInput,
+): Promise<RotaActionResult<{ shiftId: string }>> {
+  if (!isSupabaseConfigured()) {
+    return { success: false, error: "Supabase is not configured." };
+  }
+
+  try {
+    const context = await loadVenueContext(
+      `/sign-in?redirect=/dashboard/rota/${input.event_id}`,
+    );
+
+    if (!("supabase" in context)) {
+      return { success: false, error: "Set up your venue before building rotas." };
+    }
+
+    const { supabase, venueId } = context;
+    const eventRow = await fetchEventForVenue(supabase, venueId, input.event_id);
+
+    if (!eventRow) {
+      return { success: false, error: "Event not found." };
+    }
+
+    const event = toMockEvent(eventRow);
+
+    const timestamps = resolveShiftTimestamps(
+      event.date,
+      input.start_time,
+      input.finish_time,
+      { finishIsNextDay: input.finish_is_next_day },
+    );
+
+    if ("error" in timestamps) {
+      return { success: false, error: timestamps.error };
+    }
+
+    const { data: teamMember, error: memberError } = await supabase
+      .from("team_members")
+      .select("id, hourly_rate")
+      .eq("id", input.team_member_id)
+      .eq("venue_id", venueId)
+      .maybeSingle();
+
+    if (memberError || !teamMember) {
+      return { success: false, error: "Team member not found." };
+    }
+
+    const hourlyRate =
+      teamMember.hourly_rate !== null && teamMember.hourly_rate !== undefined
+        ? Number(teamMember.hourly_rate)
+        : null;
+
+    const notes = encodeArrivalInNotes(
+      input.arrival_time,
+      input.start_time,
+      input.notes?.trim() || null,
+    );
+
+    const { data: updated, error } = await supabase
+      .from("rota_shifts")
+      .update({
+        team_member_id: input.team_member_id,
+        role_label: input.role_label.trim(),
+        section: input.section.trim() || null,
+        starts_at: timestamps.startsAt,
+        ends_at: timestamps.endsAt,
+        break_minutes: input.break_minutes,
+        hourly_rate: hourlyRate,
+        notes,
+        status: input.status,
+      })
+      .eq("id", input.shift_id)
+      .eq("venue_id", venueId)
+      .eq("event_id", input.event_id)
+      .select("id, team_member_id")
+      .maybeSingle();
+
+    if (error) {
+      return { success: false, error: dbErrorMessage(error) };
+    }
+
+    if (!updated) {
+      return { success: false, error: "Shift not found." };
+    }
+
+    if (event.rotaStatus === "published") {
+      const { error: notifyError } = await supabase.rpc("notify_staff_shift_updated", {
+        p_shift_id: input.shift_id,
+        p_team_member_id: updated.team_member_id,
+        p_event_id: input.event_id,
+        p_venue_id: venueId,
+        p_event_title: event.title,
+      });
+
+      if (notifyError) {
+        console.error("Failed to notify staff of shift update:", notifyError.message);
+      }
+    }
+
+    return { success: true, shiftId: input.shift_id };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to update shift.";
+    return { success: false, error: message };
+  }
+}
+
 
 export async function deleteRotaShiftAction(
   shiftId: string,

@@ -70,6 +70,10 @@ export function getEndTimeOptionsForStart(startTime: string): {
   return { sameDay, nextDay };
 }
 
+export function endSelectionKey(time: string, nextDay: boolean): string {
+  return nextDay ? `next|${time}` : `same|${time}`;
+}
+
 export function parseEndTimeSelection(
   endTime: string,
   endIsNextDay?: boolean,

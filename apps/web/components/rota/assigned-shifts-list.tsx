@@ -1,14 +1,21 @@
-import { Trash2 } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { Pencil, Trash2 } from "lucide-react";
+import { EditShiftForm, type EditShiftInput } from "@/components/rota/edit-shift-form";
 import { ShiftStatusBadge } from "@/components/rota/shift-status-badge";
 import { Button } from "@/components/ui/button";
 import { formatEventEndTime } from "@/lib/events/event-time";
-import { formatCurrencyPrecise, type AssignedShift } from "@/lib/mock/rota";
+import { formatCurrencyPrecise, type AssignedShift, type AvailableStaffMember } from "@/lib/mock/rota";
 import { formatHourlyRate } from "@/lib/mock/team";
 
 interface AssignedShiftsListProps {
   shifts: AssignedShift[];
+  staffOptions: AvailableStaffMember[];
   onDeleteShift?: (shiftId: string) => void;
+  onUpdateShift?: (input: EditShiftInput) => Promise<void>;
   isDeletingShiftId?: string | null;
+  isUpdatingShiftId?: string | null;
 }
 
 function formatFinishTime(shift: AssignedShift): string {
@@ -17,142 +24,93 @@ function formatFinishTime(shift: AssignedShift): string {
 
 export function AssignedShiftsList({
   shifts,
+  staffOptions,
   onDeleteShift,
+  onUpdateShift,
   isDeletingShiftId,
+  isUpdatingShiftId,
 }: AssignedShiftsListProps) {
+  const [editingShiftId, setEditingShiftId] = useState<string | null>(null);
+
   if (shifts.length === 0) {
     return (
-      <div className="v-panel">
-        <h3 className="text-sm font-semibold text-stone-900">Assigned shifts</h3>
-        <p className="mt-4 text-sm text-stone-500">
+      <div className="v-panel dark:bg-stone-900">
+        <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Assigned shifts</h3>
+        <p className="mt-4 text-sm text-stone-500 dark:text-stone-400">
           No shifts assigned yet. Add staff from the panel below or use the add shift form.
         </p>
       </div>
     );
   }
 
+  const showActions = onDeleteShift || onUpdateShift;
+
   return (
-    <div className="rounded-xl border border-stone-200 bg-white shadow-sm">
-      <div className="border-b border-stone-100 px-6 py-4">
-        <h3 className="text-sm font-semibold text-stone-900">Assigned shifts</h3>
-        <p className="mt-1 text-sm text-stone-500">
+    <div className="rounded-xl border border-stone-200 bg-white shadow-sm dark:border-stone-800 dark:bg-stone-900">
+      <div className="border-b border-stone-100 px-6 py-4 dark:border-stone-800">
+        <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Assigned shifts</h3>
+        <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
           {shifts.length} shift{shifts.length !== 1 ? "s" : ""} on this rota
         </p>
       </div>
 
-      <div className="hidden overflow-x-auto lg:block">
-        <table className="w-full text-left text-sm">
-          <thead>
-            <tr className="border-b border-stone-100 bg-stone-50/50 text-xs font-medium uppercase tracking-wide text-stone-500">
-              <th className="px-6 py-3">Staff</th>
-              <th className="px-4 py-3">Role</th>
-              <th className="px-4 py-3">Section</th>
-              <th className="px-4 py-3">Arrival</th>
-              <th className="px-4 py-3">Start</th>
-              <th className="px-4 py-3">Finish</th>
-              <th className="px-4 py-3">Break</th>
-              <th className="px-4 py-3">Rate</th>
-              <th className="px-4 py-3">Cost</th>
-              <th className="px-4 py-3">Notes</th>
-              <th className="px-4 py-3">Status</th>
-              {onDeleteShift && <th className="px-6 py-3"></th>}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-stone-100">
-            {shifts.map((shift) => (
-              <tr key={shift.id} className="hover:bg-stone-50/50">
-                <td className="px-6 py-4 font-medium text-stone-900">{shift.staffName}</td>
-                <td className="px-4 py-4 text-stone-600">{shift.role}</td>
-                <td className="px-4 py-4 text-stone-600">{shift.section}</td>
-                <td className="px-4 py-4 text-stone-600">{shift.arrivalTime}</td>
-                <td className="px-4 py-4 text-stone-600">{shift.startTime}</td>
-                <td className="px-4 py-4 text-stone-600">{formatFinishTime(shift)}</td>
-                <td className="px-4 py-4 text-stone-600">{shift.breakMinutes} min</td>
-                <td className="px-4 py-4 text-stone-600">{formatHourlyRate(shift.hourlyRate)}</td>
-                <td className="px-4 py-4 font-medium text-stone-900">
-                  {formatCurrencyPrecise(shift.estimatedCost)}
-                </td>
-                <td className="max-w-[160px] truncate px-4 py-4 text-stone-500">
-                  {shift.notes ?? "—"}
-                </td>
-                <td className="px-4 py-4">
-                  <ShiftStatusBadge status={shift.status} />
-                </td>
-                {onDeleteShift && (
-                  <td className="px-6 py-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      disabled={isDeletingShiftId === shift.id}
-                      onClick={() => {
-                        if (window.confirm(`Remove ${shift.staffName} from this rota?`)) {
-                          onDeleteShift(shift.id);
-                        }
-                      }}
-                      className="text-red-700 hover:text-red-800"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </td>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="space-y-3 p-4 lg:hidden">
+      <div className="space-y-0">
         {shifts.map((shift) => (
-          <div key={shift.id} className="rounded-lg border border-stone-100 p-4">
-            <div className="flex items-start justify-between gap-3">
+          <div key={shift.id} className="border-b border-stone-100 p-4 last:border-b-0 dark:border-stone-800">
+            <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="font-medium text-stone-900">{shift.staffName}</p>
-                <p className="text-sm text-stone-500">
-                  {shift.role} · {shift.section}
+                <p className="font-medium text-stone-900 dark:text-stone-100">{shift.staffName}</p>
+                <p className="text-sm text-stone-500 dark:text-stone-400">
+                  {shift.role} · {shift.section} · {shift.startTime} – {formatFinishTime(shift)}
+                </p>
+                <p className="mt-1 text-sm text-stone-600 dark:text-stone-300">
+                  {formatHourlyRate(shift.hourlyRate)} · {formatCurrencyPrecise(shift.estimatedCost)}
                 </p>
               </div>
-              <ShiftStatusBadge status={shift.status} />
+              <div className="flex items-center gap-2">
+                <ShiftStatusBadge status={shift.status} />
+                {onUpdateShift ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={isUpdatingShiftId === shift.id}
+                    onClick={() => setEditingShiftId(editingShiftId === shift.id ? null : shift.id)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                ) : null}
+                {onDeleteShift ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={isDeletingShiftId === shift.id}
+                    onClick={() => {
+                      if (window.confirm(`Remove ${shift.staffName} from this rota?`)) {
+                        onDeleteShift(shift.id);
+                      }
+                    }}
+                    className="text-red-700 hover:text-red-800"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                ) : null}
+              </div>
             </div>
-            <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
-              <div>
-                <dt className="text-xs text-stone-500">Arrival</dt>
-                <dd className="text-stone-700">{shift.arrivalTime}</dd>
-              </div>
-              <div>
-                <dt className="text-xs text-stone-500">Start – finish</dt>
-                <dd className="text-stone-700">
-                  {shift.startTime} – {formatFinishTime(shift)}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs text-stone-500">Break</dt>
-                <dd className="text-stone-700">{shift.breakMinutes} min</dd>
-              </div>
-              <div>
-                <dt className="text-xs text-stone-500">Cost</dt>
-                <dd className="font-medium text-stone-900">
-                  {formatCurrencyPrecise(shift.estimatedCost)}
-                </dd>
-              </div>
-            </dl>
-            {shift.notes && <p className="mt-2 text-sm text-stone-500">{shift.notes}</p>}
-            {onDeleteShift && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="mt-3 w-full text-red-700"
-                disabled={isDeletingShiftId === shift.id}
-                onClick={() => {
-                  if (window.confirm(`Remove ${shift.staffName} from this rota?`)) {
-                    onDeleteShift(shift.id);
-                  }
+            {shift.notes ? <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">{shift.notes}</p> : null}
+            {editingShiftId === shift.id && onUpdateShift ? (
+              <EditShiftForm
+                shift={shift}
+                staffOptions={staffOptions}
+                isSubmitting={isUpdatingShiftId === shift.id}
+                onCancel={() => setEditingShiftId(null)}
+                onSave={async (input) => {
+                  await onUpdateShift(input);
+                  setEditingShiftId(null);
                 }}
-              >
-                Remove shift
-              </Button>
-            )}
+              />
+            ) : null}
           </div>
         ))}
       </div>

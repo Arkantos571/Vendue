@@ -18,6 +18,11 @@ export type TeamActionResult<T> =
   | ({ success: true; noVenue?: boolean } & T)
   | { success: false; error: string };
 
+export type UpdateTeamMemberInput = Omit<CreateTeamMemberInput, 'send_invite'> & {
+  team_member_id: string;
+  status: TeamMemberStatus;
+};
+
 export type CreateTeamMemberInput = {
   first_name: string;
   last_name: string;
@@ -196,6 +201,80 @@ export async function createTeamMemberAction(
     return { success: true, teamMemberId };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to create team member.";
+    return { success: false, error: message };
+  }
+}
+
+export async function updateTeamMemberAction(
+  input: UpdateTeamMemberInput,
+): Promise<TeamActionResult<{ teamMemberId: string }>> {
+  if (!isSupabaseConfigured()) {
+    return { success: false, error: "Supabase is not configured." };
+  }
+
+  try {
+    const { supabase, user } = await requireAuthenticatedClient(
+      `/sign-in?redirect=/dashboard/team/${input.team_member_id}/edit`,
+    );
+    const venueId = await getPrimaryVenueId(supabase, user.id);
+
+    if (!venueId) {
+      return { success: false, error: "Set up your venue before editing team members." };
+    }
+
+    const firstName = input.first_name.trim();
+    const lastName = input.last_name.trim();
+    const email = input.email.trim().toLowerCase();
+    const fullName = buildFullName(firstName, lastName);
+
+    if (!firstName) {
+      return { success: false, error: "First name is required." };
+    }
+
+    if (!lastName) {
+      return { success: false, error: "Last name is required." };
+    }
+
+    if (!email) {
+      return { success: false, error: "Email is required." };
+    }
+
+    if (!input.role) {
+      return { success: false, error: "Role is required." };
+    }
+
+    if (!input.employment_type) {
+      return { success: false, error: "Employment type is required." };
+    }
+
+    const { data, error } = await supabase
+      .from("team_members")
+      .update({
+        full_name: fullName,
+        email,
+        phone: input.phone?.trim() || null,
+        role: input.role,
+        employment_type: input.employment_type,
+        hourly_rate: input.hourly_rate ?? null,
+        notes: input.notes?.trim() || null,
+        status: input.status,
+      })
+      .eq("id", input.team_member_id)
+      .eq("venue_id", venueId)
+      .select("id")
+      .maybeSingle();
+
+    if (error) {
+      return { success: false, error: dbErrorMessage(error) };
+    }
+
+    if (!data) {
+      return { success: false, error: "Team member not found." };
+    }
+
+    return { success: true, teamMemberId: input.team_member_id };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to update team member.";
     return { success: false, error: message };
   }
 }

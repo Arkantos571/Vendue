@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Pencil } from "lucide-react";
 import { EnquiryActions } from "@/components/enquiries/enquiry-actions";
 import { LinkedEventCard } from "@/components/enquiries/linked-event-card";
 import { EnquiryActivitySection } from "@/components/enquiries/enquiry-activity-section";
@@ -40,7 +42,16 @@ export function EnquiryDetailView({ enquiry: initialEnquiry }: { enquiry: MockEn
           </div>
           <p className="mt-1 text-sm text-stone-500">{enquiry.clientName}</p>
         </div>
-        <EnquiryActions enquiry={enquiry} onUpdated={setEnquiry} />
+        <div className="flex flex-col items-stretch gap-2 sm:items-end">
+          <Link
+            href={`/dashboard/enquiries/${enquiry.id}/edit`}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-stone-300 bg-white px-4 text-sm font-medium text-stone-900 hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800"
+          >
+            <Pencil className="h-4 w-4" />
+            Edit enquiry
+          </Link>
+          <EnquiryActions enquiry={enquiry} onUpdated={setEnquiry} />
+        </div>
       </div>
 
       {enquiry.linkedEvent && <LinkedEventCard event={enquiry.linkedEvent} />}
