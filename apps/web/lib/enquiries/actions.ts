@@ -23,7 +23,8 @@ const ENQUIRY_SELECT = `
   preferred_end_time, event_type_id, space_id, guest_count, budget_estimate,
   estimated_value, status, source, priority, assigned_profile_id,
   last_contact_at, next_follow_up_at, proposal_notes, proposed_package,
-  proposal_valid_until, lost_reason, notes, internal_notes, activity,
+  proposal_valid_until, proposal_title, proposal_intro, proposal_inclusions,
+  proposal_terms, proposal_internal_notes, lost_reason, notes, internal_notes, activity,
   converted_event_id, converted_at, created_at,
   event_types ( name ),
   spaces ( name ),
@@ -81,8 +82,13 @@ export type CreateEnquiryInput = {
 export type EnquiryProposalInput = {
   enquiry_id: string;
   estimated_value?: number;
+  proposal_title?: string | null;
+  proposal_intro?: string | null;
   proposal_notes?: string | null;
   proposed_package?: string | null;
+  proposal_inclusions?: string | null;
+  proposal_terms?: string | null;
+  proposal_internal_notes?: string | null;
   proposal_valid_until?: string | null;
   next_follow_up_date?: string | null;
 };
@@ -177,6 +183,22 @@ function buildProposalUpdate(input: EnquiryProposalInput) {
 
   if (input.estimated_value !== undefined) {
     update.estimated_value = input.estimated_value;
+  }
+
+  if (input.proposal_title !== undefined) {
+    update.proposal_title = input.proposal_title?.trim() || null;
+  }
+  if (input.proposal_intro !== undefined) {
+    update.proposal_intro = input.proposal_intro?.trim() || null;
+  }
+  if (input.proposal_inclusions !== undefined) {
+    update.proposal_inclusions = input.proposal_inclusions?.trim() || null;
+  }
+  if (input.proposal_terms !== undefined) {
+    update.proposal_terms = input.proposal_terms?.trim() || null;
+  }
+  if (input.proposal_internal_notes !== undefined) {
+    update.proposal_internal_notes = input.proposal_internal_notes?.trim() || null;
   }
   if (input.proposal_notes !== undefined) {
     update.proposal_notes = input.proposal_notes?.trim() || null;

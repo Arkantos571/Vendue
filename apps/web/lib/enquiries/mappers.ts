@@ -55,8 +55,13 @@ export interface EnquiryRowWithJoins {
   assigned_profile_id: string | null;
   last_contact_at: string | null;
   next_follow_up_at: string | null;
+  proposal_title: string | null;
+  proposal_intro: string | null;
   proposal_notes: string | null;
   proposed_package: string | null;
+  proposal_inclusions: string | null;
+  proposal_terms: string | null;
+  proposal_internal_notes: string | null;
   proposal_valid_until: string | null;
   lost_reason: string | null;
   notes: string | null;
@@ -208,8 +213,13 @@ export function toMockEnquiry(row: EnquiryRowWithJoins): MockEnquiry {
     assignedOwner: joinProfileName(row.profiles),
     lastContactDate: toDateOnly(row.last_contact_at),
     nextFollowUpDate: toDateOnly(row.next_follow_up_at),
+    proposalTitle: row.proposal_title,
+    proposalIntro: row.proposal_intro,
     proposalNotes: row.proposal_notes,
     proposedPackage: row.proposed_package,
+    proposalInclusions: row.proposal_inclusions,
+    proposalTerms: row.proposal_terms,
+    proposalInternalNotes: row.proposal_internal_notes,
     proposalValidUntil: row.proposal_valid_until,
     lostReason: row.lost_reason,
     notes: row.notes,
