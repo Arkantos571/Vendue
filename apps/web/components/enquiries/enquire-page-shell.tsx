@@ -17,13 +17,13 @@ export function EnquirePageShell({
   children,
 }: EnquirePageShellProps) {
   return (
-    <div className="flex min-h-screen flex-col bg-surface">
+    <div className="flex min-h-screen flex-col bg-background">
       <SiteHeader />
       <main className="flex-1">
         <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 transition-colors hover:text-slate-900 dark:text-slate-100 dark:hover:text-slate-100"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
             Back to homepage
@@ -33,10 +33,10 @@ export function EnquirePageShell({
             <p className="text-sm font-medium uppercase tracking-wide text-brand-700 dark:text-brand-400">
               {venueName ?? "Venudue"}
             </p>
-            <h1 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground">
               {title}
             </h1>
-            <p className="max-w-2xl text-sm text-slate-600 dark:text-slate-300 sm:text-base">
+            <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
               {description}
             </p>
           </div>

@@ -63,7 +63,7 @@ export function ProposalPreviewPanel({
         Preview only — sending and PDF export coming later
       </div>
 
-      <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+      <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <header className="px-6 py-8 text-white sm:px-8" style={{ backgroundColor: accent }}>
           <p className="text-xs font-semibold uppercase tracking-widest text-white/80">Venudue</p>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{preview.title}</h2>
@@ -76,91 +76,91 @@ export function ProposalPreviewPanel({
 
         <div className="space-y-8 px-6 py-8 sm:px-8">
           <section>
-            <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">{preview.intro}</p>
+            <p className="text-sm leading-relaxed text-foreground/90">{preview.intro}</p>
           </section>
 
           <section>
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Client & event</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Client & event</h3>
             <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
               <div>
-                <dt className="text-slate-500 dark:text-slate-400">Client</dt>
-                <dd className="font-medium text-slate-900 dark:text-slate-100">{enquiry.clientName}</dd>
+                <dt className="text-muted-foreground">Client</dt>
+                <dd className="font-medium text-foreground">{enquiry.clientName}</dd>
               </div>
               {enquiry.company && (
                 <div>
-                  <dt className="text-slate-500 dark:text-slate-400">Company</dt>
-                  <dd className="text-slate-800 dark:text-slate-200">{enquiry.company}</dd>
+                  <dt className="text-muted-foreground">Company</dt>
+                  <dd className="text-foreground">{enquiry.company}</dd>
                 </div>
               )}
               <div>
-                <dt className="text-slate-500 dark:text-slate-400">Event</dt>
-                <dd className="font-medium text-slate-900 dark:text-slate-100">{enquiry.eventName}</dd>
+                <dt className="text-muted-foreground">Event</dt>
+                <dd className="font-medium text-foreground">{enquiry.eventName}</dd>
               </div>
               <div>
-                <dt className="text-slate-500 dark:text-slate-400">Type</dt>
-                <dd className="text-slate-800 dark:text-slate-200">{enquiry.eventType}</dd>
+                <dt className="text-muted-foreground">Type</dt>
+                <dd className="text-foreground">{enquiry.eventType}</dd>
               </div>
               <div>
-                <dt className="text-slate-500 dark:text-slate-400">Schedule</dt>
-                <dd className="text-slate-800 dark:text-slate-200">{formatProposalSchedule(enquiry)}</dd>
+                <dt className="text-muted-foreground">Schedule</dt>
+                <dd className="text-foreground">{formatProposalSchedule(enquiry)}</dd>
               </div>
               <div>
-                <dt className="text-slate-500 dark:text-slate-400">Guests</dt>
-                <dd className="text-slate-800 dark:text-slate-200">{enquiry.guestCount}</dd>
+                <dt className="text-muted-foreground">Guests</dt>
+                <dd className="text-foreground">{enquiry.guestCount}</dd>
               </div>
             </dl>
           </section>
 
           <section>
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Proposed package</h3>
-            <p className="mt-3 text-sm font-medium text-slate-900 dark:text-slate-100">{preview.packageName}</p>
-            <p className="mt-4 text-2xl font-semibold text-slate-900 dark:text-slate-100">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Proposed package</h3>
+            <p className="mt-3 text-sm font-medium text-foreground">{preview.packageName}</p>
+            <p className="mt-4 text-2xl font-semibold text-foreground">
               {formatEnquiryCurrency(preview.estimatedValue)}
-              <span className="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">estimated</span>
+              <span className="ml-2 text-sm font-normal text-muted-foreground">estimated</span>
             </p>
           </section>
 
           <section>
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Inclusions</h3>
-            <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Inclusions</h3>
+            <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-foreground/90">
               {preview.inclusions}
             </p>
           </section>
 
           {preview.enquiry.proposalNotes?.trim() && (
             <section>
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Notes</h3>
-              <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Notes</h3>
+              <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-foreground/90">
                 {preview.enquiry.proposalNotes.trim()}
               </p>
             </section>
           )}
 
           {preview.validUntil && (
-            <section className="rounded-lg bg-slate-50 px-4 py-3 dark:bg-slate-800/50">
-              <p className="text-sm text-slate-700 dark:text-slate-300">
+            <section className="rounded-lg bg-slate-50 px-4 py-3">
+              <p className="text-sm text-foreground/90">
                 <span className="font-medium">Valid until:</span> {formatDate(preview.validUntil)}
               </p>
             </section>
           )}
 
           <section>
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Next steps</h3>
-            <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Next steps</h3>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               To proceed, please confirm your acceptance before the validity date. Our team will then
               send formal booking documentation.
             </p>
           </section>
 
           <section className="border-t border-slate-100 pt-6 dark:border-slate-800">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Terms</h3>
-            <p className="mt-3 whitespace-pre-wrap text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Terms</h3>
+            <p className="mt-3 whitespace-pre-wrap text-xs leading-relaxed text-muted-foreground">
               {preview.terms}
             </p>
           </section>
         </div>
 
-        <footer className="border-t border-slate-100 bg-slate-50 px-6 py-4 text-xs text-slate-500 dark:text-slate-400 dark:border-slate-800 dark:bg-slate-900/50 sm:px-8">
+        <footer className="border-t border-slate-100 bg-slate-50 px-6 py-4 text-xs text-muted-foreground dark:border-slate-800 /50 sm:px-8">
           Proposal status: {enquiryStatusLabels[enquiry.status]} · Prepared in Venudue
         </footer>
       </article>

@@ -57,7 +57,7 @@ export function FunctionSheetActions({
         {hasRotaBuilder ? (
           <Link
             href={`/dashboard/rota/${eventId}`}
-            className="inline-flex h-8 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-900 dark:text-slate-100 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-900 dark:hover:bg-slate-800"
+            className="inline-flex h-8 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-foreground transition-colors hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-800"
           >
             <Users className="h-4 w-4" />
             Build rota

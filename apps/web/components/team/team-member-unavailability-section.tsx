@@ -130,7 +130,7 @@ export function TeamMemberUnavailabilitySection({
           />
         ) : null}
         {isLoading ? (
-          <p className="text-sm text-slate-500 dark:text-slate-400">Loading unavailability…</p>
+          <p className="text-sm text-muted-foreground">Loading unavailability…</p>
         ) : (
           <UnavailabilityList periods={periods} deletingId={deletingId} onDelete={handleDelete} />
         )}

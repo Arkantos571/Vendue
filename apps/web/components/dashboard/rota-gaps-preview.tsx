@@ -29,19 +29,19 @@ export function RotaGapsPreview({ gaps }: RotaGapsPreviewProps) {
           {gaps.map((gap) => (
             <li
               key={gap.id}
-              className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50/50 px-4 py-3"
+              className="rounded-lg border border-border bg-muted/50 px-4 py-3"
             >
               <div className="flex items-start gap-3">
                 <AlertCircle
                   className={cn(
                     "mt-0.5 h-4 w-4 shrink-0",
-                    gap.priority === "high" ? "text-amber-600" : "text-stone-400",
+                    gap.priority === "high" ? "text-amber-600" : "text-muted-foreground",
                   )}
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{gap.role}</p>
-                  <p className="mt-0.5 truncate text-xs text-slate-600 dark:text-slate-300">{gap.eventTitle}</p>
-                  <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                  <p className="text-sm font-medium text-foreground">{gap.role}</p>
+                  <p className="mt-0.5 truncate text-xs text-muted-foreground">{gap.eventTitle}</p>
+                  <p className="mt-2 text-xs text-muted-foreground">
                     {formatDate(gap.date)} · {gap.time} · {gap.space}
                   </p>
                 </div>
@@ -50,7 +50,7 @@ export function RotaGapsPreview({ gaps }: RotaGapsPreviewProps) {
                     "shrink-0 rounded-full px-2 py-0.5 text-xs font-medium",
                     gap.priority === "high"
                       ? "bg-amber-50 text-amber-700"
-                      : "bg-slate-100 text-slate-600 dark:text-slate-300",
+                      : "bg-slate-100 text-muted-foreground",
                   )}
                 >
                   {gap.priority === "high" ? "Urgent" : "Open"}

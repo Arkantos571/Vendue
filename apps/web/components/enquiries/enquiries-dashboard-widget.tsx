@@ -10,7 +10,7 @@ export function EnquiriesDashboardWidget({ stats }: EnquiriesDashboardWidgetProp
   return (
     <Link
       href="/dashboard/enquiries"
-      className="block v-card p-5 transition-all hover:border-slate-300 hover:bg-slate-50 dark:bg-slate-900/50/80 hover:shadow-md"
+      className="block v-card p-5 transition-all hover:border-slate-300 hover:bg-muted/80 hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3">
@@ -18,8 +18,8 @@ export function EnquiriesDashboardWidget({ stats }: EnquiriesDashboardWidgetProp
             <Inbox className="h-5 w-5" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Enquiries pipeline</p>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-sm font-semibold text-foreground">Enquiries pipeline</p>
+            <p className="mt-1 text-sm text-muted-foreground">
               {stats.openEnquiries} open · {stats.proposalSent} proposals out · {stats.newEnquiries} new
             </p>
           </div>

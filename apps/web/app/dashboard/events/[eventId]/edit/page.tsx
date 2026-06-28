@@ -22,7 +22,7 @@ export default async function EditEventPage({ params }: Props) {
   return (
     <DashboardShell title="Edit event" description={event.title}>
       <div className="mx-auto max-w-3xl space-y-6">
-        <Link href={`/dashboard/events/${eventId}`} className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 dark:hover:text-slate-100">
+        <Link href={`/dashboard/events/${eventId}`} className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />Back to event
         </Link>
         <EditEventForm event={event} />

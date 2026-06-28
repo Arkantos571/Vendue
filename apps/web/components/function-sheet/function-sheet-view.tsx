@@ -45,7 +45,7 @@ export function FunctionSheetView({
       />
 
       {!isPersisted && saveStatus === "saved" && (
-        <p className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:text-slate-300 dark:border-slate-700 dark:bg-slate-800/40">
+        <p className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-muted-foreground dark:border-slate-700 dark:bg-slate-800/40">
           Review the default function sheet below. Changes save automatically as you edit.
         </p>
       )}

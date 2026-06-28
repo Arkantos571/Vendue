@@ -72,7 +72,7 @@ function NotificationRow({
         "rounded-xl border p-4 transition-colors",
         isUnread
           ? "border-brand-200 bg-brand-50/40 dark:border-brand-900 dark:bg-brand-950/20"
-          : "border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900",
+          : "border-border bg-card",
         isClickable &&
           "cursor-pointer hover:border-brand-300 hover:bg-brand-50/70 hover:shadow-sm dark:hover:border-brand-800 dark:hover:bg-brand-950/40",
       )}
@@ -80,7 +80,7 @@ function NotificationRow({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="font-medium text-slate-900 dark:text-slate-100">{notification.title}</p>
+            <p className="font-medium text-foreground">{notification.title}</p>
             <NotificationTypeBadge type={notification.type} />
             {isUnread ? (
               <span className="rounded-full bg-brand-600 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
@@ -88,8 +88,8 @@ function NotificationRow({
               </span>
             ) : null}
           </div>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{notification.message}</p>
-          <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-sm text-muted-foreground">{notification.message}</p>
+          <p className="mt-2 text-xs text-muted-foreground">
             {formatDate(notification.createdAt)} at {formatTime(notification.createdAt)}
           </p>
         </div>
@@ -110,7 +110,7 @@ function NotificationRow({
           ) : null}
           {isClickable ? (
             <ChevronRight
-              className="h-5 w-5 text-stone-400 dark:text-stone-500"
+              className="h-5 w-5 text-muted-foreground dark:text-stone-500"
               aria-hidden
             />
           ) : null}
@@ -220,7 +220,7 @@ export function NotificationsList({
       ) : null}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-slate-600 dark:text-slate-300">
+        <p className="text-sm text-muted-foreground">
           {unreadCount} unread · {notifications.length} total
         </p>
         {unreadCount > 0 ? (
@@ -240,7 +240,7 @@ export function NotificationsList({
               "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
               filter === value
                 ? "bg-brand-700 text-white"
-                : "bg-white text-slate-600 dark:text-slate-300 ring-1 ring-stone-200 hover:bg-slate-50 dark:bg-slate-900  dark:ring-stone-700",
+                : "bg-white text-muted-foreground ring-1 ring-stone-200 hover:bg-slate-50   dark:ring-stone-700",
             )}
           >
             {label}
@@ -251,10 +251,10 @@ export function NotificationsList({
 
       {visibleNotifications.length === 0 ? (
         <div className="v-empty">
-          <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+          <p className="text-sm font-medium text-foreground">
             {filter === "unread" ? "No unread notifications" : "No notifications yet"}
           </p>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-sm text-muted-foreground">
             {filter === "unread"
               ? "You're all caught up."
               : audience === "staff"

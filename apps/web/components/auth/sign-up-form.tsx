@@ -50,7 +50,7 @@ export function SignUpForm() {
         {successMessage && <div className={cn(alertSuccess)} role="status">{successMessage}</div>}
         <div className="space-y-2"><Label htmlFor="full_name">Full name</Label><Input id="full_name" name="full_name" autoComplete="name" required placeholder="Alex Morgan" value={fullName} onChange={(e) => setFullName(e.target.value)} /></div>
         <div className="space-y-2"><Label htmlFor="email">Work email</Label><Input id="email" name="email" type="email" autoComplete="email" required placeholder="you@venue.com" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
-        <div className="space-y-2"><Label htmlFor="password">Password</Label><Input id="password" name="password" type="password" autoComplete="new-password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} /><p className="text-xs text-slate-500 dark:text-slate-400">At least 8 characters</p></div>
+        <div className="space-y-2"><Label htmlFor="password">Password</Label><Input id="password" name="password" type="password" autoComplete="new-password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} /><p className="text-xs text-muted-foreground">At least 8 characters</p></div>
         <div className="space-y-2"><Label htmlFor="confirm_password">Confirm password</Label><Input id="confirm_password" name="confirm_password" type="password" autoComplete="new-password" required minLength={8} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} /></div>
         <Button type="submit" className="w-full" disabled={isSubmitting}>{isSubmitting ? "Creating account…" : "Create account with email"}</Button>
       </form>

@@ -20,7 +20,7 @@ export function TeamMemberDetailView({ member }: TeamMemberDetailViewProps) {
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{member.fullName}</h2>
+              <h2 className="text-xl font-semibold text-foreground">{member.fullName}</h2>
               <TeamStatusBadge status={member.status} />
             </div>
             <div className="mt-2 flex flex-wrap gap-2">
@@ -30,10 +30,10 @@ export function TeamMemberDetailView({ member }: TeamMemberDetailViewProps) {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link href={`/dashboard/team/${member.id}/edit`} className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800">
+          <Link href={`/dashboard/team/${member.id}/edit`} className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-foreground hover:bg-slate-50 dark:hover:bg-slate-800">
             <Pencil className="h-4 w-4" />Edit profile
           </Link>
-          <Link href="/dashboard/events" className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:bg-slate-900/50">
+          <Link href="/dashboard/events" className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-card px-4 text-sm font-medium text-foreground hover:bg-muted">
             <UserPlus className="h-4 w-4" />Assign to event
           </Link>
           <button type="button" disabled={member.status === "active"} className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-brand-700 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800 disabled:opacity-50">
@@ -56,9 +56,9 @@ export function TeamMemberDetailView({ member }: TeamMemberDetailViewProps) {
               <DetailItem icon={CalendarDays} label="Upcoming shifts" value={String(member.upcomingShiftsCount)} />
             </dl>
             {member.notes && (
-              <div className="mt-6 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50/50 px-4 py-3">
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Notes</p>
-                <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">{member.notes}</p>
+              <div className="mt-6 rounded-lg border border-border bg-muted/50 px-4 py-3">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Notes</p>
+                <p className="mt-2 text-sm leading-relaxed text-foreground/90">{member.notes}</p>
               </div>
             )}
           </CardContent>
@@ -79,16 +79,16 @@ export function TeamMemberDetailView({ member }: TeamMemberDetailViewProps) {
         </CardHeader>
         <CardContent>
           {member.upcomingShifts.length === 0 ? (
-            <p className="text-sm text-slate-500 dark:text-slate-400">No upcoming shifts assigned.</p>
+            <p className="text-sm text-muted-foreground">No upcoming shifts assigned.</p>
           ) : (
-            <ul className="divide-y divide-stone-100 rounded-lg border border-slate-200 dark:border-slate-800">
+            <ul className="divide-y divide-stone-100 rounded-lg border border-border">
               {member.upcomingShifts.map((shift) => (
                 <li key={shift.id} className="flex items-center justify-between gap-4 px-4 py-3">
                   <div>
-                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{shift.eventTitle}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{shift.roleLabel}</p>
+                    <p className="text-sm font-medium text-foreground">{shift.eventTitle}</p>
+                    <p className="text-xs text-muted-foreground">{shift.roleLabel}</p>
                   </div>
-                  <p className="text-sm text-slate-600 dark:text-slate-300">{formatDate(shift.date)} · {shift.startTime} – {shift.endTime}</p>
+                  <p className="text-sm text-muted-foreground">{formatDate(shift.date)} · {shift.startTime} – {shift.endTime}</p>
                 </li>
               ))}
             </ul>
@@ -101,7 +101,7 @@ export function TeamMemberDetailView({ member }: TeamMemberDetailViewProps) {
       <Card>
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:text-slate-300"><CalendarDays className="h-4 w-4" /></div>
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground"><CalendarDays className="h-4 w-4" /></div>
               <div>
                 <CardTitle>Recent activity</CardTitle>
                 <CardDescription>Changes and rota updates for this member.</CardDescription>
@@ -110,13 +110,13 @@ export function TeamMemberDetailView({ member }: TeamMemberDetailViewProps) {
           </CardHeader>
           <CardContent>
             {member.recentActivity.length === 0 ? (
-              <p className="text-sm text-slate-500 dark:text-slate-400">No recent activity.</p>
+              <p className="text-sm text-muted-foreground">No recent activity.</p>
             ) : (
               <ul className="space-y-3">
                 {member.recentActivity.map((item) => (
                   <li key={item.id} className="text-sm">
-                    <p className="text-slate-900 dark:text-slate-100">{item.message}</p>
-                    <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{formatDate(item.timestamp)} at {formatTime(item.timestamp)}</p>
+                    <p className="text-foreground">{item.message}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">{formatDate(item.timestamp)} at {formatTime(item.timestamp)}</p>
                   </li>
                 ))}
               </ul>
@@ -130,10 +130,10 @@ export function TeamMemberDetailView({ member }: TeamMemberDetailViewProps) {
 function DetailItem({ icon: Icon, label, value }: { icon?: typeof Mail; label: string; value: string }) {
   return (
     <div className="flex gap-3">
-      {Icon && <Icon className="mt-0.5 h-4 w-4 shrink-0 text-stone-400" />}
+      {Icon && <Icon className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />}
       <div>
-        <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</dt>
-        <dd className="mt-1 text-sm text-slate-900 dark:text-slate-100">{value}</dd>
+        <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</dt>
+        <dd className="mt-1 text-sm text-foreground">{value}</dd>
       </div>
     </div>
   );

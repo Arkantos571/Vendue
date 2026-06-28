@@ -48,15 +48,15 @@ export function EnquiryDetailView({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{enquiry.eventName}</h2>
+            <h2 className="text-xl font-semibold text-foreground">{enquiry.eventName}</h2>
             <EnquiryStatusBadge status={enquiry.status} />
           </div>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{enquiry.clientName}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{enquiry.clientName}</p>
         </div>
         <div className="flex flex-col items-stretch gap-2 sm:items-end">
           <Link
             href={`/dashboard/enquiries/${enquiry.id}/edit`}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-foreground hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             <Pencil className="h-4 w-4" />
             Edit enquiry
@@ -64,7 +64,7 @@ export function EnquiryDetailView({
           <button
             type="button"
             onClick={() => setEmailOpen(true)}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-foreground hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             <Mail className="h-4 w-4" />
             Email client
@@ -77,7 +77,7 @@ export function EnquiryDetailView({
 
       {enquiry.linkedEvent && <LinkedEventCard event={enquiry.linkedEvent} />}
 
-      <nav className="flex gap-1 overflow-x-auto border-b border-slate-200 dark:border-slate-800" aria-label="Enquiry sections">
+      <nav className="flex gap-1 overflow-x-auto border-b border-border" aria-label="Enquiry sections">
         {tabs.map(({ id, label }) => (
           <button
             key={id}
@@ -87,7 +87,7 @@ export function EnquiryDetailView({
               "shrink-0 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors",
               activeTab === id
                 ? "border-brand-700 text-brand-700"
-                : "border-transparent text-slate-500 dark:text-slate-400 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300",
+                : "border-transparent text-muted-foreground hover:border-slate-300 hover:text-foreground/90",
             )}
           >
             {label}

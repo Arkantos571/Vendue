@@ -114,7 +114,7 @@ export function EnquiryActions({ enquiry, onUpdated }: EnquiryActionsProps) {
           </p>
         )}
         {isLost && enquiry.lostReason && (
-          <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 dark:border-slate-700 dark:bg-slate-900">
+          <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-foreground/90">
             Lost reason: {enquiry.lostReason}
           </p>
         )}
@@ -196,8 +196,8 @@ export function EnquiryActions({ enquiry, onUpdated }: EnquiryActionsProps) {
         </div>
 
         {lostOpen && !isConverted && (
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900/50">
-            <label htmlFor="lost-reason" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 /50">
+            <label htmlFor="lost-reason" className="text-sm font-medium text-foreground/90">
               Lost reason (optional)
             </label>
             <Textarea

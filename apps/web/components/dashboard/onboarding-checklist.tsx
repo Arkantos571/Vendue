@@ -43,7 +43,7 @@ export function OnboardingChecklist({ items, complete, total }: OnboardingCheckl
                 className={cn(
                   "flex items-start gap-3 rounded-lg border px-4 py-3 transition-colors",
                   item.completed
-                    ? "border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
+                    ? "border-slate-200 bg-white hover:bg-slate-50  dark:hover:bg-slate-800"
                     : "border-brand-200 bg-brand-50/40 hover:bg-brand-50 dark:border-brand-800 dark:bg-brand-950/30 dark:hover:bg-brand-950/50",
                 )}
               >
@@ -52,7 +52,7 @@ export function OnboardingChecklist({ items, complete, total }: OnboardingCheckl
                     "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full",
                     item.completed
                       ? "bg-brand-600 text-white dark:bg-brand-500"
-                      : "border-2 border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-900",
+                      : "border-2 border-slate-300 bg-white dark:border-slate-600 ",
                   )}
                 >
                   {item.completed && <Check className="h-3 w-3" strokeWidth={3} />}
@@ -62,13 +62,13 @@ export function OnboardingChecklist({ items, complete, total }: OnboardingCheckl
                     className={cn(
                       "text-sm font-medium",
                       item.completed
-                        ? "text-slate-700 dark:text-slate-300 "
-                        : "text-slate-900 dark:text-slate-100 ",
+                        ? "text-foreground/90 "
+                        : "text-foreground ",
                     )}
                   >
                     {item.label}
                   </p>
-                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                  <p className="mt-0.5 text-xs text-muted-foreground">
                     {item.description}
                   </p>
                 </div>

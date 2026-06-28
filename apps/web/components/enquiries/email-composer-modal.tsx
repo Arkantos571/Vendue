@@ -251,7 +251,7 @@ export function EmailComposerModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="email-composer-title"
-        className="relative z-10 flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900"
+        className="relative z-10 flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl"
       >
         <div className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
           <div className="flex items-start gap-3">
@@ -259,10 +259,10 @@ export function EmailComposerModal({
               <Mail className="h-5 w-5" />
             </div>
             <div>
-              <h2 id="email-composer-title" className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+              <h2 id="email-composer-title" className="text-lg font-semibold text-foreground">
                 {mode === "proposal" ? "Email proposal link" : "Email client"}
               </h2>
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Draft and preview an email for {enquiry.clientName}. Sending uses your configured provider when available.
               </p>
             </div>
@@ -340,7 +340,7 @@ export function EmailComposerModal({
           </div>
 
           {hasProposalToken && (
-            <label className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
+            <label className="flex items-start gap-2 text-sm text-foreground/90">
               <input
                 type="checkbox"
                 className="mt-1"

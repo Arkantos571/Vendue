@@ -24,7 +24,7 @@ export function PublicProposalDocument({ proposal, className }: PublicProposalDo
   return (
     <article
       className={cn(
-        "overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-lg",
+        "overflow-hidden rounded-xl border border-border bg-background shadow-lg",
         className,
       )}
     >
@@ -42,68 +42,68 @@ export function PublicProposalDocument({ proposal, className }: PublicProposalDo
 
       <div className="space-y-10 px-6 py-10 sm:px-10">
         <section>
-          <p className="text-base leading-relaxed text-slate-700 dark:text-slate-300">{intro}</p>
+          <p className="text-base leading-relaxed text-foreground/90">{intro}</p>
         </section>
 
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Event details</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Event details</h2>
           <dl className="mt-4 grid gap-4 text-sm sm:grid-cols-2">
             <div>
-              <dt className="text-slate-500 dark:text-slate-400">Event</dt>
-              <dd className="mt-1 font-medium text-slate-900 dark:text-slate-100">{proposal.eventName}</dd>
+              <dt className="text-muted-foreground">Event</dt>
+              <dd className="mt-1 font-medium text-foreground">{proposal.eventName}</dd>
             </div>
             {proposal.eventTypeName && (
               <div>
-                <dt className="text-slate-500 dark:text-slate-400">Event type</dt>
-                <dd className="mt-1 text-slate-800 dark:text-slate-200">{proposal.eventTypeName}</dd>
+                <dt className="text-muted-foreground">Event type</dt>
+                <dd className="mt-1 text-foreground">{proposal.eventTypeName}</dd>
               </div>
             )}
             <div>
-              <dt className="text-slate-500 dark:text-slate-400">Schedule</dt>
-              <dd className="mt-1 text-slate-800 dark:text-slate-200">{publicProposalSchedule(proposal)}</dd>
+              <dt className="text-muted-foreground">Schedule</dt>
+              <dd className="mt-1 text-foreground">{publicProposalSchedule(proposal)}</dd>
             </div>
             <div>
-              <dt className="text-slate-500 dark:text-slate-400">Guests</dt>
-              <dd className="mt-1 text-slate-800 dark:text-slate-200">{proposal.guestCount}</dd>
+              <dt className="text-muted-foreground">Guests</dt>
+              <dd className="mt-1 text-foreground">{proposal.guestCount}</dd>
             </div>
           </dl>
         </section>
 
-        <section className="rounded-xl bg-slate-50 dark:bg-slate-900/50 px-5 py-6">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Proposed package</h2>
-          <p className="mt-3 text-lg font-medium text-slate-900 dark:text-slate-100">{publicProposalPackage(proposal)}</p>
-          <p className="mt-4 text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+        <section className="rounded-xl bg-muted px-5 py-6">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Proposed package</h2>
+          <p className="mt-3 text-lg font-medium text-foreground">{publicProposalPackage(proposal)}</p>
+          <p className="mt-4 text-3xl font-semibold tracking-tight text-foreground">
             {formatEnquiryCurrency(proposal.estimatedValue)}
-            <span className="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">estimated</span>
+            <span className="ml-2 text-sm font-normal text-muted-foreground">estimated</span>
           </p>
         </section>
 
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Inclusions</h2>
-          <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Inclusions</h2>
+          <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-foreground/90">
             {publicProposalInclusions(proposal)}
           </p>
         </section>
 
         {proposal.proposalValidUntil && (
-          <section className="rounded-lg border border-slate-200 px-4 py-3">
-            <p className="text-sm text-slate-700 dark:text-slate-300">
+          <section className="rounded-lg border border-border px-4 py-3">
+            <p className="text-sm text-foreground/90">
               <span className="font-medium">Valid until</span> {formatDate(proposal.proposalValidUntil)}
             </p>
           </section>
         )}
 
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Next steps</h2>
-          <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Next steps</h2>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             To proceed, please let us know if this proposal works for you. Our team will follow up with
             formal booking documentation. Online acceptance and payments are coming soon.
           </p>
         </section>
 
-        <section className="border-t border-slate-100 dark:border-slate-800 pt-8">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Terms</h2>
-          <p className="mt-3 whitespace-pre-wrap text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+        <section className="border-t border-border pt-8">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Terms</h2>
+          <p className="mt-3 whitespace-pre-wrap text-xs leading-relaxed text-muted-foreground">
             {publicProposalTerms(proposal)}
           </p>
         </section>

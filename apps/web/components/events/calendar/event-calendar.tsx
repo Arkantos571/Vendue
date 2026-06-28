@@ -73,7 +73,7 @@ export function EventCalendar() {
   if (isLoading) {
     return (
       <div className="v-empty">
-        <p className="text-sm text-slate-500 dark:text-slate-400">Loading calendar…</p>
+        <p className="text-sm text-muted-foreground">Loading calendar…</p>
       </div>
     );
   }
@@ -104,7 +104,7 @@ export function EventCalendar() {
                 "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
                 viewMode === value
                   ? "bg-brand-700 text-white"
-                  : "bg-white text-slate-600 dark:text-slate-300 ring-1 ring-stone-200 hover:bg-slate-50 dark:bg-slate-900  dark:ring-stone-700 dark:hover:bg-slate-800",
+                  : "bg-white text-muted-foreground ring-1 ring-border hover:bg-muted",
               )}
             >
               {label}
@@ -115,7 +115,7 @@ export function EventCalendar() {
 
       <CalendarNavControls label={periodLabel} />
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm">
+      <div className="overflow-hidden rounded-xl border border-border bg-background shadow-sm">
         {viewMode === "month" && (
           <EventCalendarMonthView events={events} referenceDate={referenceDate} />
         )}

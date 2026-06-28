@@ -114,7 +114,7 @@ export function VenueOnboardingForm() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <p className="text-sm text-slate-500 dark:text-slate-400">Loading venue setup…</p>
+        <p className="text-sm text-muted-foreground">Loading venue setup…</p>
       </div>
     );
   }
@@ -132,8 +132,8 @@ export function VenueOnboardingForm() {
 
       <section className="space-y-4">
         <div>
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Venue details</h3>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Name and type shown across the dashboard.</p>
+          <h3 className="text-sm font-semibold text-foreground">Venue details</h3>
+          <p className="mt-1 text-sm text-muted-foreground">Name and type shown across the dashboard.</p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2 sm:col-span-2">
@@ -208,16 +208,16 @@ export function VenueOnboardingForm() {
                 className="flex-1"
               />
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Used for client-facing materials when branding is enabled.</p>
+            <p className="text-xs text-muted-foreground">Used for client-facing materials when branding is enabled.</p>
           </div>
         </div>
       </section>
 
-      <section className="space-y-4 border-t border-slate-100 dark:border-slate-800 pt-8">
+      <section className="space-y-4 border-t border-border pt-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Spaces</h3>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Rooms, halls, and areas where events take place.</p>
+            <h3 className="text-sm font-semibold text-foreground">Spaces</h3>
+            <p className="mt-1 text-sm text-muted-foreground">Rooms, halls, and areas where events take place.</p>
           </div>
           <Button
             type="button"
@@ -232,9 +232,9 @@ export function VenueOnboardingForm() {
 
         <div className="space-y-4">
           {draft.spaces.map((space, index) => (
-            <div key={index} className="rounded-lg border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+            <div key={index} className="rounded-lg border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-700">
               <div className="mb-3 flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Space {index + 1}</p>
+                <p className="text-sm font-medium text-foreground/90">Space {index + 1}</p>
                 {draft.spaces.length > 1 && (
                   <button
                     type="button"
@@ -244,7 +244,7 @@ export function VenueOnboardingForm() {
                         spaces: prev.spaces.filter((_, i) => i !== index),
                       }))
                     }
-                    className="rounded p-1.5 text-stone-400 hover:bg-slate-200 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+                    className="rounded p-1.5 text-muted-foreground hover:bg-slate-200 hover:text-foreground/90 dark:hover:bg-slate-700 hover:text-foreground"
                     aria-label={`Remove space ${index + 1}`}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -288,11 +288,11 @@ export function VenueOnboardingForm() {
         </div>
       </section>
 
-      <section className="space-y-4 border-t border-slate-100 dark:border-slate-800 pt-8">
+      <section className="space-y-4 border-t border-border pt-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Event types</h3>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Templates that speed up event creation and staffing.</p>
+            <h3 className="text-sm font-semibold text-foreground">Event types</h3>
+            <p className="mt-1 text-sm text-muted-foreground">Templates that speed up event creation and staffing.</p>
           </div>
           <Button
             type="button"
@@ -309,9 +309,9 @@ export function VenueOnboardingForm() {
 
         <div className="space-y-4">
           {draft.event_types.map((eventType, index) => (
-            <div key={index} className="rounded-lg border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+            <div key={index} className="rounded-lg border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-700">
               <div className="mb-3 flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Event type {index + 1}</p>
+                <p className="text-sm font-medium text-foreground/90">Event type {index + 1}</p>
                 {draft.event_types.length > 1 && (
                   <button
                     type="button"
@@ -321,7 +321,7 @@ export function VenueOnboardingForm() {
                         event_types: prev.event_types.filter((_, i) => i !== index),
                       }))
                     }
-                    className="rounded p-1.5 text-stone-400 hover:bg-slate-200 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+                    className="rounded p-1.5 text-muted-foreground hover:bg-slate-200 hover:text-foreground/90 dark:hover:bg-slate-700 hover:text-foreground"
                     aria-label={`Remove event type ${index + 1}`}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -377,10 +377,10 @@ export function VenueOnboardingForm() {
         onPublicSlugChange={(public_slug) => setDraft((prev) => ({ ...prev, public_slug }))}
       />
 
-      <section className="space-y-4 border-t border-slate-100 dark:border-slate-800 pt-8">
+      <section className="space-y-4 border-t border-border pt-8">
         <div>
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Default opening hours</h3>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <h3 className="text-sm font-semibold text-foreground">Default opening hours</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
             Venue-wide hours used when scheduling events.
           </p>
         </div>
@@ -397,7 +397,7 @@ export function VenueOnboardingForm() {
         </div>
       </section>
 
-      <div className="flex flex-col gap-3 border-t border-slate-100 dark:border-slate-800 pt-6 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
         {successMessage && (
           <p className="text-sm text-brand-700 dark:text-brand-300">{successMessage}</p>
         )}

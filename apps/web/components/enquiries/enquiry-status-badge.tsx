@@ -6,7 +6,7 @@ const styles: Record<EnquiryStatus, string> = {
   contacted: "bg-violet-50 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300",
   proposal_sent: "bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300",
   confirmed: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300",
-  lost: "bg-slate-100 text-slate-600 dark:text-slate-300 dark:bg-slate-800 ",
+  lost: "bg-slate-100 text-muted-foreground dark:bg-slate-800 ",
 };
 
 export function EnquiryStatusBadge({ status }: { status: EnquiryStatus }) {

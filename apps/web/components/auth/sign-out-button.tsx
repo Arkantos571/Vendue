@@ -38,8 +38,8 @@ export function SignOutButton({ className }: SignOutButtonProps) {
         onClick={handleSignOut}
         disabled={isSigningOut}
         className={cn(
-          "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-stone-400 transition-colors",
-          "hover:bg-white dark:bg-slate-950/5 hover:text-stone-100 disabled:opacity-50",
+          "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-brand-300/80 transition-colors",
+          "hover:bg-white/5 hover:text-white disabled:opacity-50",
         )}
       >
         <LogOut className="h-4 w-4 shrink-0" />

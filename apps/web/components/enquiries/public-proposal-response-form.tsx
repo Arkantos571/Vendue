@@ -72,9 +72,9 @@ export function PublicProposalResponseForm({
   }
 
   return (
-    <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-6 shadow-sm sm:p-8">
-      <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Interested in this proposal?</h2>
-      <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+    <section className="rounded-xl border border-border bg-background p-6 shadow-sm sm:p-8">
+      <h2 className="text-lg font-semibold text-foreground">Interested in this proposal?</h2>
+      <p className="mt-2 text-sm text-muted-foreground">
         This is not a booking confirmation or contract. The venue team will follow up.
       </p>
 
@@ -102,7 +102,7 @@ export function PublicProposalResponseForm({
               "rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors",
               selected === option
                 ? "border-brand-700 bg-brand-50 text-brand-800"
-                : "border-slate-200 bg-white text-slate-700 dark:text-slate-300 hover:border-slate-300 hover:bg-slate-50 dark:bg-slate-900/50",
+                : "border-slate-200 bg-white text-foreground/90 hover:border-slate-300 hover:bg-muted",
             )}
           >
             {option === "interested"
@@ -115,7 +115,7 @@ export function PublicProposalResponseForm({
       </div>
 
       <div className="mt-6">
-        <label htmlFor="proposal-client-message" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+        <label htmlFor="proposal-client-message" className="text-sm font-medium text-foreground/90">
           Message to the venue team
         </label>
         <Textarea

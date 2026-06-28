@@ -62,7 +62,7 @@ export function OperationalChecklist({
                 "flex items-center gap-3 rounded-lg border px-3 py-2",
                 item.completed
                   ? "border-emerald-200 bg-emerald-50/50 dark:border-emerald-900 dark:bg-emerald-950/20"
-                  : "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900",
+                  : "border-slate-200 bg-white ",
               )}
             >
               <input
@@ -77,14 +77,14 @@ export function OperationalChecklist({
                 onChange={(event) => updateLabel(item.id, event.target.value)}
                 className={cn(
                   "border-0 bg-transparent px-0 shadow-none focus-visible:ring-0",
-                  item.completed && "text-slate-500 dark:text-slate-400 line-through",
+                  item.completed && "text-muted-foreground line-through",
                 )}
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="shrink-0 text-slate-500 dark:text-slate-400 hover:text-red-600"
+                className="shrink-0 text-muted-foreground hover:text-red-600"
                 onClick={() => removeItem(item.id)}
                 aria-label="Remove checklist item"
               >

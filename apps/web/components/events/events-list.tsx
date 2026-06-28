@@ -81,7 +81,7 @@ export function EventsList() {
   if (isLoading) {
     return (
       <div className="v-empty">
-        <p className="text-sm text-slate-500 dark:text-slate-400">Loading events…</p>
+        <p className="text-sm text-muted-foreground">Loading events…</p>
       </div>
     );
   }
@@ -103,7 +103,7 @@ export function EventsList() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative max-w-md flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Search events, clients, or spaces…"
@@ -131,7 +131,7 @@ export function EventsList() {
               "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
               statusFilter === value
                 ? "bg-brand-700 text-white"
-                : "bg-white text-slate-600 dark:text-slate-300 ring-1 ring-stone-200 hover:bg-slate-50 dark:bg-slate-900  dark:ring-stone-700 dark:hover:bg-slate-800",
+                : "bg-white text-muted-foreground ring-1 ring-border hover:bg-muted",
             )}
           >
             {label}
@@ -141,17 +141,17 @@ export function EventsList() {
 
       {filteredEvents.length === 0 ? (
         <div className="v-empty">
-          <p className="text-sm font-medium text-slate-900 dark:text-slate-100">No events found</p>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm font-medium text-foreground">No events found</p>
+          <p className="mt-1 text-sm text-muted-foreground">
             Try adjusting your search or filters, or create a new event.
           </p>
         </div>
       ) : (
         <>
-          <div className="hidden overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm lg:block">
+          <div className="hidden overflow-hidden rounded-xl border border-border bg-background shadow-sm lg:block">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/50 text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                <tr className="border-b border-border bg-muted/50 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   <th className="px-6 py-3">Event</th>
                   <th className="px-4 py-3">Client</th>
                   <th className="px-4 py-3">Date</th>
@@ -202,23 +202,23 @@ function EventTableRow({ event }: { event: MockEvent }) {
       tabIndex={0}
       onClick={navigate}
       onKeyDown={handleKeyDown}
-      className="group cursor-pointer transition-colors hover:bg-slate-50/80 focus-visible:bg-slate-50/80 dark:hover:bg-slate-800/50 dark:focus-visible:bg-slate-800/50 focus-visible:outline-none"
+      className="group cursor-pointer transition-colors hover:bg-muted/80 focus-visible:bg-muted/80 focus-visible:outline-none"
       aria-label={`View ${event.title}`}
     >
       <td className="px-6 py-4">
-        <span className="font-medium text-slate-900 dark:text-slate-100">{event.title}</span>
+        <span className="font-medium text-foreground">{event.title}</span>
       </td>
-      <td className="px-4 py-4 text-slate-600 dark:text-slate-300">{event.clientName}</td>
-      <td className="px-4 py-4 text-slate-600 dark:text-slate-300">{formatDate(event.date)}</td>
-      <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
+      <td className="px-4 py-4 text-muted-foreground">{event.clientName}</td>
+      <td className="px-4 py-4 text-muted-foreground">{formatDate(event.date)}</td>
+      <td className="px-4 py-4 text-muted-foreground">
         {formatEventTimeRange(event)}
       </td>
-      <td className="px-4 py-4 text-slate-600 dark:text-slate-300">{event.space}</td>
-      <td className="px-4 py-4 text-slate-600 dark:text-slate-300">{event.guestCount}</td>
+      <td className="px-4 py-4 text-muted-foreground">{event.space}</td>
+      <td className="px-4 py-4 text-muted-foreground">{event.guestCount}</td>
       <td className="px-4 py-4">
         <StatusBadge status={event.status} />
       </td>
-      <td className="px-4 py-4 text-slate-600 dark:text-slate-300">{event.assignedStaffCount}</td>
+      <td className="px-4 py-4 text-muted-foreground">{event.assignedStaffCount}</td>
       <td className="px-6 py-4">
         <RotaCompletionIndicator
           assigned={event.assignedStaffCount}
@@ -234,37 +234,37 @@ function EventCard({ event }: { event: MockEvent }) {
   return (
     <Link
       href={`/dashboard/events/${event.id}`}
-      className="block v-card p-5 transition-colors hover:border-slate-300 hover:bg-slate-50 dark:bg-slate-900/50/50"
+      className="block v-card p-5 transition-colors hover:border-slate-300 hover:bg-muted/50"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="font-medium text-slate-900 dark:text-slate-100">{event.title}</p>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{event.clientName}</p>
+          <p className="font-medium text-foreground">{event.title}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{event.clientName}</p>
         </div>
         <StatusBadge status={event.status} />
       </div>
       <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
         <div>
-          <dt className="text-xs text-stone-400">Date</dt>
-          <dd className="mt-0.5 text-slate-700 dark:text-slate-300">{formatDate(event.date)}</dd>
+          <dt className="text-xs text-muted-foreground">Date</dt>
+          <dd className="mt-0.5 text-foreground/90">{formatDate(event.date)}</dd>
         </div>
         <div>
-          <dt className="text-xs text-stone-400">Time</dt>
-          <dd className="mt-0.5 text-slate-700 dark:text-slate-300">
+          <dt className="text-xs text-muted-foreground">Time</dt>
+          <dd className="mt-0.5 text-foreground/90">
             {formatEventTimeRange(event)}
           </dd>
         </div>
         <div>
-          <dt className="text-xs text-stone-400">Space</dt>
-          <dd className="mt-0.5 text-slate-700 dark:text-slate-300">{event.space}</dd>
+          <dt className="text-xs text-muted-foreground">Space</dt>
+          <dd className="mt-0.5 text-foreground/90">{event.space}</dd>
         </div>
         <div>
-          <dt className="text-xs text-stone-400">Guests</dt>
-          <dd className="mt-0.5 text-slate-700 dark:text-slate-300">{event.guestCount}</dd>
+          <dt className="text-xs text-muted-foreground">Guests</dt>
+          <dd className="mt-0.5 text-foreground/90">{event.guestCount}</dd>
         </div>
       </dl>
-      <div className="mt-4 flex items-center justify-between gap-4 border-t border-slate-100 pt-4">
-        <span className="text-xs text-slate-500 dark:text-slate-400">
+      <div className="mt-4 flex items-center justify-between gap-4 border-t border-border pt-4">
+        <span className="text-xs text-muted-foreground">
           {event.assignedStaffCount} staff assigned
         </span>
         <RotaCompletionIndicator

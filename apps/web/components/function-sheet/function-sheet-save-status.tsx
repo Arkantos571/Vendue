@@ -9,11 +9,11 @@ const statusConfig: Record<
   saved: {
     label: "Saved",
     className:
-      "text-slate-500 dark:text-slate-400 ",
+      "text-muted-foreground ",
   },
   saving: {
     label: "Saving...",
-    className: "text-slate-600 dark:text-slate-300 ",
+    className: "text-muted-foreground ",
   },
   unsaved: {
     label: "Unsaved changes",

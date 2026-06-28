@@ -37,15 +37,15 @@ export function EventDetailView({ event, functionSheetData, hasRotaBuilder }: Ev
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between print:hidden">
         <div>
           <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{event.title}</h2>
+            <h2 className="text-xl font-semibold text-foreground">{event.title}</h2>
             <StatusBadge status={event.status} />
           </div>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{event.eventType}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{event.eventType}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Link
             href={`/dashboard/events/${event.id}/edit`}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-foreground hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             <Pencil className="h-4 w-4" />
             Edit event
@@ -62,7 +62,7 @@ export function EventDetailView({ event, functionSheetData, hasRotaBuilder }: Ev
             <button
               type="button"
               disabled
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-slate-200 px-4 text-sm font-medium text-stone-400"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-slate-200 px-4 text-sm font-medium text-muted-foreground"
             >
               <Users className="h-4 w-4" />
               Build rota
@@ -72,7 +72,7 @@ export function EventDetailView({ event, functionSheetData, hasRotaBuilder }: Ev
       </div>
 
       <nav
-        className="flex gap-1 overflow-x-auto border-b border-slate-200 dark:border-slate-800 print:hidden"
+        className="flex gap-1 overflow-x-auto border-b border-border print:hidden"
         aria-label="Event sections"
       >
         {tabs.map(({ id, label }) => (
@@ -84,7 +84,7 @@ export function EventDetailView({ event, functionSheetData, hasRotaBuilder }: Ev
               "shrink-0 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors",
               activeTab === id
                 ? "border-brand-700 text-brand-700"
-                : "border-transparent text-slate-500 dark:text-slate-400 hover:border-slate-300 hover:text-slate-700 dark:text-slate-300",
+                : "border-transparent text-muted-foreground hover:border-slate-300 hover:text-foreground/90",
             )}
           >
             {label}
@@ -97,9 +97,9 @@ export function EventDetailView({ event, functionSheetData, hasRotaBuilder }: Ev
           <div className="space-y-6 lg:col-span-2">
             <EventOverviewSection event={event} />
             {event.notes && (
-              <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-6 py-5 shadow-sm">
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Quick note</p>
-                <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">{event.notes}</p>
+              <div className="rounded-xl border border-border bg-background px-6 py-5 shadow-sm">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Quick note</p>
+                <p className="mt-2 text-sm leading-relaxed text-foreground/90">{event.notes}</p>
               </div>
             )}
           </div>

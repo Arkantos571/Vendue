@@ -26,8 +26,8 @@ export default async function StaffShiftsPage() {
     <StaffShell title="All shifts" backHref="/staff">
       <div className="space-y-4">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Your shifts</h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <h1 className="text-xl font-semibold text-foreground">Your shifts</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             Upcoming assignments for {profile.fullName}
           </p>
         </div>

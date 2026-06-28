@@ -66,7 +66,7 @@ export function SettingsView() {
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
         <div className="lg:sticky lg:top-6 lg:max-h-[calc(100vh-7rem)] lg:w-56 lg:shrink-0 lg:self-start lg:overflow-y-auto">
           <nav
-            className="flex gap-1 overflow-x-auto rounded-xl border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-900 lg:flex-col lg:overflow-x-visible lg:overflow-y-auto"
+            className="flex gap-1 overflow-x-auto rounded-xl border border-slate-200 bg-white p-1 lg:flex-col lg:overflow-x-visible lg:overflow-y-auto"
             aria-label="Settings sections"
           >
           {settingsTabs.map(({ id, label, icon: Icon }) => {
@@ -81,7 +81,7 @@ export function SettingsView() {
                   "flex w-full shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors lg:justify-start",
                   isActive
                     ? "bg-brand-700 text-white shadow-sm dark:bg-brand-600"
-                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-100  dark:hover:bg-slate-800 dark:hover:text-slate-100",
+                    : "text-muted-foreground hover:bg-slate-100 hover:text-foreground  dark:hover:bg-slate-800 hover:text-foreground",
                 )}
                 aria-current={isActive ? "page" : undefined}
               >
@@ -109,7 +109,7 @@ export function SettingsView() {
               <Label htmlFor="settings_name">Full name</Label>
               <Input id="settings_name" placeholder="Alex Morgan" disabled />
             </div>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-sm text-muted-foreground">
               Profile settings will sync with Supabase Auth in a later release.
             </p>
           </CardContent>
@@ -139,8 +139,8 @@ export function SettingsView() {
           <CardContent className="space-y-8">
             <section className="space-y-4">
               <div>
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Theme</h3>
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                <h3 className="text-sm font-semibold text-foreground">Theme</h3>
+                <p className="mt-1 text-sm text-muted-foreground">
                   Choose light, dark, or match your system preference.
                 </p>
               </div>
@@ -149,10 +149,10 @@ export function SettingsView() {
 
             <section className="space-y-4 border-t border-slate-100 pt-8 dark:border-slate-800">
               <div>
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                <h3 className="text-sm font-semibold text-foreground">
                   Accent colour
                 </h3>
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                <p className="mt-1 text-sm text-muted-foreground">
                   Placeholder for dashboard accent colour. Venue branding lives under Venue Setup.
                 </p>
               </div>
@@ -193,7 +193,7 @@ export function SettingsView() {
             <CardDescription>Invite teammates and manage venue permissions.</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-sm text-muted-foreground">
               Role management will connect to Supabase and venue membership. For now, use the Team
               section to review your roster.
             </p>
@@ -208,22 +208,22 @@ export function SettingsView() {
             <CardDescription>Email and in-app alerts for enquiries, events, and rota.</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-sm text-muted-foreground">
               In-app notifications are live. Outbound client emails use Resend or Postmark when
               configured via server environment variables.
             </p>
             <dl className="mt-4 space-y-2 rounded-lg border border-slate-200 bg-slate-50/80 p-4 text-sm dark:border-slate-700 dark:bg-slate-800/40">
               <div>
-                <dt className="font-medium text-slate-700 dark:text-slate-300">RESEND_API_KEY</dt>
-                <dd className="text-slate-500 dark:text-slate-400">Optional. Preferred when set with EMAIL_FROM.</dd>
+                <dt className="font-medium text-foreground/90">RESEND_API_KEY</dt>
+                <dd className="text-muted-foreground">Optional. Preferred when set with EMAIL_FROM.</dd>
               </div>
               <div>
-                <dt className="font-medium text-slate-700 dark:text-slate-300">POSTMARK_SERVER_TOKEN</dt>
-                <dd className="text-slate-500 dark:text-slate-400">Optional fallback provider.</dd>
+                <dt className="font-medium text-foreground/90">POSTMARK_SERVER_TOKEN</dt>
+                <dd className="text-muted-foreground">Optional fallback provider.</dd>
               </div>
               <div>
-                <dt className="font-medium text-slate-700 dark:text-slate-300">EMAIL_FROM</dt>
-                <dd className="text-slate-500 dark:text-slate-400">Verified sender address, e.g. events@yourvenue.com</dd>
+                <dt className="font-medium text-foreground/90">EMAIL_FROM</dt>
+                <dd className="text-muted-foreground">Verified sender address, e.g. events@yourvenue.com</dd>
               </div>
             </dl>
           </CardContent>

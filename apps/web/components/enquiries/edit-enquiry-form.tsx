@@ -94,7 +94,7 @@ export function EditEnquiryForm({ enquiry }: { enquiry: MockEnquiry }) {
     router.refresh();
   }
 
-  if (isLoading) return <div className="v-empty"><p className="text-sm text-slate-500 dark:text-slate-400">Loading form…</p></div>;
+  if (isLoading) return <div className="v-empty"><p className="text-sm text-muted-foreground">Loading form…</p></div>;
 
   const budgetDefault = enquiry.budgetEstimate || enquiry.estimatedValue || "";
 
@@ -106,8 +106,8 @@ export function EditEnquiryForm({ enquiry }: { enquiry: MockEnquiry }) {
           This enquiry is linked to an event. Editing details here will not change the linked event.
         </div>
       ) : null}
-      <section className="v-panel dark:bg-slate-900">
-        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Enquiry details</h2>
+      <section className="v-panel">
+        <h2 className="text-base font-semibold text-foreground">Enquiry details</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <div className="space-y-2 sm:col-span-2"><Label htmlFor="event_name">Event name</Label><Input id="event_name" name="event_name" required defaultValue={enquiry.eventName} /></div>
           <div className="space-y-2"><Label htmlFor="client_name">Client name</Label><Input id="client_name" name="client_name" required defaultValue={enquiry.clientName} /></div>
@@ -118,8 +118,8 @@ export function EditEnquiryForm({ enquiry }: { enquiry: MockEnquiry }) {
           <div className="space-y-2"><Label htmlFor="status">Status</Label><Select id="status" name="status" defaultValue={enquiry.status}>{enquiryStatusOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</Select></div>
         </div>
       </section>
-      <section className="v-panel dark:bg-slate-900">
-        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Event request</h2>
+      <section className="v-panel">
+        <h2 className="text-base font-semibold text-foreground">Event request</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <div className="space-y-2"><Label htmlFor="requested_date">Requested date</Label><Input id="requested_date" name="requested_date" type="date" required defaultValue={enquiry.requestedDate} /></div>
           <div className="space-y-2"><Label htmlFor="event_type">Event type</Label><Select id="event_type" name="event_type" required defaultValue={enquiry.eventTypeId}>{eventTypes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select></div>
@@ -130,9 +130,9 @@ export function EditEnquiryForm({ enquiry }: { enquiry: MockEnquiry }) {
           <div className="space-y-2"><Label htmlFor="preferred_end">Preferred end</Label><Select id="preferred_end" value={endSelection} disabled={!startTime} onChange={(e) => setEndSelection(e.target.value)}><option value="">Not specified</option>{endOptions.sameDay.map((o) => <option key={endSelectionKey(o.value, false)} value={endSelectionKey(o.value, false)}>{o.label}</option>)}{endOptions.nextDay.map((o) => <option key={endSelectionKey(o.value, true)} value={endSelectionKey(o.value, true)}>{o.label} next day</option>)}</Select></div>
         </div>
       </section>
-      <section className="v-panel dark:bg-slate-900"><h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Notes</h2><div className="mt-5"><Textarea id="notes" name="notes" rows={4} defaultValue={enquiry.notes ?? ""} /></div></section>
+      <section className="v-panel"><h2 className="text-base font-semibold text-foreground">Notes</h2><div className="mt-5"><Textarea id="notes" name="notes" rows={4} defaultValue={enquiry.notes ?? ""} /></div></section>
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <Link href={`/dashboard/enquiries/${enquiry.id}`} className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900">Cancel</Link>
+        <Link href={`/dashboard/enquiries/${enquiry.id}`} className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-foreground hover:bg-slate-50">Cancel</Link>
         <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Saving…" : "Save changes"}</Button>
       </div>
     </form>

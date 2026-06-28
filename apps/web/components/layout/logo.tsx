@@ -10,7 +10,6 @@ interface LogoProps {
   variant?: "default" | "inverse";
   href?: string;
   size?: LogoSize;
-  /** Accessible label when wordmark is hidden */
   ariaLabel?: string;
 }
 
@@ -32,21 +31,15 @@ function LogoIcon({ className }: { className?: string }) {
       className={className}
       aria-hidden
     >
-      <rect
-        x="2"
-        y="4"
-        width="28"
-        height="26"
-        rx="7"
-        className="fill-brand-700 dark:fill-brand-500"
-      />
-      <rect x="2" y="4" width="28" height="8" rx="7" className="fill-brand-800/40" />
-      <circle cx="10" cy="8" r="1.25" className="fill-white/70" />
-      <circle cx="16" cy="8" r="1.25" className="fill-white/70" />
-      <circle cx="22" cy="8" r="1.25" className="fill-white/70" />
+      <rect x="2" y="4" width="28" height="26" rx="7" className="fill-primary" />
+      <rect x="2" y="4" width="28" height="8" rx="7" className="fill-brand-900/35" />
+      <circle cx="10" cy="8" r="1.25" className="fill-primary-foreground/70" />
+      <circle cx="16" cy="8" r="1.25" className="fill-primary-foreground/70" />
+      <circle cx="22" cy="8" r="1.25" className="fill-primary-foreground/70" />
+      {/* Upright V: open at top, point at bottom */}
       <path
-        d="M10.5 24.5L16 14.5L21.5 24.5H18.8L16 19.8L13.2 24.5H10.5Z"
-        className="fill-white"
+        d="M10.5 15.5L16 24.5L21.5 15.5H18.8L16 20.2L13.2 15.5H10.5Z"
+        className="fill-primary-foreground"
       />
     </svg>
   );
@@ -71,9 +64,7 @@ export function Logo({
           className={cn(
             "font-semibold tracking-tight",
             styles.wordmark,
-            isInverse
-              ? "text-white"
-              : "text-slate-900 dark:text-slate-100",
+            isInverse ? "text-primary-foreground" : "text-foreground",
           )}
         >
           Venudue
@@ -101,10 +92,7 @@ export function Logo({
   }
 
   return (
-    <span
-      className={linkClass}
-      aria-label={showWordmark ? undefined : ariaLabel}
-    >
+    <span className={linkClass} aria-label={showWordmark ? undefined : ariaLabel}>
       {content}
     </span>
   );

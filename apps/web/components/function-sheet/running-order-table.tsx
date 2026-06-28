@@ -41,7 +41,7 @@ export function RunningOrderTable({ items, onChange }: RunningOrderTableProps) {
       </CardHeader>
       <CardContent className="space-y-3">
         {items.length === 0 ? (
-          <p className="text-sm text-slate-500 dark:text-slate-400">No running order items yet.</p>
+          <p className="text-sm text-muted-foreground">No running order items yet.</p>
         ) : (
           items.map((item, index) => (
             <div
@@ -49,7 +49,7 @@ export function RunningOrderTable({ items, onChange }: RunningOrderTableProps) {
               className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-700 dark:bg-slate-800/40 sm:grid-cols-12"
             >
               <div className="sm:col-span-2">
-                <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Time</label>
+                <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted-foreground">Time</label>
                 <Input
                   value={item.time}
                   onChange={(event) => updateItem(index, { time: event.target.value })}
@@ -57,7 +57,7 @@ export function RunningOrderTable({ items, onChange }: RunningOrderTableProps) {
                 />
               </div>
               <div className="sm:col-span-3">
-                <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Activity</label>
+                <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted-foreground">Activity</label>
                 <Input
                   value={item.activity}
                   onChange={(event) => updateItem(index, { activity: event.target.value })}
@@ -65,7 +65,7 @@ export function RunningOrderTable({ items, onChange }: RunningOrderTableProps) {
                 />
               </div>
               <div className="sm:col-span-2">
-                <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Owner / team</label>
+                <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted-foreground">Owner / team</label>
                 <Input
                   value={item.owner}
                   onChange={(event) => updateItem(index, { owner: event.target.value })}
@@ -73,7 +73,7 @@ export function RunningOrderTable({ items, onChange }: RunningOrderTableProps) {
                 />
               </div>
               <div className="sm:col-span-4">
-                <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Notes</label>
+                <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted-foreground">Notes</label>
                 <Input
                   value={item.notes ?? ""}
                   onChange={(event) =>
@@ -87,7 +87,7 @@ export function RunningOrderTable({ items, onChange }: RunningOrderTableProps) {
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="text-slate-500 dark:text-slate-400 hover:text-red-600"
+                  className="text-muted-foreground hover:text-red-600"
                   onClick={() => removeItem(index)}
                   aria-label="Remove row"
                 >

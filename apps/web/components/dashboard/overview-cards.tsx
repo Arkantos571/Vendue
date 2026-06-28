@@ -59,16 +59,16 @@ export function OverviewCards({ stats }: OverviewCardsProps) {
           className={cn(
             "block v-card p-5 shadow-sm",
             "cursor-pointer transition-all hover:border-slate-300 hover:bg-slate-50/80 hover:shadow-md",
-            "dark:border-slate-700 dark:bg-slate-900 dark:hover:border-slate-600 dark:hover:bg-slate-800/80",
+            "  hover:bg-muted",
           )}
         >
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</p>
-              <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+              <p className="text-sm font-medium text-muted-foreground">{label}</p>
+              <p className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
                 {values[key]}
               </p>
-              <p className="mt-1 text-xs text-stone-400 dark:text-stone-500">{sublabel}</p>
+              <p className="mt-1 text-xs text-muted-foreground dark:text-stone-500">{sublabel}</p>
             </div>
             <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${accent}`}>
               <Icon className="h-5 w-5" />

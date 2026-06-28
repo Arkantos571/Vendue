@@ -235,13 +235,13 @@ export function ConvertEnquiryModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="convert-enquiry-title"
-        className="relative z-10 flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900"
+        className="relative z-10 flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl"
       >
         <div className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
-          <h2 id="convert-enquiry-title" className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+          <h2 id="convert-enquiry-title" className="text-lg font-semibold text-foreground">
             Convert enquiry to event
           </h2>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-sm text-muted-foreground">
             Review the mapped details, adjust anything needed, then create the operational event.
           </p>
         </div>
@@ -256,64 +256,64 @@ export function ConvertEnquiryModal({
 
             <div className="grid gap-6 lg:grid-cols-2">
               <section className="rounded-lg border border-slate-200 bg-slate-50/80 p-4 dark:border-slate-700 dark:bg-slate-800/40">
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">From enquiry</h3>
+                <h3 className="text-sm font-semibold text-foreground">From enquiry</h3>
                 <dl className="mt-4 space-y-3 text-sm">
                   <div>
-                    <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Event name</dt>
-                    <dd className="mt-1 text-slate-900 dark:text-slate-100">{enquiry.eventName}</dd>
+                    <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Event name</dt>
+                    <dd className="mt-1 text-foreground">{enquiry.eventName}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Client</dt>
-                    <dd className="mt-1 text-slate-900 dark:text-slate-100">
+                    <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Client</dt>
+                    <dd className="mt-1 text-foreground">
                       {enquiry.clientName}
-                      <span className="block text-slate-500 dark:text-slate-400">{enquiry.clientEmail}</span>
+                      <span className="block text-muted-foreground">{enquiry.clientEmail}</span>
                       {enquiry.clientPhone && (
-                        <span className="block text-slate-500 dark:text-slate-400">{enquiry.clientPhone}</span>
+                        <span className="block text-muted-foreground">{enquiry.clientPhone}</span>
                       )}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Requested date</dt>
-                    <dd className="mt-1 text-slate-900 dark:text-slate-100">
+                    <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Requested date</dt>
+                    <dd className="mt-1 text-foreground">
                       {enquiry.requestedDate ? formatDate(enquiry.requestedDate) : "—"}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Preferred time</dt>
-                    <dd className="mt-1 text-slate-900 dark:text-slate-100">{enquiryTimeRange}</dd>
+                    <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Preferred time</dt>
+                    <dd className="mt-1 text-foreground">{enquiryTimeRange}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Event type</dt>
-                    <dd className="mt-1 text-slate-900 dark:text-slate-100">{enquiry.eventType}</dd>
+                    <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Event type</dt>
+                    <dd className="mt-1 text-foreground">{enquiry.eventType}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Space preference</dt>
-                    <dd className="mt-1 text-slate-900 dark:text-slate-100">{enquiry.spacePreference}</dd>
+                    <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Space preference</dt>
+                    <dd className="mt-1 text-foreground">{enquiry.spacePreference}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Guest count</dt>
-                    <dd className="mt-1 text-slate-900 dark:text-slate-100">{enquiry.guestCount || "—"}</dd>
+                    <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Guest count</dt>
+                    <dd className="mt-1 text-foreground">{enquiry.guestCount || "—"}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Estimated value</dt>
-                    <dd className="mt-1 text-slate-900 dark:text-slate-100">
+                    <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Estimated value</dt>
+                    <dd className="mt-1 text-foreground">
                       {formatEnquiryCurrency(enquiry.estimatedValue || enquiry.budgetEstimate)}
                     </dd>
                   </div>
                   {enquiry.notes && (
                     <div>
-                      <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Notes</dt>
-                      <dd className="mt-1 whitespace-pre-wrap text-slate-900 dark:text-slate-100">{enquiry.notes}</dd>
+                      <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Notes</dt>
+                      <dd className="mt-1 whitespace-pre-wrap text-foreground">{enquiry.notes}</dd>
                     </div>
                   )}
                 </dl>
               </section>
 
               <section className="space-y-4">
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Event to create</h3>
+                <h3 className="text-sm font-semibold text-foreground">Event to create</h3>
 
                 {isLoadingOptions ? (
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Loading venue options…</p>
+                  <p className="text-sm text-muted-foreground">Loading venue options…</p>
                 ) : (
                   <>
                     <div className="space-y-2">
@@ -470,7 +470,7 @@ export function ConvertEnquiryModal({
                       />
                     </div>
 
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <p className="text-xs text-muted-foreground">
                       Client details ({enquiry.clientName}) will be copied to the new event.
                     </p>
                   </>

@@ -203,10 +203,10 @@ export function PublicEnquiryForm({ initialVenueId, fixedVenue }: PublicEnquiryF
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
           <CheckCircle2 className="h-7 w-7" aria-hidden />
         </div>
-        <h2 className="mt-5 text-xl font-semibold text-slate-900 dark:text-slate-100">
+        <h2 className="mt-5 text-xl font-semibold text-foreground">
           Enquiry sent
         </h2>
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+        <p className="mt-2 text-sm text-muted-foreground">
           Enquiry sent. The venue team will get back to you soon.
         </p>
         <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
@@ -227,7 +227,7 @@ export function PublicEnquiryForm({ initialVenueId, fixedVenue }: PublicEnquiryF
   if (isLoadingVenues) {
     return (
       <div className="v-panel">
-        <p className="text-sm text-slate-500 dark:text-slate-400">Loading enquiry form…</p>
+        <p className="text-sm text-muted-foreground">Loading enquiry form…</p>
       </div>
     );
   }
@@ -235,10 +235,10 @@ export function PublicEnquiryForm({ initialVenueId, fixedVenue }: PublicEnquiryF
   if (!fixedVenue && venues.length === 0) {
     return (
       <div className="v-panel">
-        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+        <h2 className="text-base font-semibold text-foreground">
           Enquiries unavailable
         </h2>
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+        <p className="mt-2 text-sm text-muted-foreground">
           No venues are accepting enquiries online at the moment. Please contact the venue directly.
         </p>
         <Link
@@ -263,8 +263,8 @@ export function PublicEnquiryForm({ initialVenueId, fixedVenue }: PublicEnquiryF
 
       {showVenueSelector && (
         <section className="v-panel">
-          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Venue</h2>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <h2 className="text-base font-semibold text-foreground">Venue</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             Choose the venue you would like to enquire with.
           </p>
           <div className="mt-5 space-y-2">
@@ -290,13 +290,13 @@ export function PublicEnquiryForm({ initialVenueId, fixedVenue }: PublicEnquiryF
 
       {!fixedVenue && !showVenueSelector && venueName && (
         <section className="v-panel">
-          <p className="text-sm text-slate-500 dark:text-slate-400">Enquiring with</p>
-          <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">{venueName}</p>
+          <p className="text-sm text-muted-foreground">Enquiring with</p>
+          <p className="mt-1 text-lg font-semibold text-foreground">{venueName}</p>
         </section>
       )}
 
       <section className="v-panel">
-        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Your details</h2>
+        <h2 className="text-base font-semibold text-foreground">Your details</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="event_name">Event name / occasion</Label>
@@ -330,7 +330,7 @@ export function PublicEnquiryForm({ initialVenueId, fixedVenue }: PublicEnquiryF
       </section>
 
       <section className="v-panel">
-        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Event request</h2>
+        <h2 className="text-base font-semibold text-foreground">Event request</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="requested_date">Requested event date</Label>
@@ -459,7 +459,7 @@ export function PublicEnquiryForm({ initialVenueId, fixedVenue }: PublicEnquiryF
       </section>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs text-slate-500 dark:text-slate-400">
+        <p className="text-xs text-muted-foreground">
           By submitting, you agree the venue may contact you about this enquiry.
         </p>
         <Button type="submit" disabled={formDisabled} className="sm:min-w-40">

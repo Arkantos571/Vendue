@@ -32,7 +32,7 @@ export default async function EnquiryDetailPage({ params }: EnquiryDetailPagePro
       <div className="mx-auto max-w-5xl space-y-6">
         <Link
           href="/dashboard/enquiries"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to enquiries

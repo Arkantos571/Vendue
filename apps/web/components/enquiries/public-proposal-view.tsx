@@ -21,7 +21,7 @@ export function PublicProposalView({ token, proposal: initialProposal }: PublicP
     <div className="space-y-8">
       <PublicProposalDocument proposal={proposal} />
       <PublicProposalResponseForm token={token} proposal={proposal} onUpdated={handleUpdated} />
-      <p className="text-center text-xs text-slate-500 dark:text-slate-400">
+      <p className="text-center text-xs text-muted-foreground">
         Powered by Venudue · This page is a read-only proposal preview
       </p>
     </div>
