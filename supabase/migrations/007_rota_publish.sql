@@ -22,17 +22,48 @@ CREATE INDEX IF NOT EXISTS events_venue_rota_status_idx ON public.events (venue_
 
 DROP POLICY IF EXISTS "rota_shifts_select_self" ON public.rota_shifts;
 
+CREATE OR REPLACE FUNCTION public.event_rota_is_published(p_event_id uuid)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.events e
+    WHERE e.id = p_event_id
+      AND e.rota_status = 'published'
+  );
+$$;
+
+CREATE OR REPLACE FUNCTION public.user_staff_published_event_ids()
+RETURNS SETOF uuid
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT DISTINCT rs.event_id
+  FROM public.rota_shifts rs
+  INNER JOIN public.events e ON e.id = rs.event_id
+  WHERE rs.team_member_id IN (SELECT public.user_team_member_ids())
+    AND rs.event_id IS NOT NULL
+    AND e.rota_status = 'published';
+$$;
+
+GRANT EXECUTE ON FUNCTION public.event_rota_is_published(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.user_staff_published_event_ids() TO authenticated;
+
 CREATE POLICY "rota_shifts_select_self" ON public.rota_shifts
   FOR SELECT TO authenticated
   USING (
     team_member_id IN (SELECT public.user_team_member_ids())
     AND (
       public.can_manage_venue(venue_id)
-      OR EXISTS (
-        SELECT 1
-        FROM public.events e
-        WHERE e.id = rota_shifts.event_id
-          AND e.rota_status = 'published'
+      OR (
+        event_id IS NOT NULL
+        AND public.event_rota_is_published(event_id)
       )
     )
   );
@@ -43,15 +74,7 @@ CREATE POLICY "events_select_staff_shift" ON public.events
   FOR SELECT TO authenticated
   USING (
     public.can_manage_venue(venue_id)
-    OR (
-      rota_status = 'published'
-      AND id IN (
-        SELECT rs.event_id
-        FROM public.rota_shifts rs
-        WHERE rs.team_member_id IN (SELECT public.user_team_member_ids())
-          AND rs.event_id IS NOT NULL
-      )
-    )
+    OR id IN (SELECT public.user_staff_published_event_ids())
   );
 
 CREATE OR REPLACE FUNCTION public.notify_staff_rota_published(p_event_id uuid)
