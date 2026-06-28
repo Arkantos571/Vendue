@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  BarChart3,
   CalendarDays,
   ClipboardList,
   Bell,
@@ -15,6 +16,10 @@ import {
 import { Logo } from "@/components/layout/logo";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { ThemeSelector } from "@/components/settings/theme-selector";
+import {
+  formatUnreadBadgeCount,
+  useUnreadNotificationCount,
+} from "@/hooks/use-unread-notification-count";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -22,7 +27,8 @@ const navItems = [
   { href: "/dashboard/enquiries", label: "Enquiries", icon: Inbox },
   { href: "/dashboard/events", label: "Events", icon: CalendarDays },
   { href: "/dashboard/rota", label: "Rota", icon: ClipboardList },
-  { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
+  { href: "/dashboard/notifications", label: "Notifications", icon: Bell, badge: true },
+  { href: "/dashboard/reports", label: "Reports", icon: BarChart3 },
   { href: "/dashboard/team", label: "Team", icon: Users },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
@@ -34,6 +40,8 @@ interface DashboardSidebarProps {
 
 export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProps) {
   const pathname = usePathname();
+  const unreadCount = useUnreadNotificationCount();
+  const unreadBadge = formatUnreadBadgeCount(unreadCount);
 
   const content = (
     <div className="flex h-full min-h-0 flex-col bg-brand-950">
@@ -52,8 +60,9 @@ export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProp
       </div>
 
       <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto px-3 py-4">
-        {navItems.map(({ href, label, icon: Icon, exact }) => {
+        {navItems.map(({ href, label, icon: Icon, exact, badge }) => {
           const isActive = exact ? pathname === href : pathname.startsWith(href);
+          const showBadge = badge && unreadBadge;
 
           return (
             <Link
@@ -68,7 +77,15 @@ export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProp
               )}
             >
               <Icon className="h-4 w-4 shrink-0" />
-              {label}
+              <span className="min-w-0 flex-1 truncate">{label}</span>
+              {showBadge ? (
+                <span
+                  className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1.5 text-[10px] font-semibold leading-none text-white"
+                  aria-label={`${unreadCount} unread notifications`}
+                >
+                  {unreadBadge}
+                </span>
+              ) : null}
             </Link>
           );
         })}

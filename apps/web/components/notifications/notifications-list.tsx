@@ -11,6 +11,7 @@ import {
   matchesNotificationCategory,
 } from "@/lib/notifications/categories";
 import { NOTIFICATIONS_SCHEMA_HINT } from "@/lib/notifications/constants";
+import { dispatchNotificationsRead } from "@/lib/notifications/events";
 import type { AppNotification } from "@/lib/notifications/mappers";
 import {
   markAllNotificationsReadAction,
@@ -153,6 +154,7 @@ export function NotificationsList({
           : notification,
       ),
     );
+    dispatchNotificationsRead();
     router.refresh();
   }
 
@@ -174,6 +176,7 @@ export function NotificationsList({
         notification.readAt ? notification : { ...notification, readAt: now },
       ),
     );
+    dispatchNotificationsRead();
     router.refresh();
   }
 
