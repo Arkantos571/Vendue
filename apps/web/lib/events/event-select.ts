@@ -28,6 +28,12 @@ export interface EventQueryResult {
 
 type EventsQueryResult = PromiseLike<{ data: unknown; error: { message: string } | null }>;
 
+function normalizeEventRows(data: unknown): EventRowWithJoins[] {
+  if (data === null) return [];
+  if (Array.isArray(data)) return data as EventRowWithJoins[];
+  return [data as EventRowWithJoins];
+}
+
 export async function queryVenueEvents(
   buildQuery: (select: string) => EventsQueryResult,
 ): Promise<EventQueryResult> {
@@ -35,7 +41,7 @@ export async function queryVenueEvents(
 
   if (!withRota.error) {
     return {
-      rows: (withRota.data as EventRowWithJoins[] | null) ?? [],
+      rows: normalizeEventRows(withRota.data),
       rotaPublishSchemaReady: true,
     };
   }
@@ -50,11 +56,8 @@ export async function queryVenueEvents(
     throw new Error(fallback.error.message);
   }
 
-  const data = fallback.data;
-  const rows = data === null ? [] : Array.isArray(data) ? data : [data];
-
   return {
-    rows: rows as EventRowWithJoins[],
+    rows: normalizeEventRows(fallback.data),
     rotaPublishSchemaReady: false,
   };
 }
