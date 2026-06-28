@@ -108,8 +108,9 @@ export function formatStaffShiftTimeRange(shift: {
 }
 
 export const staffShiftStatusLabels: Record<RotaShiftStatus, string> = {
-  scheduled: "Scheduled",
+  scheduled: "Not confirmed",
   confirmed: "Confirmed",
+  declined: "Declined",
   completed: "Completed",
   cancelled: "Cancelled",
 };

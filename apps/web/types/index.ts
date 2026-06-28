@@ -136,7 +136,7 @@ export interface TeamMember {
   updated_at: string;
 }
 
-export type RotaShiftStatus = "scheduled" | "confirmed" | "completed" | "cancelled";
+export type RotaShiftStatus = "scheduled" | "confirmed" | "declined" | "completed" | "cancelled";
 
 export interface RotaShift {
   id: string;

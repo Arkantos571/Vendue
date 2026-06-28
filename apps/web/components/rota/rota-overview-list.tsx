@@ -8,6 +8,7 @@ import { VenueRequiredEmptyState } from "@/components/events/venue-required-empt
 import { RotaStatusBadge } from "@/components/rota/rota-status-badge";
 import { Input } from "@/components/ui/input";
 import { formatEventTimeRange } from "@/lib/events/event-time";
+import { formatConfirmationSummary } from "@/lib/rota/shift-confirmation";
 import { cn, formatDate } from "@/lib/utils";
 import {
   formatCurrency,
@@ -51,7 +52,22 @@ function RotaTableRow({ event }: { event: RotaEventSummary }) {
         <RotaStatusBadge status={event.rotaStatus} />
       </td>
       <td className="px-4 py-4 text-stone-600">
-        {event.assignedStaffCount}/{event.requiredStaffCount}
+        <div>{event.assignedStaffCount}/{event.requiredStaffCount}</div>
+        {event.assignedStaffCount > 0 && (
+          <div className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+            {formatConfirmationSummary({
+              totalAssigned: event.assignedStaffCount - event.declinedCount,
+              confirmedCount: event.confirmedCount,
+              pendingCount: event.pendingConfirmationCount,
+              declinedCount: event.declinedCount,
+            })}
+            {event.pendingConfirmationCount > 0 && (
+              <span className="ml-1 font-medium text-amber-700 dark:text-amber-400">
+                · {event.pendingConfirmationCount} pending
+              </span>
+            )}
+          </div>
+        )}
       </td>
       <td className="px-4 py-4">
         <span className={event.gapCount > 0 ? "font-medium text-amber-700" : "text-stone-600"}>
@@ -119,6 +135,16 @@ function RotaCard({ event }: { event: RotaEventSummary }) {
           <dt className="text-xs text-stone-500">Staff</dt>
           <dd className="text-stone-700">
             {event.assignedStaffCount}/{event.requiredStaffCount}
+            {event.assignedStaffCount > 0 && (
+              <p className="mt-0.5 text-xs text-stone-500 dark:text-stone-400">
+                {formatConfirmationSummary({
+                  totalAssigned: event.assignedStaffCount - event.declinedCount,
+                  confirmedCount: event.confirmedCount,
+                  pendingCount: event.pendingConfirmationCount,
+                  declinedCount: event.declinedCount,
+                })}
+              </p>
+            )}
           </dd>
         </div>
         <div>
@@ -276,7 +302,7 @@ export function RotaOverviewList() {
                   <th className="px-4 py-3">Space</th>
                   <th className="px-4 py-3">Guests</th>
                   <th className="px-4 py-3">Rota status</th>
-                  <th className="px-4 py-3">Staff</th>
+                  <th className="px-4 py-3">Staff / confirmations</th>
                   <th className="px-4 py-3">Gaps</th>
                   <th className="px-4 py-3">Est. cost</th>
                   <th className="px-6 py-3"></th>

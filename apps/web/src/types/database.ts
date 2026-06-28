@@ -48,7 +48,7 @@ export type EmploymentType = "full_time" | "part_time" | "casual" | "agency";
 
 export type AvailabilityStatus = "available" | "limited" | "unavailable";
 
-export type RotaShiftStatus = "scheduled" | "confirmed" | "completed" | "cancelled";
+export type RotaShiftStatus = "scheduled" | "confirmed" | "declined" | "completed" | "cancelled";
 
 export type InvitationStatus = "pending" | "accepted" | "expired" | "revoked";
 
@@ -496,6 +496,9 @@ export interface Database {
           status: RotaShiftStatus;
           hourly_rate: number | null;
           notes: string | null;
+          confirmed_at: string | null;
+          declined_at: string | null;
+          response_note: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -512,6 +515,9 @@ export interface Database {
           status?: RotaShiftStatus;
           hourly_rate?: number | null;
           notes?: string | null;
+          confirmed_at?: string | null;
+          declined_at?: string | null;
+          response_note?: string | null;
         };
         Update: {
           event_id?: string | null;
@@ -524,6 +530,9 @@ export interface Database {
           status?: RotaShiftStatus;
           hourly_rate?: number | null;
           notes?: string | null;
+          confirmed_at?: string | null;
+          declined_at?: string | null;
+          response_note?: string | null;
         };
         Relationships: [];
       };
@@ -630,6 +639,7 @@ export interface Database {
         Returns: boolean;
       };
       user_venue_ids: { Args: Record<string, never>; Returns: string[] };
+      notify_managers_shift_confirmed: { Args: { p_shift_id: string }; Returns: undefined };
     };
     Enums: {
       venue_member_role: VenueMemberRole;

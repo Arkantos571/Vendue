@@ -1,4 +1,5 @@
 import { getEventById } from "@/lib/mock/events";
+import { buildShiftConfirmationSummary } from "@/lib/rota/shift-confirmation";
 import { mockTeamMembers, type AvailabilityStatus } from "@/lib/mock/team";
 
 export type RotaStatus =
@@ -9,7 +10,7 @@ export type RotaStatus =
 
 export type RotaStatusFilter = "all" | RotaStatus;
 
-export type ShiftStatus = "draft" | "notified" | "confirmed";
+export type ShiftStatus = "draft" | "notified" | "confirmed" | "declined";
 
 export interface RotaEventSummary {
   eventId: string;
@@ -26,6 +27,9 @@ export interface RotaEventSummary {
   gapCount: number;
   estimatedLabourCost: number;
   totalScheduledHours: number;
+  confirmedCount: number;
+  pendingConfirmationCount: number;
+  declinedCount: number;
 }
 
 export interface StaffingRequirement {
@@ -83,6 +87,12 @@ export interface RotaBuilderData {
   assignedShifts: AssignedShift[];
   availableStaff: AvailableStaffMember[];
   labourSummary: LabourSummary;
+  confirmationSummary: {
+    totalAssigned: number;
+    confirmedCount: number;
+    pendingCount: number;
+    declinedCount: number;
+  };
 }
 
 export const rotaStatusFilters: { value: RotaStatusFilter; label: string }[] = [
@@ -101,9 +111,10 @@ export const rotaStatusLabels: Record<RotaStatus, string> = {
 };
 
 export const shiftStatusLabels: Record<ShiftStatus, string> = {
-  draft: "Draft",
-  notified: "Notified",
+  draft: "Not confirmed",
+  notified: "Pending confirmation",
   confirmed: "Confirmed",
+  declined: "Declined",
 };
 
 export const rotaSections = [
@@ -341,6 +352,7 @@ export const mockRotaEventSummaries: RotaEventSummary[] = [
   const labourCost = shifts.reduce((total, shift) => total + shift.estimatedCost, 0);
   const assignedStaffCount = shifts.length;
   const gapCount = Math.max(0, event.requiredStaffCount - assignedStaffCount);
+  const confirmationSummary = buildShiftConfirmationSummary(shifts);
 
   return {
     eventId: event.id,
@@ -360,6 +372,9 @@ export const mockRotaEventSummaries: RotaEventSummary[] = [
         total + calculateShiftHours(shift.startTime, shift.finishTime, shift.breakMinutes),
       0,
     ),
+    confirmedCount: confirmationSummary.confirmedCount,
+    pendingConfirmationCount: confirmationSummary.pendingCount,
+    declinedCount: confirmationSummary.declinedCount,
   };
 });
 
@@ -384,6 +399,7 @@ export function getRotaBuilderByEventId(eventId: string): RotaBuilderData | unde
     assignedShifts: shifts,
     availableStaff: buildAvailableStaff(assignedIds),
     labourSummary: buildLabourSummary(shifts, event.requiredStaffCount),
+    confirmationSummary: buildShiftConfirmationSummary(shifts),
   };
 }
 

@@ -7,6 +7,7 @@ import { AssignedShiftsList } from "@/components/rota/assigned-shifts-list";
 import { AvailableStaffPanel } from "@/components/rota/available-staff-panel";
 import { EventSummaryHeader } from "@/components/rota/event-summary-header";
 import { LabourCostSummary } from "@/components/rota/labour-cost-summary";
+import { RotaConfirmationSummary } from "@/components/rota/rota-confirmation-summary";
 import { StaffingRequirementsSummary } from "@/components/rota/staffing-requirements-summary";
 import { VenueRequiredEmptyState } from "@/components/events/venue-required-empty-state";
 import { Button } from "@/components/ui/button";
@@ -219,6 +220,7 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
+          <RotaConfirmationSummary summary={data.confirmationSummary} />
           <StaffingRequirementsSummary requirements={data.staffingRequirements} />
           <AssignedShiftsList
             shifts={data.assignedShifts}
@@ -234,9 +236,9 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
             <h3 className="text-sm font-semibold text-stone-900">Publish rota</h3>
             <p className="mt-1 text-sm text-stone-500">
               {published
-                ? "This rota has been published. Staff notifications are not sent yet."
+                ? "This rota has been published. Staff can confirm their assigned shifts."
                 : canPublish
-                  ? "Mark all shifts as confirmed and publish this rota."
+                  ? "Publish this rota so staff can review and confirm their shifts."
                   : "Add at least one shift before publishing."}
             </p>
             <Button

@@ -3,14 +3,18 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { confirmStaffShiftAction } from "@/lib/staff/actions";
+import { confirmStaffShiftAction, declineStaffShiftAction } from "@/lib/staff/actions";
 import type { StaffShift } from "@/lib/staff/types";
 
 export function StaffShiftActions({ shift }: { shift: StaffShift }) {
   const router = useRouter();
   const [isConfirming, setIsConfirming] = useState(false);
+  const [isDeclining, setIsDeclining] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+
+  const canRespond = shift.status === "scheduled";
+  const isBusy = isConfirming || isDeclining;
 
   async function handleConfirm() {
     setIsConfirming(true);
@@ -29,6 +33,27 @@ export function StaffShiftActions({ shift }: { shift: StaffShift }) {
     router.refresh();
   }
 
+  async function handleDecline() {
+    if (!window.confirm("Decline this shift? Your manager will be notified in a future update.")) {
+      return;
+    }
+
+    setIsDeclining(true);
+    setError(null);
+    setMessage(null);
+
+    const result = await declineStaffShiftAction(shift.id);
+    setIsDeclining(false);
+
+    if (!result.success) {
+      setError(result.error);
+      return;
+    }
+
+    setMessage("Shift declined. Your manager has been updated.");
+    router.refresh();
+  }
+
   return (
     <div className="space-y-3">
       {error && (
@@ -42,17 +67,31 @@ export function StaffShiftActions({ shift }: { shift: StaffShift }) {
         </p>
       )}
       <div className="grid gap-3 sm:grid-cols-2">
+        <Button type="button" disabled={isBusy || !canRespond} onClick={handleConfirm}>
+          {shift.status === "confirmed"
+            ? "Shift confirmed"
+            : isConfirming
+              ? "Confirming…"
+              : "Confirm shift"}
+        </Button>
         <Button
           type="button"
-          disabled={isConfirming || shift.status !== "scheduled"}
-          onClick={handleConfirm}
+          variant="outline"
+          disabled={isBusy || !canRespond}
+          onClick={handleDecline}
+          className="text-red-700 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
         >
-          {shift.status === "confirmed" ? "Shift confirmed" : isConfirming ? "Confirming…" : "Confirm shift"}
+          {shift.status === "declined"
+            ? "Shift declined"
+            : isDeclining
+              ? "Declining…"
+              : "Decline shift"}
         </Button>
         <Button
           type="button"
           variant="outline"
           disabled
+          className="sm:col-span-2"
           title="Messaging is coming in a later phase"
         >
           I have a question

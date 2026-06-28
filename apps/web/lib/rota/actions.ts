@@ -374,15 +374,19 @@ export async function publishRotaAction(
 
     const { supabase, venueId } = context;
 
-    const { error } = await supabase
+    const { count, error } = await supabase
       .from("rota_shifts")
-      .update({ status: "confirmed" })
+      .select("id", { count: "exact", head: true })
       .eq("venue_id", venueId)
       .eq("event_id", eventId)
       .neq("status", "cancelled");
 
     if (error) {
       return { success: false, error: dbErrorMessage(error) };
+    }
+
+    if (!count) {
+      return { success: false, error: "Add at least one shift before publishing the rota." };
     }
 
     return { success: true, ok: true as const };

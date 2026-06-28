@@ -18,6 +18,7 @@ import type {
   StaffingRequirement,
 } from "@/lib/mock/rota";
 import type { MockEvent } from "@/lib/mock/events";
+import { buildShiftConfirmationSummary } from "@/lib/rota/shift-confirmation";
 import type { RotaShiftStatus } from "@/src/types/database";
 
 export interface RotaShiftRow {
@@ -57,8 +58,9 @@ function parseRate(value: number | string | null | undefined): number {
 }
 
 function toUiShiftStatus(status: RotaShiftStatus): ShiftStatus {
-  if (status === "confirmed") return "confirmed";
-  if (status === "scheduled") return "draft";
+  if (status === "confirmed" || status === "completed") return "confirmed";
+  if (status === "declined") return "declined";
+  if (status === "scheduled") return "notified";
   return "draft";
 }
 
@@ -148,6 +150,8 @@ export function toRotaEventSummary(
   const labour = buildLabourSummary(shifts, 0);
   const assignedStaffCount = shifts.length;
 
+  const confirmationSummary = buildShiftConfirmationSummary(shifts);
+
   return {
     eventId: event.id,
     eventName: event.title,
@@ -163,6 +167,9 @@ export function toRotaEventSummary(
     gapCount: 0,
     estimatedLabourCost: labour.estimatedLabourCost,
     totalScheduledHours: labour.totalScheduledHours,
+    confirmedCount: confirmationSummary.confirmedCount,
+    pendingConfirmationCount: confirmationSummary.pendingCount,
+    declinedCount: confirmationSummary.declinedCount,
   };
 }
 
@@ -218,5 +225,6 @@ export function buildRotaBuilderData(
     assignedShifts: shifts,
     availableStaff,
     labourSummary,
+    confirmationSummary: buildShiftConfirmationSummary(shifts),
   };
 }
