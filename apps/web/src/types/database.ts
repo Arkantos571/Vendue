@@ -358,6 +358,8 @@ export interface Database {
           client_email: string | null;
           client_phone: string | null;
           notes: string | null;
+          rota_status: string;
+          rota_published_at: string | null;
           created_by: string | null;
           created_at: string;
           updated_at: string;
@@ -378,6 +380,8 @@ export interface Database {
           client_email?: string | null;
           client_phone?: string | null;
           notes?: string | null;
+          rota_status?: string;
+          rota_published_at?: string | null;
           created_by?: string | null;
         };
         Update: {
@@ -394,6 +398,8 @@ export interface Database {
           client_email?: string | null;
           client_phone?: string | null;
           notes?: string | null;
+          rota_status?: string;
+          rota_published_at?: string | null;
         };
         Relationships: [];
       };
@@ -640,6 +646,7 @@ export interface Database {
       };
       user_venue_ids: { Args: Record<string, never>; Returns: string[] };
       notify_managers_shift_confirmed: { Args: { p_shift_id: string }; Returns: undefined };
+      notify_staff_rota_published: { Args: { p_event_id: string }; Returns: undefined };
     };
     Enums: {
       venue_member_role: VenueMemberRole;

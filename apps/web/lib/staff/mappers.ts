@@ -27,6 +27,7 @@ export interface StaffShiftRow {
         starts_at: string;
         ends_at: string;
         guest_count: number | null;
+        rota_status?: string | null;
         spaces?: { name: string } | { name: string }[] | null;
         event_types?: { name: string } | { name: string }[] | null;
       }
@@ -35,6 +36,7 @@ export interface StaffShiftRow {
         starts_at: string;
         ends_at: string;
         guest_count: number | null;
+        rota_status?: string | null;
         spaces?: { name: string } | { name: string }[] | null;
         event_types?: { name: string } | { name: string }[] | null;
       }[]

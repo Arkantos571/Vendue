@@ -50,6 +50,11 @@ function RotaTableRow({ event }: { event: RotaEventSummary }) {
       <td className="px-4 py-4 text-stone-600">{event.guestCount}</td>
       <td className="px-4 py-4">
         <RotaStatusBadge status={event.rotaStatus} />
+        {event.rotaPublishedAt && (
+          <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+            Published {formatDate(event.rotaPublishedAt)}
+          </p>
+        )}
       </td>
       <td className="px-4 py-4 text-stone-600">
         <div>{event.assignedStaffCount}/{event.requiredStaffCount}</div>
@@ -119,7 +124,14 @@ function RotaCard({ event }: { event: RotaEventSummary }) {
             {formatDate(event.date)} · {formatEventTimeRange(event)}
           </p>
         </div>
-        <RotaStatusBadge status={event.rotaStatus} />
+        <div className="text-right">
+          <RotaStatusBadge status={event.rotaStatus} />
+          {event.rotaPublishedAt && (
+            <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+              Published {formatDate(event.rotaPublishedAt)}
+            </p>
+          )}
+        </div>
       </div>
 
       <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">

@@ -2,11 +2,7 @@ import { getEventById } from "@/lib/mock/events";
 import { buildShiftConfirmationSummary } from "@/lib/rota/shift-confirmation";
 import { mockTeamMembers, type AvailabilityStatus } from "@/lib/mock/team";
 
-export type RotaStatus =
-  | "draft"
-  | "needs_attention"
-  | "ready_to_publish"
-  | "published";
+export type RotaStatus = "draft" | "ready_to_publish" | "published";
 
 export type RotaStatusFilter = "all" | RotaStatus;
 
@@ -30,6 +26,7 @@ export interface RotaEventSummary {
   confirmedCount: number;
   pendingConfirmationCount: number;
   declinedCount: number;
+  rotaPublishedAt: string | null;
 }
 
 export interface StaffingRequirement {
@@ -93,19 +90,18 @@ export interface RotaBuilderData {
     pendingCount: number;
     declinedCount: number;
   };
+  rotaPublishedAt: string | null;
 }
 
 export const rotaStatusFilters: { value: RotaStatusFilter; label: string }[] = [
   { value: "all", label: "All" },
   { value: "draft", label: "Draft" },
-  { value: "needs_attention", label: "Needs attention" },
   { value: "ready_to_publish", label: "Ready to publish" },
   { value: "published", label: "Published" },
 ];
 
 export const rotaStatusLabels: Record<RotaStatus, string> = {
   draft: "Draft",
-  needs_attention: "Needs attention",
   ready_to_publish: "Ready to publish",
   published: "Published",
 };
@@ -294,7 +290,7 @@ const staffingRequirements: Record<string, StaffingRequirement[]> = {
 };
 
 const rotaStatuses: Record<string, RotaStatus> = {
-  "evt-1": "needs_attention",
+  "evt-1": "ready_to_publish",
   "evt-2": "draft",
   "evt-3": "draft",
   "evt-4": "ready_to_publish",
@@ -375,6 +371,7 @@ export const mockRotaEventSummaries: RotaEventSummary[] = [
     confirmedCount: confirmationSummary.confirmedCount,
     pendingConfirmationCount: confirmationSummary.pendingCount,
     declinedCount: confirmationSummary.declinedCount,
+    rotaPublishedAt: null,
   };
 });
 
@@ -400,6 +397,7 @@ export function getRotaBuilderByEventId(eventId: string): RotaBuilderData | unde
     availableStaff: buildAvailableStaff(assignedIds),
     labourSummary: buildLabourSummary(shifts, event.requiredStaffCount),
     confirmationSummary: buildShiftConfirmationSummary(shifts),
+    rotaPublishedAt: null,
   };
 }
 

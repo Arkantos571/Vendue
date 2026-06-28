@@ -178,7 +178,10 @@ export function buildUpcomingOperational(event: MockEvent): UpcomingEventOperati
     rotaStatus,
     functionSheetStatus: meta.functionSheetStatus,
     warnings,
-    needsAttention: warnings.length > 0 || rotaStatus === "needs_attention" || rotaStatus === "draft",
+    needsAttention:
+      warnings.length > 0 ||
+      rotaStatus === "draft" ||
+      (rotaSummary?.pendingConfirmationCount ?? 0) > 0,
   };
 }
 

@@ -1,5 +1,5 @@
 import type { MockEvent } from "@/lib/mock/events";
-import type { EventStatus } from "@/types";
+import type { EventRotaStatus, EventStatus } from "@/types";
 
 export interface EventSpaceJoin {
   name: string;
@@ -20,6 +20,8 @@ export interface EventRowWithJoins {
   client_email: string | null;
   client_phone: string | null;
   notes: string | null;
+  rota_status?: EventRotaStatus;
+  rota_published_at?: string | null;
   space_id: string | null;
   event_type_id: string | null;
   spaces: EventSpaceJoin | EventSpaceJoin[] | null;
@@ -72,5 +74,7 @@ export function toMockEvent(row: EventRowWithJoins): MockEvent {
     assignedStaffCount: 0,
     requiredStaffCount: 0,
     rotaShifts: [],
+    rotaStatus: row.rota_status ?? "draft",
+    rotaPublishedAt: row.rota_published_at ?? null,
   };
 }

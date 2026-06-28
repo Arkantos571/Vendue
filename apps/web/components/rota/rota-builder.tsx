@@ -1,23 +1,24 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Send } from "lucide-react";
 import { AddShiftForm, type NewShiftInput } from "@/components/rota/add-shift-form";
 import { AssignedShiftsList } from "@/components/rota/assigned-shifts-list";
 import { AvailableStaffPanel } from "@/components/rota/available-staff-panel";
 import { EventSummaryHeader } from "@/components/rota/event-summary-header";
 import { LabourCostSummary } from "@/components/rota/labour-cost-summary";
 import { RotaConfirmationSummary } from "@/components/rota/rota-confirmation-summary";
+import { RotaPublishPanel } from "@/components/rota/rota-publish-panel";
 import { StaffingRequirementsSummary } from "@/components/rota/staffing-requirements-summary";
 import { VenueRequiredEmptyState } from "@/components/events/venue-required-empty-state";
-import { Button } from "@/components/ui/button";
 import type { AvailableStaffMember, RotaBuilderData } from "@/lib/mock/rota";
 import { buildLabourSummary } from "@/lib/rota/mappers";
 import {
   createRotaShiftAction,
   deleteRotaShiftAction,
   loadRotaBuilderAction,
+  markRotaReadyAction,
   publishRotaAction,
+  revertRotaToDraftAction,
 } from "@/lib/rota/actions";
 
 interface RotaBuilderProps {
@@ -33,6 +34,8 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
   const [isSubmittingShift, setIsSubmittingShift] = useState(false);
   const [deletingShiftId, setDeletingShiftId] = useState<string | null>(null);
   const [isPublishing, setIsPublishing] = useState(false);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [publishMessage, setPublishMessage] = useState<string | null>(null);
 
   const reload = useCallback(async () => {
     setError(null);
@@ -159,13 +162,46 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
     await reload();
   }
 
+  async function handleMarkReady() {
+    setIsUpdatingStatus(true);
+    setError(null);
+    setPublishMessage(null);
+
+    const result = await markRotaReadyAction(eventId);
+    setIsUpdatingStatus(false);
+
+    if (!result.success) {
+      setError(result.error);
+      return;
+    }
+
+    await reload();
+  }
+
   async function handlePublish() {
     setIsPublishing(true);
     setError(null);
+    setPublishMessage(null);
 
     const result = await publishRotaAction(eventId);
-
     setIsPublishing(false);
+
+    if (!result.success) {
+      setError(result.error);
+      return;
+    }
+
+    setPublishMessage(result.message);
+    await reload();
+  }
+
+  async function handleRevertToDraft() {
+    setIsUpdatingStatus(true);
+    setError(null);
+    setPublishMessage(null);
+
+    const result = await revertRotaToDraftAction(eventId);
+    setIsUpdatingStatus(false);
 
     if (!result.success) {
       setError(result.error);
@@ -205,9 +241,6 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
     );
   }
 
-  const published = data.rotaStatus === "published";
-  const canPublish = data.assignedShifts.length > 0 && !published;
-
   return (
     <div className="space-y-6">
       {error && (
@@ -232,25 +265,15 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
         <div className="space-y-6">
           <LabourCostSummary summary={labourSummary} />
 
-          <div className="v-panel">
-            <h3 className="text-sm font-semibold text-stone-900">Publish rota</h3>
-            <p className="mt-1 text-sm text-stone-500">
-              {published
-                ? "This rota has been published. Staff can confirm their assigned shifts."
-                : canPublish
-                  ? "Publish this rota so staff can review and confirm their shifts."
-                  : "Add at least one shift before publishing."}
-            </p>
-            <Button
-              type="button"
-              className="mt-4 w-full"
-              disabled={!canPublish || isPublishing}
-              onClick={handlePublish}
-            >
-              <Send className="mr-2 h-4 w-4" />
-              {isPublishing ? "Publishing…" : published ? "Published" : "Publish rota"}
-            </Button>
-          </div>
+          <RotaPublishPanel
+            data={{ ...data, labourSummary }}
+            isPublishing={isPublishing}
+            isUpdatingStatus={isUpdatingStatus}
+            publishMessage={publishMessage}
+            onMarkReady={handleMarkReady}
+            onPublish={handlePublish}
+            onRevertToDraft={handleRevertToDraft}
+          />
         </div>
       </div>
 

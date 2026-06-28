@@ -1,4 +1,4 @@
-import type { EventStatus } from "@/types";
+import type { EventRotaStatus, EventStatus } from "@/types";
 
 export interface MockRotaShift {
   role: string;
@@ -26,6 +26,8 @@ export interface MockEvent {
   assignedStaffCount: number;
   requiredStaffCount: number;
   rotaShifts: MockRotaShift[];
+  rotaStatus?: EventRotaStatus;
+  rotaPublishedAt?: string | null;
 }
 
 export const mockSpaces = [

@@ -13,10 +13,12 @@ import {
 import { encodeArrivalInNotes, resolveShiftTimestamps } from "@/lib/rota/shift-time";
 import { toMockTeamMember, type TeamMemberRow } from "@/lib/team/mappers";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { canManageVenue } from "@/lib/rota/venue-access";
 
 const EVENT_SELECT = `
   id, title, status, starts_at, ends_at, guest_count,
   client_name, client_email, client_phone, notes,
+  rota_status, rota_published_at,
   space_id, event_type_id,
   spaces ( name ),
   event_types ( name )
@@ -358,9 +360,130 @@ export async function deleteRotaShiftAction(
   }
 }
 
-export async function publishRotaAction(
+async function assertManager(
+  supabase: Awaited<ReturnType<typeof requireAuthenticatedClient>>["supabase"],
+  venueId: string,
+): Promise<{ success: false; error: string } | null> {
+  const allowed = await canManageVenue(supabase, venueId);
+  if (!allowed) {
+    return { success: false, error: "Only managers can update rota publish status." };
+  }
+  return null;
+}
+
+async function countActiveShifts(
+  supabase: Awaited<ReturnType<typeof requireAuthenticatedClient>>["supabase"],
+  venueId: string,
+  eventId: string,
+): Promise<number> {
+  const { count, error } = await supabase
+    .from("rota_shifts")
+    .select("id", { count: "exact", head: true })
+    .eq("venue_id", venueId)
+    .eq("event_id", eventId)
+    .neq("status", "cancelled");
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return count ?? 0;
+}
+
+export async function markRotaReadyAction(
   eventId: string,
 ): Promise<RotaActionResult<{ ok: true }>> {
+  if (!isSupabaseConfigured()) {
+    return { success: false, error: "Supabase is not configured." };
+  }
+
+  try {
+    const context = await loadVenueContext(`/sign-in?redirect=/dashboard/rota/${eventId}`);
+    if (!("supabase" in context)) {
+      return { success: false, error: "Set up your venue before building rotas." };
+    }
+
+    const { supabase, venueId } = context;
+    const denied = await assertManager(supabase, venueId);
+    if (denied) return denied;
+
+    const shiftCount = await countActiveShifts(supabase, venueId, eventId);
+    if (!shiftCount) {
+      return { success: false, error: "Add at least one shift before marking ready." };
+    }
+
+    const { error } = await supabase
+      .from("events")
+      .update({ rota_status: "ready_to_publish", rota_published_at: null })
+      .eq("id", eventId)
+      .eq("venue_id", venueId);
+
+    if (error) {
+      return { success: false, error: dbErrorMessage(error) };
+    }
+
+    return { success: true, ok: true as const };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to mark rota ready.";
+    return { success: false, error: message };
+  }
+}
+
+export async function revertRotaToDraftAction(
+  eventId: string,
+): Promise<RotaActionResult<{ ok: true }>> {
+  if (!isSupabaseConfigured()) {
+    return { success: false, error: "Supabase is not configured." };
+  }
+
+  try {
+    const context = await loadVenueContext(`/sign-in?redirect=/dashboard/rota/${eventId}`);
+    if (!("supabase" in context)) {
+      return { success: false, error: "Set up your venue before building rotas." };
+    }
+
+    const { supabase, venueId } = context;
+    const denied = await assertManager(supabase, venueId);
+    if (denied) return denied;
+
+    const { data: shifts, error: shiftsError } = await supabase
+      .from("rota_shifts")
+      .select("status")
+      .eq("venue_id", venueId)
+      .eq("event_id", eventId)
+      .in("status", ["confirmed", "declined"]);
+
+    if (shiftsError) {
+      return { success: false, error: dbErrorMessage(shiftsError) };
+    }
+
+    if ((shifts ?? []).length > 0) {
+      return {
+        success: false,
+        error: "Cannot unpublish after staff have confirmed or declined shifts.",
+      };
+    }
+
+    const { error } = await supabase
+      .from("events")
+      .update({ rota_status: "draft", rota_published_at: null })
+      .eq("id", eventId)
+      .eq("venue_id", venueId);
+
+    if (error) {
+      return { success: false, error: dbErrorMessage(error) };
+    }
+
+    return { success: true, ok: true as const };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to revert rota to draft.";
+    return { success: false, error: message };
+  }
+}
+
+export async function publishRotaAction(
+  eventId: string,
+): Promise<RotaActionResult<{ ok: true; message: string }>> {
   if (!isSupabaseConfigured()) {
     return { success: false, error: "Supabase is not configured." };
   }
@@ -373,23 +496,40 @@ export async function publishRotaAction(
     }
 
     const { supabase, venueId } = context;
+    const denied = await assertManager(supabase, venueId);
+    if (denied) return denied;
 
-    const { count, error } = await supabase
-      .from("rota_shifts")
-      .select("id", { count: "exact", head: true })
-      .eq("venue_id", venueId)
-      .eq("event_id", eventId)
-      .neq("status", "cancelled");
-
-    if (error) {
-      return { success: false, error: dbErrorMessage(error) };
-    }
-
-    if (!count) {
+    const shiftCount = await countActiveShifts(supabase, venueId, eventId);
+    if (!shiftCount) {
       return { success: false, error: "Add at least one shift before publishing the rota." };
     }
 
-    return { success: true, ok: true as const };
+    const now = new Date().toISOString();
+
+    const { error: eventError } = await supabase
+      .from("events")
+      .update({ rota_status: "published", rota_published_at: now })
+      .eq("id", eventId)
+      .eq("venue_id", venueId);
+
+    if (eventError) {
+      return { success: false, error: dbErrorMessage(eventError) };
+    }
+
+    const { error: notifyError } = await supabase.rpc("notify_staff_rota_published", {
+      p_event_id: eventId,
+    });
+
+    if (notifyError) {
+      console.error("Failed to notify staff of rota publish:", notifyError.message);
+    }
+
+    return {
+      success: true,
+      ok: true as const,
+      message:
+        "Rota published. Staff with linked accounts were notified. Email delivery will be added later.",
+    };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to publish rota.";
     return { success: false, error: message };

@@ -51,8 +51,8 @@ export default async function StaffHomePage() {
           </section>
         ) : (
           <StaffEmptyState
-            title="No upcoming shifts yet."
-            description="When your manager assigns you to an event rota, your shifts will appear here."
+            title="No published shifts yet."
+            description="When your manager publishes your event rota, your shifts will appear here."
           />
         )}
 

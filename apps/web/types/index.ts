@@ -83,6 +83,8 @@ export interface EventType {
   updated_at: string;
 }
 
+export type EventRotaStatus = "draft" | "ready_to_publish" | "published";
+
 export type EventStatus =
   | "draft"
   | "confirmed"

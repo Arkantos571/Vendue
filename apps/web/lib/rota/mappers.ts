@@ -99,22 +99,6 @@ export function toAssignedShift(row: RotaShiftRow, eventDate: string): AssignedS
   };
 }
 
-export function deriveRotaStatus(shifts: AssignedShift[]): RotaStatus {
-  if (shifts.length === 0) {
-    return "draft";
-  }
-
-  if (shifts.every((shift) => shift.status === "confirmed")) {
-    return "published";
-  }
-
-  if (shifts.some((shift) => shift.status === "confirmed")) {
-    return "needs_attention";
-  }
-
-  return "ready_to_publish";
-}
-
 export function buildLabourSummary(
   shifts: AssignedShift[],
   requiredStaff = 0,
@@ -161,7 +145,7 @@ export function toRotaEventSummary(
     endsNextDay: event.endsNextDay,
     space: event.space,
     guestCount: event.guestCount,
-    rotaStatus: deriveRotaStatus(shifts),
+    rotaStatus: event.rotaStatus ?? "draft",
     assignedStaffCount,
     requiredStaffCount: assignedStaffCount,
     gapCount: 0,
@@ -170,6 +154,7 @@ export function toRotaEventSummary(
     confirmedCount: confirmationSummary.confirmedCount,
     pendingConfirmationCount: confirmationSummary.pendingCount,
     declinedCount: confirmationSummary.declinedCount,
+    rotaPublishedAt: event.rotaPublishedAt ?? null,
   };
 }
 
@@ -220,11 +205,12 @@ export function buildRotaBuilderData(
     space: event.space,
     guestCount: event.guestCount,
     clientName: event.clientName,
-    rotaStatus: deriveRotaStatus(shifts),
+    rotaStatus: event.rotaStatus ?? "draft",
     staffingRequirements,
     assignedShifts: shifts,
     availableStaff,
     labourSummary,
     confirmationSummary: buildShiftConfirmationSummary(shifts),
+    rotaPublishedAt: event.rotaPublishedAt ?? null,
   };
 }

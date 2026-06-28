@@ -7,6 +7,7 @@ import {
 } from "@/lib/staff/mappers";
 import type { StaffHomeData, StaffMemberProfile, StaffShift } from "@/lib/staff/types";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { canManageAnyVenue } from "@/lib/rota/venue-access";
 
 const TEAM_MEMBER_SELECT = `
   id, full_name, email, venue_id,
@@ -18,7 +19,7 @@ const STAFF_SHIFT_SELECT = `
   starts_at, ends_at, break_minutes, status, notes,
   venues ( name ),
   events (
-    title, starts_at, ends_at, guest_count,
+    title, starts_at, ends_at, guest_count, rota_status,
     spaces ( name ),
     event_types ( name )
   )
@@ -46,10 +47,15 @@ async function loadMatchedTeamMembers(
   return ((data as TeamMemberRow[] | null) ?? []).map(toStaffMemberProfile);
 }
 
+function eventRotaStatus(row: StaffShiftRow): string | null {
+  const event = Array.isArray(row.events) ? row.events[0] : row.events;
+  return event?.rota_status ?? null;
+}
+
 async function loadShiftsForTeamMembers(
   supabase: Awaited<ReturnType<typeof requireAuthenticatedClient>>["supabase"],
   teamMemberIds: string[],
-  options?: { shiftId?: string; upcomingOnly?: boolean },
+  options?: { shiftId?: string; upcomingOnly?: boolean; publishedOnly?: boolean },
 ): Promise<StaffShift[]> {
   if (teamMemberIds.length === 0) {
     return [];
@@ -73,7 +79,13 @@ async function loadShiftsForTeamMembers(
     throw new Error(error.message);
   }
 
-  return ((data as StaffShiftRow[] | null) ?? []).map(toStaffShift);
+  let rows = (data as StaffShiftRow[] | null) ?? [];
+
+  if (options?.publishedOnly) {
+    rows = rows.filter((row) => eventRotaStatus(row) === "published");
+  }
+
+  return rows.map(toStaffShift);
 }
 
 export async function loadStaffHomeData(): Promise<StaffHomeData> {
@@ -89,7 +101,13 @@ export async function loadStaffHomeData(): Promise<StaffHomeData> {
   }
 
   const teamMemberIds = profiles.map((profile) => profile.id);
-  const upcomingShifts = await loadShiftsForTeamMembers(supabase, teamMemberIds);
+  const isManager = await canManageAnyVenue(
+    supabase,
+    profiles.map((profile) => profile.venueId),
+  );
+  const upcomingShifts = await loadShiftsForTeamMembers(supabase, teamMemberIds, {
+    publishedOnly: !isManager,
+  });
 
   return {
     profile: profiles[0] ?? null,
@@ -113,9 +131,14 @@ export async function loadStaffShiftsList(): Promise<{
     return { profile: null, shifts: [] };
   }
 
+  const isManager = await canManageAnyVenue(
+    supabase,
+    profiles.map((profile) => profile.venueId),
+  );
   const shifts = await loadShiftsForTeamMembers(
     supabase,
     profiles.map((profile) => profile.id),
+    { publishedOnly: !isManager },
   );
 
   return {
@@ -141,10 +164,14 @@ export async function loadStaffShiftDetail(shiftId: string): Promise<{
     return { profile: null, shift: null };
   }
 
+  const isManager = await canManageAnyVenue(
+    supabase,
+    profiles.map((profile) => profile.venueId),
+  );
   const shifts = await loadShiftsForTeamMembers(
     supabase,
     profiles.map((profile) => profile.id),
-    { shiftId, upcomingOnly: false },
+    { shiftId, upcomingOnly: false, publishedOnly: !isManager },
   );
 
   return {
