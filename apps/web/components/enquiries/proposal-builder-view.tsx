@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { ArrowLeft, Copy } from "lucide-react";
 import { ProposalPreviewPanel } from "@/components/enquiries/proposal-preview-panel";
+import { ProposalShareSection } from "@/components/enquiries/proposal-share-section";
 import { EnquiryStatusBadge } from "@/components/enquiries/enquiry-status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -381,6 +382,12 @@ export function ProposalBuilderView({ enquiry: initialEnquiry, venue }: Proposal
               </dl>
             </CardContent>
           </Card>
+
+          <ProposalShareSection
+            enquiry={enquiry}
+            buildProposalInput={buildInput}
+            onUpdated={setEnquiry}
+          />
 
           {!isReadOnly && (
             <div className="flex flex-wrap gap-2">

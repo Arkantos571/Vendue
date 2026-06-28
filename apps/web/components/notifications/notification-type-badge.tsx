@@ -9,6 +9,7 @@ const styles: Record<string, string> = {
   shift_declined: "bg-red-50 text-red-800 dark:bg-red-950/50 dark:text-red-300",
   function_sheet_updated: "bg-violet-50 text-violet-800 dark:bg-violet-950/50 dark:text-violet-300",
   enquiry_converted: "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300",
+  proposal_viewed: "bg-amber-50 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300",
 };
 
 export function NotificationTypeBadge({ type }: { type: string }) {

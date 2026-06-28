@@ -1,6 +1,7 @@
 "use server";
 
-import { randomUUID } from "crypto";
+import { randomBytes, randomUUID } from "crypto";
+import { getPublicProposalUrl } from "@/lib/enquiries/public-url";
 import { getPrimaryVenueId, requireAuthenticatedClient } from "@/lib/auth/session";
 import {
   buildEnquiryPipelineStats,
@@ -24,7 +25,8 @@ const ENQUIRY_SELECT = `
   estimated_value, status, source, priority, assigned_profile_id,
   last_contact_at, next_follow_up_at, proposal_notes, proposed_package,
   proposal_valid_until, proposal_title, proposal_intro, proposal_inclusions,
-  proposal_terms, proposal_internal_notes, lost_reason, notes, internal_notes, activity,
+  proposal_terms, proposal_internal_notes, proposal_token, proposal_published_at,
+  proposal_viewed_at, proposal_status, lost_reason, notes, internal_notes, activity,
   converted_event_id, converted_at, created_at,
   event_types ( name ),
   spaces ( name ),
@@ -675,6 +677,82 @@ export async function markProposalSentAction(
     return { success: true, enquiry: toMockEnquiry(data as EnquiryRowWithJoins) };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to mark proposal sent.";
+    return { success: false, error: message };
+  }
+}
+
+
+
+export async function generateProposalLinkAction(
+  enquiry_id: string,
+): Promise<EnquiriesActionResult<{ enquiry: MockEnquiry; publicUrl: string }>> {
+  if (!isSupabaseConfigured()) {
+    return { success: false, error: "Supabase is not configured." };
+  }
+
+  try {
+    const { supabase, user } = await requireAuthenticatedClient(
+      `/sign-in?redirect=/dashboard/enquiries/${enquiry_id}/proposal`,
+    );
+    const venueId = await getPrimaryVenueId(supabase, user.id);
+
+    if (!venueId) {
+      return { success: false, error: "Set up your venue before sharing proposals." };
+    }
+
+    const { data: existing, error: loadError } = await supabase
+      .from("enquiries")
+      .select("id, proposal_token, proposal_published_at, proposal_status, converted_event_id")
+      .eq("id", enquiry_id)
+      .eq("venue_id", venueId)
+      .maybeSingle();
+
+    if (loadError) {
+      return { success: false, error: dbErrorMessage(loadError) };
+    }
+
+    if (!existing) {
+      return { success: false, error: "Enquiry not found." };
+    }
+
+    if (existing.converted_event_id) {
+      return { success: false, error: "Converted enquiries cannot be shared." };
+    }
+
+    const token = existing.proposal_token ?? randomBytes(24).toString("base64url");
+    const now = new Date().toISOString();
+    const nextStatus =
+      existing.proposal_status === "draft" || !existing.proposal_status
+        ? "shared"
+        : existing.proposal_status;
+
+    const { data, error } = await supabase
+      .from("enquiries")
+      .update({
+        proposal_token: token,
+        proposal_published_at: existing.proposal_published_at ?? now,
+        proposal_status: nextStatus,
+      })
+      .eq("id", enquiry_id)
+      .eq("venue_id", venueId)
+      .select(ENQUIRY_SELECT)
+      .maybeSingle();
+
+    if (error) {
+      return { success: false, error: dbErrorMessage(error) };
+    }
+
+    if (!data) {
+      return { success: false, error: "Enquiry not found." };
+    }
+
+    return {
+      success: true,
+      enquiry: toMockEnquiry(data as EnquiryRowWithJoins),
+      publicUrl: getPublicProposalUrl(token),
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to generate proposal link.";
     return { success: false, error: message };
   }
 }

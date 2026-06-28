@@ -2,14 +2,16 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { FileText } from "lucide-react";
+import { Copy, FileText } from "lucide-react";
 import { EnquiryStatusBadge } from "@/components/enquiries/enquiry-status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { markProposalSentAction } from "@/lib/enquiries/actions";
+import { generateProposalLinkAction, markProposalSentAction } from "@/lib/enquiries/actions";
+import { getPublicProposalUrl } from "@/lib/enquiries/public-url";
 import {
   enquiryStatusLabels,
   formatEnquiryCurrency,
+  proposalShareStatusLabels,
   type MockEnquiry,
 } from "@/lib/mock/enquiries";
 import { formatDate } from "@/lib/utils";
@@ -19,13 +21,17 @@ interface EnquiryProposalSectionProps {
   onUpdated?: (enquiry: MockEnquiry) => void;
 }
 
-export function EnquiryProposalSection({ enquiry, onUpdated }: EnquiryProposalSectionProps) {
+export function EnquiryProposalSection({ enquiry: initialEnquiry, onUpdated }: EnquiryProposalSectionProps) {
+  const [enquiry, setEnquiry] = useState(initialEnquiry);
   const [isSending, setIsSending] = useState(false);
+  const [isCopying, setIsCopying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
 
   const isConverted = Boolean(enquiry.convertedEventId);
   const isLost = enquiry.status === "lost";
+  const publicUrl = enquiry.proposalToken ? getPublicProposalUrl(enquiry.proposalToken) : null;
 
   async function handleMarkSent() {
     setIsSending(true);
@@ -53,20 +59,47 @@ export function EnquiryProposalSection({ enquiry, onUpdated }: EnquiryProposalSe
       return;
     }
 
+    setEnquiry(result.enquiry);
     onUpdated?.(result.enquiry);
     setSuccess("Marked as proposal sent. Email sending will be connected later.");
   }
 
+  async function handleCopyLink() {
+    if (!publicUrl) {
+      setIsCopying(true);
+      setError(null);
+      const result = await generateProposalLinkAction(enquiry.id);
+      setIsCopying(false);
+      if (!result.success) {
+        setError(result.error);
+        return;
+      }
+      setEnquiry(result.enquiry);
+      onUpdated?.(result.enquiry);
+      try {
+        await navigator.clipboard.writeText(result.publicUrl);
+        setCopyState("copied");
+        setTimeout(() => setCopyState("idle"), 2000);
+      } catch {
+        setError("Link generated. Copy it from the proposal builder.");
+      }
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(publicUrl);
+      setCopyState("copied");
+      setTimeout(() => setCopyState("idle"), 2000);
+    } catch {
+      setError("Could not copy link automatically.");
+    }
+  }
+
   const summaryItems = [
-    { label: "Status", value: enquiryStatusLabels[enquiry.status] },
-    {
-      label: "Proposed package",
-      value: enquiry.proposedPackage?.trim() || "Not set",
-    },
-    {
-      label: "Estimated value",
-      value: formatEnquiryCurrency(enquiry.estimatedValue),
-    },
+    { label: "Enquiry status", value: enquiryStatusLabels[enquiry.status] },
+    { label: "Proposal status", value: proposalShareStatusLabels[enquiry.proposalShareStatus] },
+    { label: "Proposed package", value: enquiry.proposedPackage?.trim() || "Not set" },
+    { label: "Estimated value", value: formatEnquiryCurrency(enquiry.estimatedValue) },
     {
       label: "Valid until",
       value: enquiry.proposalValidUntil ? formatDate(enquiry.proposalValidUntil) : "Not set",
@@ -74,6 +107,10 @@ export function EnquiryProposalSection({ enquiry, onUpdated }: EnquiryProposalSe
     {
       label: "Follow-up",
       value: enquiry.nextFollowUpDate ? formatDate(enquiry.nextFollowUpDate) : "Not set",
+    },
+    {
+      label: "First viewed",
+      value: enquiry.proposalViewedAt ? formatDate(enquiry.proposalViewedAt) : "Not yet viewed",
     },
   ];
 
@@ -85,8 +122,7 @@ export function EnquiryProposalSection({ enquiry, onUpdated }: EnquiryProposalSe
           <EnquiryStatusBadge status={enquiry.status} />
         </div>
         <CardDescription>
-          Prepare a client-facing proposal preview before sending. Use the builder to edit draft
-          content.
+          Prepare and share a client-facing proposal. Internal notes stay in the builder.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -106,13 +142,6 @@ export function EnquiryProposalSection({ enquiry, onUpdated }: EnquiryProposalSe
           ))}
         </dl>
 
-        {enquiry.proposalTitle && (
-          <p className="text-sm text-stone-600 dark:text-stone-400">
-            <span className="font-medium text-stone-800 dark:text-stone-200">Title:</span>{" "}
-            {enquiry.proposalTitle}
-          </p>
-        )}
-
         <div className="flex flex-wrap gap-2 pt-2">
           <Link
             href={`/dashboard/enquiries/${enquiry.id}/proposal`}
@@ -124,6 +153,12 @@ export function EnquiryProposalSection({ enquiry, onUpdated }: EnquiryProposalSe
           {!isConverted && !isLost && (
             <Button type="button" variant="outline" disabled={isSending} onClick={handleMarkSent}>
               {isSending ? "Updating…" : "Mark proposal sent"}
+            </Button>
+          )}
+          {!isConverted && !isLost && (
+            <Button type="button" variant="outline" disabled={isCopying} onClick={handleCopyLink}>
+              <Copy className="mr-2 h-4 w-4" />
+              {copyState === "copied" ? "Copied" : publicUrl ? "Copy proposal link" : "Generate & copy link"}
             </Button>
           )}
         </div>

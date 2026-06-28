@@ -12,6 +12,7 @@ import type {
   EnquirySource,
   EnquiryStatus,
   MockEnquiry,
+  ProposalShareStatus,
 } from "@/lib/mock/enquiries";
 import type { EventStatus } from "@/types";
 import type {
@@ -63,6 +64,10 @@ export interface EnquiryRowWithJoins {
   proposal_terms: string | null;
   proposal_internal_notes: string | null;
   proposal_valid_until: string | null;
+  proposal_token: string | null;
+  proposal_published_at: string | null;
+  proposal_viewed_at: string | null;
+  proposal_status: string | null;
   lost_reason: string | null;
   notes: string | null;
   internal_notes: string | null;
@@ -221,6 +226,10 @@ export function toMockEnquiry(row: EnquiryRowWithJoins): MockEnquiry {
     proposalTerms: row.proposal_terms,
     proposalInternalNotes: row.proposal_internal_notes,
     proposalValidUntil: row.proposal_valid_until,
+    proposalToken: row.proposal_token,
+    proposalPublishedAt: toDateOnly(row.proposal_published_at),
+    proposalViewedAt: toDateOnly(row.proposal_viewed_at),
+    proposalShareStatus: (row.proposal_status || 'draft') as ProposalShareStatus,
     lostReason: row.lost_reason,
     notes: row.notes,
     internalNotes: row.internal_notes,

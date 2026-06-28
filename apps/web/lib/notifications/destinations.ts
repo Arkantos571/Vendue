@@ -9,6 +9,10 @@ export function getNotificationHref(
   const { type, enquiryId, eventId, shiftId } = notification;
 
   if (audience === "manager") {
+    if (type === "proposal_viewed" && enquiryId) {
+      return `/dashboard/enquiries/${enquiryId}`;
+    }
+
     if (type === "new_enquiry" && enquiryId) {
       return `/dashboard/enquiries/${enquiryId}`;
     }

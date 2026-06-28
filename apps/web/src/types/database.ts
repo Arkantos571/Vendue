@@ -289,6 +289,10 @@ export interface Database {
           proposal_inclusions: string | null;
           proposal_terms: string | null;
           proposal_internal_notes: string | null;
+          proposal_token: string | null;
+          proposal_published_at: string | null;
+          proposal_viewed_at: string | null;
+          proposal_status: string;
           lost_reason: string | null;
           notes: string | null;
           internal_notes: string | null;
@@ -330,6 +334,10 @@ export interface Database {
           proposal_inclusions?: string | null;
           proposal_terms?: string | null;
           proposal_internal_notes?: string | null;
+          proposal_token?: string | null;
+          proposal_published_at?: string | null;
+          proposal_viewed_at?: string | null;
+          proposal_status?: string;
           lost_reason?: string | null;
           notes?: string | null;
           internal_notes?: string | null;
@@ -367,6 +375,10 @@ export interface Database {
           proposal_inclusions?: string | null;
           proposal_terms?: string | null;
           proposal_internal_notes?: string | null;
+          proposal_token?: string | null;
+          proposal_published_at?: string | null;
+          proposal_viewed_at?: string | null;
+          proposal_status?: string;
           lost_reason?: string | null;
           notes?: string | null;
           internal_notes?: string | null;
