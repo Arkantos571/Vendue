@@ -1,4 +1,5 @@
--- Public enquiry links per venue: slug, enable toggle, and lookup RPCs.
+-- Fix 013: PostgreSQL cannot change list_public_venues() return type via CREATE OR REPLACE.
+-- Safe to run if 013 failed at list_public_venues(); schema changes use IF NOT EXISTS in 013.
 
 ALTER TABLE public.venues
   ADD COLUMN IF NOT EXISTS public_slug text,
