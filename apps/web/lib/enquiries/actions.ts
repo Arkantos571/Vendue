@@ -7,10 +7,10 @@ import {
   toMockEnquiry,
   type EnquiryRowWithJoins,
 } from "@/lib/enquiries/mappers";
-import { parseEndTimeSelection } from "@/lib/events/event-time";
+import { parseEndTimeSelection, resolveEventTimestamps } from "@/lib/events/event-time";
 import type { EnquiryPipelineStats, EnquirySource, MockEnquiry } from "@/lib/mock/enquiries";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
-import type { EnquiryPriority, EnquiryStatus } from "@/types";
+import type { EnquiryPriority, EnquiryStatus, EventStatus } from "@/types";
 
 const ENQUIRY_SELECT = `
   id, venue_id, event_name, client_name, client_email, client_phone,
@@ -18,15 +18,34 @@ const ENQUIRY_SELECT = `
   preferred_end_time, event_type_id, space_id, guest_count, budget_estimate,
   estimated_value, status, source, priority, assigned_profile_id,
   last_contact_at, next_follow_up_at, notes, internal_notes, activity,
-  converted_event_id, created_at,
+  converted_event_id, converted_at, created_at,
   event_types ( name ),
   spaces ( name ),
-  profiles!enquiries_assigned_profile_id_fkey ( full_name )
+  profiles!enquiries_assigned_profile_id_fkey ( full_name ),
+  events!enquiries_converted_event_id_fkey ( id, title, status, starts_at, ends_at )
 `;
 
 export type EnquiriesActionResult<T> =
   | ({ success: true; noVenue?: boolean } & T)
   | { success: false; error: string };
+
+
+export type ConvertEnquiryToEventInput = {
+  enquiry_id: string;
+  title: string;
+  client_name: string;
+  client_email?: string;
+  client_phone?: string;
+  event_date: string;
+  start_time: string;
+  end_time: string;
+  end_is_next_day?: boolean;
+  space_id: string;
+  event_type_id: string;
+  guest_count: number;
+  notes?: string;
+  status?: EventStatus;
+};
 
 export type CreateEnquiryInput = {
   event_name: string;
@@ -348,3 +367,149 @@ export async function updateEnquiryStatusAction(input: {
     return { success: false, error: message };
   }
 }
+export async function convertEnquiryToEventAction(
+  input: ConvertEnquiryToEventInput,
+): Promise<EnquiriesActionResult<{ eventId: string; enquiry: MockEnquiry }>> {
+  if (!isSupabaseConfigured()) {
+    return {
+      success: false,
+      error: "Supabase is not configured.",
+    };
+  }
+
+  try {
+    const { supabase, user } = await requireAuthenticatedClient(
+      `/sign-in?redirect=/dashboard/enquiries/${input.enquiry_id}`,
+    );
+    const venueId = await getPrimaryVenueId(supabase, user.id);
+
+    if (!venueId) {
+      return { success: false, error: "Set up your venue before converting enquiries." };
+    }
+
+    const { data: existing, error: loadError } = await supabase
+      .from("enquiries")
+      .select("id, converted_event_id, status")
+      .eq("id", input.enquiry_id)
+      .eq("venue_id", venueId)
+      .maybeSingle();
+
+    if (loadError) {
+      return { success: false, error: dbErrorMessage(loadError) };
+    }
+
+    if (!existing) {
+      return { success: false, error: "Enquiry not found." };
+    }
+
+    if (existing.converted_event_id) {
+      return {
+        success: false,
+        error: "This enquiry has already been converted to an event.",
+      };
+    }
+
+    const title = input.title.trim();
+    const clientName = input.client_name.trim();
+
+    if (!title) {
+      return { success: false, error: "Event name is required." };
+    }
+
+    if (!clientName) {
+      return { success: false, error: "Client name is required." };
+    }
+
+    if (!input.event_date) {
+      return { success: false, error: "Event date is required." };
+    }
+
+    if (!input.start_time || !input.end_time) {
+      return { success: false, error: "Start and end times are required." };
+    }
+
+    if (!input.space_id) {
+      return { success: false, error: "Space is required." };
+    }
+
+    if (!input.event_type_id) {
+      return { success: false, error: "Event type is required." };
+    }
+
+    if (!input.guest_count || input.guest_count < 1) {
+      return { success: false, error: "Guest count is required." };
+    }
+
+    const timestamps = resolveEventTimestamps(
+      input.event_date,
+      input.start_time,
+      input.end_time,
+      { endIsNextDay: input.end_is_next_day },
+    );
+
+    if ("error" in timestamps) {
+      return { success: false, error: timestamps.error };
+    }
+
+    const eventId = randomUUID();
+    const convertedAt = new Date().toISOString();
+
+    const { error: insertError } = await supabase.from("events").insert({
+      id: eventId,
+      venue_id: venueId,
+      space_id: input.space_id,
+      event_type_id: input.event_type_id,
+      enquiry_id: input.enquiry_id,
+      title,
+      status: input.status ?? "draft",
+      starts_at: timestamps.startsAt,
+      ends_at: timestamps.endsAt,
+      guest_count: input.guest_count,
+      client_name: clientName,
+      client_email: input.client_email?.trim() || null,
+      client_phone: input.client_phone?.trim() || null,
+      notes: input.notes?.trim() || null,
+      created_by: user.id,
+    });
+
+    if (insertError) {
+      return { success: false, error: dbErrorMessage(insertError) };
+    }
+
+    const { data: updated, error: updateError } = await supabase
+      .from("enquiries")
+      .update({
+        converted_event_id: eventId,
+        converted_at: convertedAt,
+        status: "confirmed",
+      })
+      .eq("id", input.enquiry_id)
+      .eq("venue_id", venueId)
+      .is("converted_event_id", null)
+      .select(ENQUIRY_SELECT)
+      .maybeSingle();
+
+    if (updateError || !updated) {
+      await supabase.from("events").delete().eq("id", eventId).eq("venue_id", venueId);
+
+      if (updateError) {
+        return { success: false, error: dbErrorMessage(updateError) };
+      }
+
+      return {
+        success: false,
+        error: "This enquiry was already converted by another session.",
+      };
+    }
+
+    return {
+      success: true,
+      eventId,
+      enquiry: toMockEnquiry(updated as EnquiryRowWithJoins),
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to convert enquiry.";
+    return { success: false, error: message };
+  }
+}
+

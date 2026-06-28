@@ -9,10 +9,11 @@ const ENQUIRY_SELECT = `
   preferred_end_time, event_type_id, space_id, guest_count, budget_estimate,
   estimated_value, status, source, priority, assigned_profile_id,
   last_contact_at, next_follow_up_at, notes, internal_notes, activity,
-  converted_event_id, created_at,
+  converted_event_id, converted_at, created_at,
   event_types ( name ),
   spaces ( name ),
-  profiles!enquiries_assigned_profile_id_fkey ( full_name )
+  profiles!enquiries_assigned_profile_id_fkey ( full_name ),
+  events!enquiries_converted_event_id_fkey ( id, title, status, starts_at, ends_at )
 `;
 
 export async function loadEnquiryForPage(enquiryId: string): Promise<MockEnquiry | null> {

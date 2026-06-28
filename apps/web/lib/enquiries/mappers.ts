@@ -1,3 +1,4 @@
+import { splitDateTime } from "@/lib/events/mappers";
 import {
   eventEndsNextDay,
   formatEventTimeRange,
@@ -5,12 +6,14 @@ import {
 } from "@/lib/events/event-time";
 import type {
   EnquiryActivityItem,
+  EnquiryLinkedEvent,
   EnquiryPipelineStats,
   EnquiryPriority,
   EnquirySource,
   EnquiryStatus,
   MockEnquiry,
 } from "@/lib/mock/enquiries";
+import type { EventStatus } from "@/types";
 import type {
   EnquiryPriority as DbEnquiryPriority,
   EnquirySource as DbEnquirySource,
@@ -19,6 +22,14 @@ import type {
 
 export interface ProfileJoin {
   full_name: string | null;
+}
+
+export interface ConvertedEventJoin {
+  id: string;
+  title: string;
+  status: EventStatus;
+  starts_at: string;
+  ends_at: string;
 }
 
 export interface EnquiryRowWithJoins {
@@ -48,10 +59,12 @@ export interface EnquiryRowWithJoins {
   internal_notes: string | null;
   activity: unknown;
   converted_event_id: string | null;
+  converted_at: string | null;
   created_at: string;
   event_types?: { name: string } | { name: string }[] | null;
   spaces?: { name: string } | { name: string }[] | null;
   profiles?: ProfileJoin | ProfileJoin[] | null;
+  events?: ConvertedEventJoin | ConvertedEventJoin[] | null;
 }
 
 function joinName<T extends { name: string }>(value: T | T[] | null | undefined): string {
@@ -63,6 +76,27 @@ function joinProfileName(value: ProfileJoin | ProfileJoin[] | null | undefined):
   if (!value) return "Unassigned";
   const profile = Array.isArray(value) ? value[0] : value;
   return profile?.full_name?.trim() || "Unassigned";
+}
+
+function toLinkedEvent(
+  value: ConvertedEventJoin | ConvertedEventJoin[] | null | undefined,
+): EnquiryLinkedEvent | null {
+  if (!value) return null;
+  const event = Array.isArray(value) ? value[0] : value;
+  if (!event) return null;
+
+  const start = splitDateTime(event.starts_at);
+  const end = splitDateTime(event.ends_at);
+
+  return {
+    id: event.id,
+    title: event.title,
+    date: start.date,
+    startTime: start.time,
+    endTime: end.time,
+    endsNextDay: end.date > start.date,
+    status: event.status,
+  };
 }
 
 function parseAmount(value: number | string | null | undefined): number {
@@ -157,6 +191,9 @@ export function toMockEnquiry(row: EnquiryRowWithJoins): MockEnquiry {
       createdAt: row.created_at,
       status: row.status as EnquiryStatus,
     }),
+    convertedEventId: row.converted_event_id,
+    convertedAt: row.converted_at,
+    linkedEvent: toLinkedEvent(row.events),
     createdAt: row.created_at,
   };
 }

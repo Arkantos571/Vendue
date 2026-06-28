@@ -56,7 +56,20 @@ export interface MockEnquiry {
   notes: string | null;
   internalNotes: string | null;
   activity: EnquiryActivityItem[];
+  convertedEventId: string | null;
+  convertedAt: string | null;
+  linkedEvent: EnquiryLinkedEvent | null;
   createdAt: string;
+}
+
+export interface EnquiryLinkedEvent {
+  id: string;
+  title: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  endsNextDay?: boolean;
+  status: import("@/types").EventStatus;
 }
 
 export interface EnquiryPipelineStats {
@@ -139,6 +152,9 @@ export const mockEnquiries: MockEnquiry[] = [
     priority: "high",
     notes: "Interested in AV package and vegetarian menu for 12 guests.",
     internalNotes: "Strong lead — respond within 24 hours.",
+    convertedEventId: null,
+    convertedAt: null,
+    linkedEvent: null,
     createdAt: "2026-06-26T08:30:00Z",
     activity: [
       {
@@ -185,6 +201,9 @@ export const mockEnquiries: MockEnquiry[] = [
     priority: "high",
     notes: "Referred by Chen & Walsh wedding. Wants tasting session.",
     internalNotes: "Send brochure and sample menu options.",
+    convertedEventId: null,
+    convertedAt: null,
+    linkedEvent: null,
     createdAt: "2026-06-24T14:00:00Z",
     activity: [
       {
@@ -239,6 +258,9 @@ export const mockEnquiries: MockEnquiry[] = [
     priority: "medium",
     notes: "Wine pairing required. Two board members gluten-free.",
     internalNotes: "Proposal v2 sent with updated wine list.",
+    convertedEventId: null,
+    convertedAt: null,
+    linkedEvent: null,
     createdAt: "2026-06-20T10:15:00Z",
     activity: [
       {
@@ -293,6 +315,9 @@ export const mockEnquiries: MockEnquiry[] = [
     priority: "high",
     notes: "Deposit received. Converted to confirmed booking.",
     internalNotes: "Linked to evt-4 planning — repeat annual client.",
+    convertedEventId: null,
+    convertedAt: null,
+    linkedEvent: null,
     createdAt: "2026-05-10T09:00:00Z",
     activity: [
       {
@@ -347,6 +372,9 @@ export const mockEnquiries: MockEnquiry[] = [
     priority: "medium",
     notes: "Visited venue after anniversary dinner. Interested in similar setup.",
     internalNotes: "Awaiting guest count confirmation.",
+    convertedEventId: null,
+    convertedAt: null,
+    linkedEvent: null,
     createdAt: "2026-06-22T17:00:00Z",
     activity: [
       {
@@ -393,6 +421,9 @@ export const mockEnquiries: MockEnquiry[] = [
     priority: "low",
     notes: "Client chose competitor venue due to date conflict.",
     internalNotes: "Archive — may re-engage next year.",
+    convertedEventId: null,
+    convertedAt: null,
+    linkedEvent: null,
     createdAt: "2026-06-05T11:00:00Z",
     activity: [
       {
@@ -447,6 +478,9 @@ export const mockEnquiries: MockEnquiry[] = [
     priority: "medium",
     notes: "Multi-room setup. AV partner to be confirmed by client.",
     internalNotes: "Proposal includes AM/PM catering breakdown.",
+    convertedEventId: null,
+    convertedAt: null,
+    linkedEvent: null,
     createdAt: "2026-06-18T13:00:00Z",
     activity: [
       {

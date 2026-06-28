@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { EnquiryActions } from "@/components/enquiries/enquiry-actions";
+import { LinkedEventCard } from "@/components/enquiries/linked-event-card";
 import { EnquiryActivitySection } from "@/components/enquiries/enquiry-activity-section";
 import { EnquiryClientSection } from "@/components/enquiries/enquiry-client-section";
 import { EnquiryEventRequestSection } from "@/components/enquiries/enquiry-event-request-section";
@@ -41,6 +42,8 @@ export function EnquiryDetailView({ enquiry: initialEnquiry }: { enquiry: MockEn
         </div>
         <EnquiryActions enquiry={enquiry} onUpdated={setEnquiry} />
       </div>
+
+      {enquiry.linkedEvent && <LinkedEventCard event={enquiry.linkedEvent} />}
 
       <nav className="flex gap-1 overflow-x-auto border-b border-stone-200" aria-label="Enquiry sections">
         {tabs.map(({ id, label }) => (

@@ -277,6 +277,7 @@ export interface Database {
           internal_notes: string | null;
           activity: Json;
           converted_event_id: string | null;
+          converted_at: string | null;
           created_by: string | null;
           created_at: string;
           updated_at: string;
@@ -308,6 +309,7 @@ export interface Database {
           internal_notes?: string | null;
           activity?: Json;
           converted_event_id?: string | null;
+          converted_at?: string | null;
           created_by?: string | null;
         };
         Update: {
@@ -335,6 +337,7 @@ export interface Database {
           internal_notes?: string | null;
           activity?: Json;
           converted_event_id?: string | null;
+          converted_at?: string | null;
         };
         Relationships: [];
       };
