@@ -704,6 +704,33 @@ export interface Database {
         };
         Returns: undefined;
       };
+      list_public_venues: {
+        Args: Record<PropertyKey, never>;
+        Returns: { id: string; name: string }[];
+      };
+      get_public_enquiry_form_options: {
+        Args: { p_venue_id: string };
+        Returns: Json;
+      };
+      submit_public_enquiry: {
+        Args: {
+          p_venue_id: string;
+          p_event_name: string;
+          p_client_name: string;
+          p_client_email: string;
+          p_client_phone: string | null;
+          p_requested_date: string | null;
+          p_preferred_start_time: string | null;
+          p_preferred_end_time: string | null;
+          p_end_is_next_day: boolean;
+          p_event_type_id: string | null;
+          p_space_id: string | null;
+          p_guest_count: number | null;
+          p_budget_estimate: number | null;
+          p_notes: string | null;
+        };
+        Returns: string;
+      };
     };
     Enums: {
       venue_member_role: VenueMemberRole;

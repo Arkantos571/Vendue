@@ -11,6 +11,7 @@ const navLinks = [
   { href: "#features", label: "Features" },
   { href: "#how-it-works", label: "How it works" },
   { href: "#pricing", label: "Pricing" },
+  { href: "/enquire", label: "Enquire" },
 ];
 
 export function SiteHeader() {

@@ -74,6 +74,16 @@ export function endSelectionKey(time: string, nextDay: boolean): string {
   return nextDay ? `next|${time}` : `same|${time}`;
 }
 
+export function parseEndSelectionKey(key: string): { time: string; nextDay: boolean } {
+  if (key.startsWith("next|")) {
+    return { time: key.slice(5), nextDay: true };
+  }
+  if (key.startsWith("same|")) {
+    return { time: key.slice(5), nextDay: false };
+  }
+  return { time: key, nextDay: false };
+}
+
 export function parseEndTimeSelection(
   endTime: string,
   endIsNextDay?: boolean,

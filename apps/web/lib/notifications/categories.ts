@@ -12,7 +12,7 @@ export const notificationCategoryFilters: { value: NotificationCategory; label: 
 const rotaTypes = new Set(["rota_published", "shift_added", "shift_updated"]);
 const staffTypes = new Set(["shift_confirmed", "shift_declined"]);
 const eventTypes = new Set(["function_sheet_updated"]);
-const enquiryTypes = new Set(["enquiry_converted"]);
+const enquiryTypes = new Set(["enquiry_converted", "new_enquiry"]);
 
 export function notificationCategoryForType(type: string): NotificationCategory | null {
   if (rotaTypes.has(type)) return "rota";
@@ -41,4 +41,5 @@ export const notificationTypeLabels: Record<string, string> = {
   shift_declined: "Declined",
   function_sheet_updated: "Function sheet",
   enquiry_converted: "Enquiry",
+  new_enquiry: "New enquiry",
 };

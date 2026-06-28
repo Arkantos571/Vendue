@@ -4,6 +4,7 @@ import { Logo } from "@/components/layout/logo";
 const footerLinks = [
   { href: "#features", label: "Features" },
   { href: "#how-it-works", label: "How it works" },
+  { href: "/enquire", label: "Enquire" },
   { href: "/sign-in", label: "Sign in" },
   { href: "/sign-up", label: "Get started" },
 ];
