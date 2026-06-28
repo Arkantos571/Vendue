@@ -10,6 +10,7 @@ const styles: Record<string, string> = {
   function_sheet_updated: "bg-violet-50 text-violet-800 dark:bg-violet-950/50 dark:text-violet-300",
   enquiry_converted: "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300",
   proposal_viewed: "bg-amber-50 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300",
+  proposal_response: "bg-emerald-50 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300",
 };
 
 export function NotificationTypeBadge({ type }: { type: string }) {

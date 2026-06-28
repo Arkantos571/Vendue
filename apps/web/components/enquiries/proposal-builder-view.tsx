@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { ArrowLeft, Copy } from "lucide-react";
 import { ProposalPreviewPanel } from "@/components/enquiries/proposal-preview-panel";
 import { ProposalShareSection } from "@/components/enquiries/proposal-share-section";
+import { ProposalResponseSummary } from "@/components/enquiries/proposal-response-summary";
 import { EnquiryStatusBadge } from "@/components/enquiries/enquiry-status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -388,6 +389,8 @@ export function ProposalBuilderView({ enquiry: initialEnquiry, venue }: Proposal
             buildProposalInput={buildInput}
             onUpdated={setEnquiry}
           />
+
+          <ProposalResponseSummary enquiry={enquiry} showBuilderLink={false} />
 
           {!isReadOnly && (
             <div className="flex flex-wrap gap-2">

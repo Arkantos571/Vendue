@@ -30,6 +30,9 @@ export interface ReportsEnquiryPipeline {
   pipelineValue: number;
   convertedCount: number;
   totalCount: number;
+  proposalsViewed: number;
+  proposalsResponded: number;
+  interestedResponses: number;
 }
 
 export interface ReportsRotaStaffing {
@@ -65,6 +68,9 @@ export interface ReportsSnapshot {
     createdAt: string;
     estimatedValue: number;
     convertedEventId: string | null;
+    proposalViewedAt: string | null;
+    proposalRespondedAt: string | null;
+    proposalClientResponse: string | null;
   }[];
   shifts: {
     id: string;

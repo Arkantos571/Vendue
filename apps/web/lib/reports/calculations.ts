@@ -138,6 +138,11 @@ export function computeReports(
       pipelineValue,
       convertedCount,
       totalCount: enquiriesInRange.length,
+      proposalsViewed: enquiriesInRange.filter((enquiry) => Boolean(enquiry.proposalViewedAt)).length,
+      proposalsResponded: enquiriesInRange.filter((enquiry) => Boolean(enquiry.proposalRespondedAt)).length,
+      interestedResponses: enquiriesInRange.filter(
+        (enquiry) => enquiry.proposalClientResponse === "interested",
+      ).length,
     },
     rotaStaffing: {
       totalShifts: shiftsInRange.length,

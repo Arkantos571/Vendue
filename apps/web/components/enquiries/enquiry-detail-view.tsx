@@ -12,6 +12,7 @@ import { EnquiryNotesSection } from "@/components/enquiries/enquiry-notes-sectio
 import { EnquiryOverviewSection } from "@/components/enquiries/enquiry-overview-section";
 import { EnquiryPipelineBar } from "@/components/enquiries/enquiry-pipeline-bar";
 import { EnquiryProposalSection } from "@/components/enquiries/enquiry-proposal-section";
+import { ProposalResponseSummary } from "@/components/enquiries/proposal-response-summary";
 import { EnquiryStatusBadge } from "@/components/enquiries/enquiry-status-badge";
 import { cn } from "@/lib/utils";
 import type { MockEnquiry } from "@/lib/mock/enquiries";
@@ -82,6 +83,7 @@ export function EnquiryDetailView({ enquiry: initialEnquiry }: { enquiry: MockEn
         <div className="space-y-6">
           <EnquiryOverviewSection enquiry={enquiry} />
           <EnquiryProposalSection enquiry={enquiry} onUpdated={setEnquiry} />
+          <ProposalResponseSummary enquiry={enquiry} />
         </div>
       )}
       {activeTab === "client" && <EnquiryClientSection enquiry={enquiry} />}

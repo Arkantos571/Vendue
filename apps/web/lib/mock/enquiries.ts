@@ -7,6 +7,12 @@ export type EnquiryStatus =
   | "confirmed"
   | "lost";
 
+export type ProposalClientResponse =
+  | "interested"
+  | "question"
+  | "not_right_now"
+  | "declined";
+
 export type ProposalShareStatus =
   | "draft"
   | "shared"
@@ -78,6 +84,9 @@ export interface MockEnquiry {
   proposalPublishedAt: string | null;
   proposalViewedAt: string | null;
   proposalShareStatus: ProposalShareStatus;
+  proposalClientResponse: ProposalClientResponse | null;
+  proposalClientMessage: string | null;
+  proposalRespondedAt: string | null;
   lostReason: string | null;
   priority: EnquiryPriority;
   notes: string | null;
@@ -106,6 +115,13 @@ export interface EnquiryPipelineStats {
   openEnquiries: number;
   conversionRate: number;
 }
+
+export const proposalClientResponseLabels: Record<ProposalClientResponse, string> = {
+  interested: "Looks good",
+  question: "Has a question",
+  not_right_now: "Not right now",
+  declined: "Declined",
+};
 
 export const proposalShareStatusLabels: Record<ProposalShareStatus, string> = {
   draft: "Draft",
@@ -196,6 +212,9 @@ export const mockEnquiries: MockEnquiry[] = [
     proposalPublishedAt: null,
     proposalViewedAt: null,
     proposalShareStatus: "draft" as ProposalShareStatus,
+    proposalClientResponse: null,
+    proposalClientMessage: null,
+    proposalRespondedAt: null,
     lostReason: null,
     nextFollowUpDate: "2026-06-28",
     priority: "high",
@@ -258,6 +277,9 @@ export const mockEnquiries: MockEnquiry[] = [
     proposalPublishedAt: null,
     proposalViewedAt: null,
     proposalShareStatus: "draft" as ProposalShareStatus,
+    proposalClientResponse: null,
+    proposalClientMessage: null,
+    proposalRespondedAt: null,
     lostReason: null,
     nextFollowUpDate: "2026-06-29",
     priority: "high",
@@ -328,6 +350,9 @@ export const mockEnquiries: MockEnquiry[] = [
     proposalPublishedAt: null,
     proposalViewedAt: null,
     proposalShareStatus: "draft" as ProposalShareStatus,
+    proposalClientResponse: null,
+    proposalClientMessage: null,
+    proposalRespondedAt: null,
     lostReason: null,
     nextFollowUpDate: "2026-07-01",
     priority: "medium",
@@ -398,6 +423,9 @@ export const mockEnquiries: MockEnquiry[] = [
     proposalPublishedAt: null,
     proposalViewedAt: null,
     proposalShareStatus: "draft" as ProposalShareStatus,
+    proposalClientResponse: null,
+    proposalClientMessage: null,
+    proposalRespondedAt: null,
     lostReason: null,
     nextFollowUpDate: null,
     priority: "high",
@@ -468,6 +496,9 @@ export const mockEnquiries: MockEnquiry[] = [
     proposalPublishedAt: null,
     proposalViewedAt: null,
     proposalShareStatus: "draft" as ProposalShareStatus,
+    proposalClientResponse: null,
+    proposalClientMessage: null,
+    proposalRespondedAt: null,
     lostReason: null,
     nextFollowUpDate: "2026-06-30",
     priority: "medium",
@@ -530,6 +561,9 @@ export const mockEnquiries: MockEnquiry[] = [
     proposalPublishedAt: null,
     proposalViewedAt: null,
     proposalShareStatus: "draft" as ProposalShareStatus,
+    proposalClientResponse: null,
+    proposalClientMessage: null,
+    proposalRespondedAt: null,
     lostReason: null,
     nextFollowUpDate: null,
     priority: "low",
@@ -600,6 +634,9 @@ export const mockEnquiries: MockEnquiry[] = [
     proposalPublishedAt: null,
     proposalViewedAt: null,
     proposalShareStatus: "draft" as ProposalShareStatus,
+    proposalClientResponse: null,
+    proposalClientMessage: null,
+    proposalRespondedAt: null,
     lostReason: null,
     nextFollowUpDate: "2026-07-02",
     priority: "medium",

@@ -1,4 +1,4 @@
-import type { ProposalShareStatus } from "@/lib/mock/enquiries";
+import type { ProposalClientResponse, ProposalShareStatus } from "@/lib/mock/enquiries";
 
 export interface PublicProposal {
   venueName: string;
@@ -22,4 +22,7 @@ export interface PublicProposal {
   proposalTerms: string | null;
   proposalValidUntil: string | null;
   proposalShareStatus: ProposalShareStatus;
+  proposalClientResponse: ProposalClientResponse | null;
+  proposalClientMessage: string | null;
+  proposalRespondedAt: string | null;
 }

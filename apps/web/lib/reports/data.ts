@@ -12,7 +12,8 @@ const EVENT_SELECT = `
 `;
 
 const ENQUIRY_SELECT = `
-  id, status, created_at, estimated_value, budget_estimate, converted_event_id
+  id, status, created_at, estimated_value, budget_estimate, converted_event_id,
+  proposal_viewed_at, proposal_responded_at, proposal_client_response
 `;
 
 const SHIFT_SELECT = `
@@ -116,6 +117,9 @@ export async function loadReportsPayload(): Promise<
       createdAt: row.created_at,
       estimatedValue: parseRate(row.estimated_value ?? row.budget_estimate),
       convertedEventId: row.converted_event_id,
+      proposalViewedAt: row.proposal_viewed_at,
+      proposalRespondedAt: row.proposal_responded_at,
+      proposalClientResponse: row.proposal_client_response,
     })),
     shifts: (shiftsResult.data ?? []).map((row) => ({
       id: row.id,

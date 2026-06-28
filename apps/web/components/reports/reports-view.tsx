@@ -109,7 +109,7 @@ export function ReportsView({ payload }: ReportsViewProps) {
           title="Enquiry pipeline"
           description="Enquiries filtered by created date in the selected range."
         >
-          <div className="mb-6 grid gap-4 sm:grid-cols-3">
+          <div className="mb-6 grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
             <div className="rounded-xl bg-stone-50 p-4 dark:bg-stone-800/50">
               <p className="text-xs uppercase tracking-wide text-stone-500">Conversion rate</p>
               <p className="mt-1 text-2xl font-semibold text-stone-900 dark:text-stone-100">
@@ -126,6 +126,24 @@ export function ReportsView({ payload }: ReportsViewProps) {
               <p className="text-xs uppercase tracking-wide text-stone-500">Converted</p>
               <p className="mt-1 text-2xl font-semibold text-stone-900 dark:text-stone-100">
                 {reports.enquiryPipeline.convertedCount}
+              </p>
+            </div>
+            <div className="rounded-xl bg-stone-50 p-4 dark:bg-stone-800/50">
+              <p className="text-xs uppercase tracking-wide text-stone-500">Proposals viewed</p>
+              <p className="mt-1 text-2xl font-semibold text-stone-900 dark:text-stone-100">
+                {reports.enquiryPipeline.proposalsViewed}
+              </p>
+            </div>
+            <div className="rounded-xl bg-stone-50 p-4 dark:bg-stone-800/50">
+              <p className="text-xs uppercase tracking-wide text-stone-500">Proposals responded</p>
+              <p className="mt-1 text-2xl font-semibold text-stone-900 dark:text-stone-100">
+                {reports.enquiryPipeline.proposalsResponded}
+              </p>
+            </div>
+            <div className="rounded-xl bg-stone-50 p-4 dark:bg-stone-800/50">
+              <p className="text-xs uppercase tracking-wide text-stone-500">Interested</p>
+              <p className="mt-1 text-2xl font-semibold text-stone-900 dark:text-stone-100">
+                {reports.enquiryPipeline.interestedResponses}
               </p>
             </div>
           </div>

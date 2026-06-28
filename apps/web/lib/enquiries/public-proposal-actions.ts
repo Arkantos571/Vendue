@@ -9,7 +9,7 @@ import type { DbClient } from "@/lib/supabase/db";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { venueTypeLabel } from "@/lib/venue-setup/venue-types";
-import type { ProposalShareStatus } from "@/lib/mock/enquiries";
+import type { ProposalClientResponse, ProposalShareStatus } from "@/lib/mock/enquiries";
 import type { VenueType } from "@/types";
 
 export type PublicProposalActionResult<T> =
@@ -38,12 +38,27 @@ type RpcProposalRow = {
   proposal_terms: string | null;
   proposal_valid_until: string | null;
   proposal_status: ProposalShareStatus;
+  proposal_client_response: ProposalClientResponse | null;
+  proposal_client_message: string | null;
+  proposal_responded_at: string | null;
+};
+
+type RpcSubmitResponseRow = {
+  proposal_status: ProposalShareStatus;
+  proposal_client_response: ProposalClientResponse;
+  proposal_client_message: string | null;
+  proposal_responded_at: string;
 };
 
 function parseAmount(value: number | string | null | undefined): number {
   if (value === null || value === undefined || value === "") return 0;
   const parsed = typeof value === "number" ? value : Number(value);
   return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function toDateOnly(iso: string | null): string | null {
+  if (!iso) return null;
+  return iso.slice(0, 10);
 }
 
 function mapRpcProposal(row: RpcProposalRow): PublicProposal {
@@ -72,6 +87,9 @@ function mapRpcProposal(row: RpcProposalRow): PublicProposal {
     proposalTerms: row.proposal_terms,
     proposalValidUntil: row.proposal_valid_until,
     proposalShareStatus: row.proposal_status ?? "shared",
+    proposalClientResponse: row.proposal_client_response,
+    proposalClientMessage: row.proposal_client_message,
+    proposalRespondedAt: toDateOnly(row.proposal_responded_at),
   };
 }
 
@@ -115,10 +133,18 @@ export async function loadPublicProposalAction(
   }
 }
 
-export async function respondPublicProposalAction(input: {
+export async function submitPublicProposalResponseAction(input: {
   token: string;
-  response: "accepted_placeholder" | "declined_placeholder";
-}): Promise<PublicProposalActionResult<{ proposalShareStatus: ProposalShareStatus }>> {
+  response: ProposalClientResponse;
+  message?: string | null;
+}): Promise<
+  PublicProposalActionResult<{
+    proposalShareStatus: ProposalShareStatus;
+    proposalClientResponse: ProposalClientResponse;
+    proposalClientMessage: string | null;
+    proposalRespondedAt: string | null;
+  }>
+> {
   if (!isSupabaseConfigured()) {
     return { success: false, error: "Proposal is not available right now." };
   }
@@ -130,25 +156,31 @@ export async function respondPublicProposalAction(input: {
 
   try {
     const supabase = (await createClient()) as unknown as DbClient;
-    const { data, error } = await supabase.rpc("respond_public_proposal", {
+    const { data, error } = await supabase.rpc("submit_public_proposal_response", {
       p_token: trimmed,
       p_response: input.response,
+      p_message: input.message ?? null,
     });
 
     if (error) {
       return { success: false, error: dbErrorMessage(error) };
     }
 
-    if (!data) {
+    if (!data || typeof data !== "object") {
       return { success: false, error: "Proposal not found." };
     }
 
+    const row = data as RpcSubmitResponseRow;
+
     return {
       success: true,
-      proposalShareStatus: input.response,
+      proposalShareStatus: row.proposal_status,
+      proposalClientResponse: row.proposal_client_response,
+      proposalClientMessage: row.proposal_client_message,
+      proposalRespondedAt: toDateOnly(row.proposal_responded_at),
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to record response.";
+    const message = error instanceof Error ? error.message : "Failed to send response.";
     return { success: false, error: message };
   }
 }

@@ -293,6 +293,9 @@ export interface Database {
           proposal_published_at: string | null;
           proposal_viewed_at: string | null;
           proposal_status: string;
+          proposal_client_response: string | null;
+          proposal_client_message: string | null;
+          proposal_responded_at: string | null;
           lost_reason: string | null;
           notes: string | null;
           internal_notes: string | null;
@@ -338,6 +341,9 @@ export interface Database {
           proposal_published_at?: string | null;
           proposal_viewed_at?: string | null;
           proposal_status?: string;
+          proposal_client_response?: string | null;
+          proposal_client_message?: string | null;
+          proposal_responded_at?: string | null;
           lost_reason?: string | null;
           notes?: string | null;
           internal_notes?: string | null;
@@ -379,6 +385,9 @@ export interface Database {
           proposal_published_at?: string | null;
           proposal_viewed_at?: string | null;
           proposal_status?: string;
+          proposal_client_response?: string | null;
+          proposal_client_message?: string | null;
+          proposal_responded_at?: string | null;
           lost_reason?: string | null;
           notes?: string | null;
           internal_notes?: string | null;
