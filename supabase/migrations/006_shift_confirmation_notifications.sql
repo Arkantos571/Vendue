@@ -1,6 +1,5 @@
 -- Shift confirmation timestamps and staff decline support.
-
-ALTER TYPE public.rota_shift_status ADD VALUE IF NOT EXISTS 'declined';
+-- Prerequisite: run 006a_rota_shift_status_declined.sql first (enum must commit separately).
 
 ALTER TABLE public.rota_shifts
   ADD COLUMN IF NOT EXISTS confirmed_at timestamptz,

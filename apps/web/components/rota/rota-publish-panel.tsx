@@ -13,6 +13,7 @@ interface RotaPublishPanelProps {
   isPublishing: boolean;
   isUpdatingStatus: boolean;
   publishMessage: string | null;
+  migrationRequired?: boolean;
   onMarkReady: () => void;
   onPublish: () => void;
   onRevertToDraft: () => void;
@@ -23,6 +24,7 @@ export function RotaPublishPanel({
   isPublishing,
   isUpdatingStatus,
   publishMessage,
+  migrationRequired = false,
   onMarkReady,
   onPublish,
   onRevertToDraft,
@@ -98,6 +100,16 @@ export function RotaPublishPanel({
         </div>
       </dl>
 
+      {migrationRequired && (
+        <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
+          Apply{" "}
+          <code className="rounded bg-amber-100 px-1 py-0.5 text-xs dark:bg-amber-900/50">
+            supabase/migrations/007_rota_publish.sql
+          </code>{" "}
+          in Supabase SQL Editor to enable publish workflow.
+        </p>
+      )}
+
       {!hasShifts && (
         <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
           Add at least one staff shift before marking ready or publishing.
@@ -128,7 +140,7 @@ export function RotaPublishPanel({
           <Button
             type="button"
             variant="outline"
-            disabled={!hasShifts || isBusy}
+            disabled={!hasShifts || isBusy || migrationRequired}
             onClick={onMarkReady}
             className="sm:col-span-2"
           >
@@ -140,7 +152,7 @@ export function RotaPublishPanel({
         {(isDraft || isReady) && (
           <Button
             type="button"
-            disabled={!hasShifts || isBusy}
+            disabled={!hasShifts || isBusy || migrationRequired}
             onClick={onPublish}
             className={isReady ? "sm:col-span-2" : undefined}
           >
@@ -153,7 +165,7 @@ export function RotaPublishPanel({
           <Button
             type="button"
             variant="outline"
-            disabled={isBusy || (isPublished && hasResponses)}
+            disabled={isBusy || migrationRequired || (isPublished && hasResponses)}
             onClick={onRevertToDraft}
             className="sm:col-span-2"
             title={

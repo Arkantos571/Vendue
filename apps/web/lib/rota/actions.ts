@@ -2,6 +2,7 @@
 
 import { randomUUID } from "crypto";
 import { getPrimaryVenueId, requireAuthenticatedClient } from "@/lib/auth/session";
+import { queryVenueEventById, queryVenueEvents } from "@/lib/events/event-select";
 import { toMockEvent, type EventRowWithJoins } from "@/lib/events/mappers";
 import type { RotaBuilderData, RotaEventSummary } from "@/lib/mock/rota";
 import {
@@ -13,16 +14,8 @@ import {
 import { encodeArrivalInNotes, resolveShiftTimestamps } from "@/lib/rota/shift-time";
 import { toMockTeamMember, type TeamMemberRow } from "@/lib/team/mappers";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { rotaPublishSchemaError } from "@/lib/supabase/schema-errors";
 import { canManageVenue } from "@/lib/rota/venue-access";
-
-const EVENT_SELECT = `
-  id, title, status, starts_at, ends_at, guest_count,
-  client_name, client_email, client_phone, notes,
-  rota_status, rota_published_at,
-  space_id, event_type_id,
-  spaces ( name ),
-  event_types ( name )
-`;
 
 const ROTA_SHIFT_SELECT = `
   id, venue_id, event_id, team_member_id, role_label, section,
@@ -79,18 +72,8 @@ async function fetchEventForVenue(
   venueId: string,
   eventId: string,
 ) {
-  const { data, error } = await supabase
-    .from("events")
-    .select(EVENT_SELECT)
-    .eq("id", eventId)
-    .eq("venue_id", venueId)
-    .maybeSingle();
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return data as EventRowWithJoins | null;
+  const { row } = await queryVenueEventById(supabase, venueId, eventId);
+  return row;
 }
 
 async function fetchShiftsForEvent(
@@ -130,7 +113,7 @@ async function fetchTeamMembers(
 }
 
 export async function loadRotaOverviewAction(): Promise<
-  RotaActionResult<{ events: RotaEventSummary[] }>
+  RotaActionResult<{ events: RotaEventSummary[]; migrationRequired?: boolean }>
 > {
   if (!isSupabaseConfigured()) {
     return { success: true, events: [], noVenue: true };
@@ -146,21 +129,21 @@ export async function loadRotaOverviewAction(): Promise<
     const { supabase, venueId } = context;
     const nowIso = new Date().toISOString();
 
-    const { data: eventRows, error: eventsError } = await supabase
-      .from("events")
-      .select(EVENT_SELECT)
-      .eq("venue_id", venueId)
-      .gte("ends_at", nowIso)
-      .order("starts_at", { ascending: true });
-
-    if (eventsError) {
-      return { success: false, error: dbErrorMessage(eventsError) };
-    }
-
-    const events = (eventRows as EventRowWithJoins[] | null) ?? [];
+    const { rows: events, rotaPublishSchemaReady } = await queryVenueEvents((select) =>
+      supabase
+        .from("events")
+        .select(select)
+        .eq("venue_id", venueId)
+        .gte("ends_at", nowIso)
+        .order("starts_at", { ascending: true }),
+    );
 
     if (events.length === 0) {
-      return { success: true, events: [] };
+      return {
+        success: true,
+        events: [],
+        migrationRequired: !rotaPublishSchemaReady,
+      };
     }
 
     const eventIds = events.map((event) => event.id);
@@ -192,7 +175,11 @@ export async function loadRotaOverviewAction(): Promise<
       return toRotaEventSummary(event, eventShifts);
     });
 
-    return { success: true, events: summaries };
+    return {
+      success: true,
+      events: summaries,
+      migrationRequired: !rotaPublishSchemaReady,
+    };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to load rota overview.";
     return { success: false, error: message };
@@ -201,7 +188,7 @@ export async function loadRotaOverviewAction(): Promise<
 
 export async function loadRotaBuilderAction(
   eventId: string,
-): Promise<RotaActionResult<{ data: RotaBuilderData | null }>> {
+): Promise<RotaActionResult<{ data: RotaBuilderData | null; migrationRequired?: boolean }>> {
   if (!isSupabaseConfigured()) {
     return { success: true, data: null, noVenue: true };
   }
@@ -214,7 +201,11 @@ export async function loadRotaBuilderAction(
     }
 
     const { supabase, venueId } = context;
-    const eventRow = await fetchEventForVenue(supabase, venueId, eventId);
+    const { row: eventRow, rotaPublishSchemaReady } = await queryVenueEventById(
+      supabase,
+      venueId,
+      eventId,
+    );
 
     if (!eventRow) {
       return { success: true, data: null };
@@ -229,7 +220,11 @@ export async function loadRotaBuilderAction(
     const assignedShifts = shiftRows.map((shift) => toAssignedShift(shift, event.date));
     const data = buildRotaBuilderData(event, assignedShifts, teamMembers);
 
-    return { success: true, data };
+    return {
+      success: true,
+      data,
+      migrationRequired: !rotaPublishSchemaReady,
+    };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to load rota builder.";
     return { success: false, error: message };
@@ -419,6 +414,8 @@ export async function markRotaReadyAction(
       .eq("venue_id", venueId);
 
     if (error) {
+      const schemaError = rotaPublishSchemaError(error);
+      if (schemaError) return schemaError;
       return { success: false, error: dbErrorMessage(error) };
     }
 
@@ -471,6 +468,8 @@ export async function revertRotaToDraftAction(
       .eq("venue_id", venueId);
 
     if (error) {
+      const schemaError = rotaPublishSchemaError(error);
+      if (schemaError) return schemaError;
       return { success: false, error: dbErrorMessage(error) };
     }
 
@@ -513,6 +512,8 @@ export async function publishRotaAction(
       .eq("venue_id", venueId);
 
     if (eventError) {
+      const schemaError = rotaPublishSchemaError(eventError);
+      if (schemaError) return schemaError;
       return { success: false, error: dbErrorMessage(eventError) };
     }
 

@@ -8,13 +8,25 @@ import {
 import type { StaffHomeData, StaffMemberProfile, StaffShift } from "@/lib/staff/types";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { canManageAnyVenue } from "@/lib/rota/venue-access";
+import { isRotaPublishSchemaMissing } from "@/lib/supabase/schema-errors";
 
 const TEAM_MEMBER_SELECT = `
   id, full_name, email, venue_id,
   venues ( name )
 `;
 
-const STAFF_SHIFT_SELECT = `
+const STAFF_SHIFT_SELECT_BASE = `
+  id, venue_id, event_id, team_member_id, role_label, section,
+  starts_at, ends_at, break_minutes, status, notes,
+  venues ( name ),
+  events (
+    title, starts_at, ends_at, guest_count,
+    spaces ( name ),
+    event_types ( name )
+  )
+`;
+
+const STAFF_SHIFT_SELECT_WITH_ROTA = `
   id, venue_id, event_id, team_member_id, role_label, section,
   starts_at, ends_at, break_minutes, status, notes,
   venues ( name ),
@@ -61,19 +73,30 @@ async function loadShiftsForTeamMembers(
     return [];
   }
 
-  let query = supabase
-    .from("rota_shifts")
-    .select(STAFF_SHIFT_SELECT)
-    .in("team_member_id", teamMemberIds)
-    .neq("status", "cancelled");
+  let rotaPublishSchemaReady = true;
 
-  if (options?.shiftId) {
-    query = query.eq("id", options.shiftId);
-  } else if (options?.upcomingOnly !== false) {
-    query = query.gte("ends_at", new Date().toISOString());
+  async function runQuery(select: string) {
+    let query = supabase
+      .from("rota_shifts")
+      .select(select)
+      .in("team_member_id", teamMemberIds)
+      .neq("status", "cancelled");
+
+    if (options?.shiftId) {
+      query = query.eq("id", options.shiftId);
+    } else if (options?.upcomingOnly !== false) {
+      query = query.gte("ends_at", new Date().toISOString());
+    }
+
+    return query.order("starts_at", { ascending: true });
   }
 
-  const { data, error } = await query.order("starts_at", { ascending: true });
+  let { data, error } = await runQuery(STAFF_SHIFT_SELECT_WITH_ROTA);
+
+  if (error && isRotaPublishSchemaMissing(error)) {
+    rotaPublishSchemaReady = false;
+    ({ data, error } = await runQuery(STAFF_SHIFT_SELECT_BASE));
+  }
 
   if (error) {
     throw new Error(error.message);
@@ -81,7 +104,7 @@ async function loadShiftsForTeamMembers(
 
   let rows = (data as StaffShiftRow[] | null) ?? [];
 
-  if (options?.publishedOnly) {
+  if (options?.publishedOnly && rotaPublishSchemaReady) {
     rows = rows.filter((row) => eventRotaStatus(row) === "published");
   }
 

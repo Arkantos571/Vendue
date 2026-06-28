@@ -36,6 +36,7 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [publishMessage, setPublishMessage] = useState<string | null>(null);
+  const [migrationRequired, setMigrationRequired] = useState(false);
 
   const reload = useCallback(async () => {
     setError(null);
@@ -56,6 +57,7 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
 
     setData(result.data);
     setNoVenue(false);
+    setMigrationRequired(Boolean(result.migrationRequired));
   }, [eventId]);
 
   useEffect(() => {
@@ -270,6 +272,7 @@ export function RotaBuilder({ eventId, initialData = null }: RotaBuilderProps) {
             isPublishing={isPublishing}
             isUpdatingStatus={isUpdatingStatus}
             publishMessage={publishMessage}
+            migrationRequired={migrationRequired}
             onMarkReady={handleMarkReady}
             onPublish={handlePublish}
             onRevertToDraft={handleRevertToDraft}

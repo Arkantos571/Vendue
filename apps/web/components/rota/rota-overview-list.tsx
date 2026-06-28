@@ -188,6 +188,7 @@ export function RotaOverviewList() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [noVenue, setNoVenue] = useState(false);
+  const [migrationRequired, setMigrationRequired] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<RotaStatusFilter>("all");
 
@@ -211,6 +212,7 @@ export function RotaOverviewList() {
       } else {
         setEvents(result.events);
         setNoVenue(Boolean(result.noVenue));
+        setMigrationRequired(Boolean(result.migrationRequired));
       }
 
       setIsLoading(false);
@@ -258,8 +260,18 @@ export function RotaOverviewList() {
 
   return (
     <div className="space-y-6">
+      {migrationRequired && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
+          Rota publish is not fully enabled yet. Run{" "}
+          <code className="rounded bg-amber-100 px-1 py-0.5 text-xs dark:bg-amber-900/50">
+            supabase/migrations/007_rota_publish.sql
+          </code>{" "}
+          in Supabase SQL Editor, then reload.
+        </div>
+      )}
+
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200">
           {error}
         </div>
       )}
