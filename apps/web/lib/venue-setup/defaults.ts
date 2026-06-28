@@ -16,6 +16,8 @@ export function createEmptyVenueDraft(): VenueOnboardingDraft {
     venue_type_custom: "",
     accent_colour: "#5c4b8a",
     default_opening_hours: "",
+    public_slug: "",
+    enquiry_form_enabled: true,
     spaces: [emptySpace()],
     event_types: [emptyEventType()],
   };

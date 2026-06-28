@@ -43,7 +43,7 @@ export default function HomePage() {
                 <p className="mt-6 text-lg leading-relaxed text-stone-600 dark:text-stone-400">Venudue helps venues manage enquiries, events, rotas, function sheets, and teams in one place — so your team knows what is happening, where, and when.</p>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                   <Link href="/sign-up" className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-brand-700 px-5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-800">Start managing events<ArrowRight className="h-4 w-4" /></Link>
-                  <Link href="/dashboard" className="inline-flex h-11 items-center justify-center rounded-lg border border-stone-300 bg-surface-elevated px-5 text-sm font-medium text-stone-900 transition-colors hover:bg-stone-50 dark:border-stone-600 dark:text-stone-100 dark:hover:bg-stone-800">View demo dashboard</Link>
+                  <Link href="/enquire" className="inline-flex h-11 items-center justify-center rounded-lg border border-stone-300 bg-surface-elevated px-5 text-sm font-medium text-stone-900 transition-colors hover:bg-stone-50 dark:border-stone-600 dark:text-stone-100 dark:hover:bg-stone-800">Submit an enquiry</Link>
                 </div>
               </div>
               <div className="v-card overflow-hidden p-0">

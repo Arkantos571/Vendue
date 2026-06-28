@@ -13,6 +13,8 @@ import {
   emptySpace,
 } from "@/lib/venue-setup/defaults";
 import { loadVenueSetupAction, saveVenueSetupAction } from "@/lib/venue-setup/actions";
+import { PublicEnquiryLinkSettings } from "@/components/venue-setup/public-enquiry-link-settings";
+import { slugifyVenueName } from "@/lib/venue-setup/slug";
 import { venueTypeOptions } from "@/lib/venue-setup/venue-types";
 import type { VenueOnboardingDraft, VenueType } from "@/types";
 
@@ -139,7 +141,17 @@ export function VenueOnboardingForm() {
             <Input
               id="venue_name"
               value={draft.name}
-              onChange={(e) => setDraft((prev) => ({ ...prev, name: e.target.value }))}
+              onChange={(e) => {
+                const name = e.target.value;
+                setDraft((prev) => ({
+                  ...prev,
+                  name,
+                  public_slug:
+                    prev.public_slug.trim() || !prev.venue_id
+                      ? slugifyVenueName(name)
+                      : prev.public_slug,
+                }));
+              }}
               placeholder="The Grand Assembly"
               required
             />
@@ -353,6 +365,17 @@ export function VenueOnboardingForm() {
           ))}
         </div>
       </section>
+
+      <PublicEnquiryLinkSettings
+        enabled={draft.enquiry_form_enabled}
+        publicSlug={draft.public_slug}
+        venueName={draft.name}
+        disabled={isSubmitting}
+        onEnabledChange={(enquiry_form_enabled) =>
+          setDraft((prev) => ({ ...prev, enquiry_form_enabled }))
+        }
+        onPublicSlugChange={(public_slug) => setDraft((prev) => ({ ...prev, public_slug }))}
+      />
 
       <section className="space-y-4 border-t border-stone-100 dark:border-stone-800 pt-8">
         <div>

@@ -7,7 +7,12 @@ import type { DbClient } from "@/lib/supabase/db";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createEmptyVenueDraft } from "@/lib/venue-setup/defaults";
-import { slugifyVenueName, uniqueVenueSlug } from "@/lib/venue-setup/slug";
+import {
+  isValidPublicSlug,
+  normalizePublicSlug,
+  slugifyVenueName,
+  uniqueVenueSlug,
+} from "@/lib/venue-setup/slug";
 import type { VenueOnboardingDraft } from "@/types";
 
 export type VenueSetupActionResult =
@@ -66,7 +71,7 @@ export async function loadVenueSetupAction(): Promise<VenueSetupActionResult> {
 
   const { data: venue, error: venueError } = await supabase
     .from("venues")
-    .select("id, name, venue_type, venue_type_custom, accent_colour, default_opening_hours")
+    .select("id, name, venue_type, venue_type_custom, accent_colour, default_opening_hours, public_slug, enquiry_form_enabled")
     .eq("id", membership.venue_id)
     .maybeSingle();
 
@@ -107,6 +112,8 @@ export async function loadVenueSetupAction(): Promise<VenueSetupActionResult> {
     venue_type_custom: venue.venue_type_custom ?? "",
     accent_colour: venue.accent_colour ?? "#5c4b8a",
     default_opening_hours: venue.default_opening_hours ?? "",
+    public_slug: venue.public_slug ?? slugifyVenueName(venue.name),
+    enquiry_form_enabled: venue.enquiry_form_enabled ?? true,
     spaces:
       spaces && spaces.length > 0
         ? spaces.map((space: { name: string; capacity: number | null; description: string | null }) => ({
@@ -130,6 +137,42 @@ export async function loadVenueSetupAction(): Promise<VenueSetupActionResult> {
     const message = error instanceof Error ? error.message : "Failed to load venue setup.";
     return { success: false, error: message };
   }
+}
+
+
+async function resolvePublicSlugForSave(
+  supabase: DbClient,
+  venueId: string | null,
+  draft: VenueOnboardingDraft,
+): Promise<{ slug: string | null; error?: string }> {
+  if (!draft.enquiry_form_enabled) {
+    const trimmed = draft.public_slug.trim();
+    return { slug: trimmed ? normalizePublicSlug(trimmed) : null };
+  }
+
+  const candidate = normalizePublicSlug(draft.public_slug.trim() || draft.name);
+  if (!isValidPublicSlug(candidate)) {
+    return {
+      slug: null,
+      error: "Public slug must use lowercase letters, numbers, and hyphens only (at least 2 characters).",
+    };
+  }
+
+  let query = supabase.from("venues").select("id").eq("public_slug", candidate).limit(1);
+  if (venueId) {
+    query = query.neq("id", venueId);
+  }
+
+  const { data: conflict, error } = await query.maybeSingle();
+  if (error) {
+    return { slug: null, error: dbErrorMessage(error) };
+  }
+
+  if (conflict) {
+    return { slug: null, error: "That public slug is already taken. Choose another." };
+  }
+
+  return { slug: candidate };
 }
 
 export async function saveVenueSetupAction(
@@ -181,6 +224,11 @@ export async function saveVenueSetupAction(
   }
 
   let venueId = draft.venue_id;
+  const slugResult = await resolvePublicSlugForSave(supabase, venueId, draft);
+  if (slugResult.error) {
+    return { success: false, error: slugResult.error };
+  }
+  const publicSlug = slugResult.slug;
 
   if (!venueId) {
     const newVenueId = randomUUID();
@@ -196,6 +244,8 @@ export async function saveVenueSetupAction(
         venue_type_custom: draft.venue_type === "other" ? venueTypeCustom : null,
         accent_colour: draft.accent_colour,
         default_opening_hours: draft.default_opening_hours.trim() || null,
+        public_slug: publicSlug,
+        enquiry_form_enabled: draft.enquiry_form_enabled,
       });
 
       venueError = result.error;
@@ -237,6 +287,8 @@ export async function saveVenueSetupAction(
         venue_type_custom: draft.venue_type === "other" ? venueTypeCustom : null,
         accent_colour: draft.accent_colour,
         default_opening_hours: draft.default_opening_hours.trim() || null,
+        public_slug: publicSlug,
+        enquiry_form_enabled: draft.enquiry_form_enabled,
       })
       .eq("id", venueId);
 
@@ -296,7 +348,7 @@ export async function saveVenueSetupAction(
 
   return {
     success: true,
-    draft: { ...draft, venue_id: venueId },
+    draft: { ...draft, venue_id: venueId, public_slug: publicSlug ?? draft.public_slug },
     message: draft.venue_id ? "Venue setup saved." : "Venue created and setup saved.",
   };
   } catch (error) {

@@ -120,6 +120,8 @@ export interface Database {
           logo_url: string | null;
           accent_colour: string | null;
           default_opening_hours: string | null;
+          public_slug: string | null;
+          enquiry_form_enabled: boolean;
           onboarding_completed_at: string | null;
           created_at: string;
           updated_at: string;
@@ -139,6 +141,8 @@ export interface Database {
           logo_url?: string | null;
           accent_colour?: string | null;
           default_opening_hours?: string | null;
+          public_slug?: string | null;
+          enquiry_form_enabled?: boolean;
           onboarding_completed_at?: string | null;
         };
         Update: {
@@ -155,6 +159,8 @@ export interface Database {
           logo_url?: string | null;
           accent_colour?: string | null;
           default_opening_hours?: string | null;
+          public_slug?: string | null;
+          enquiry_form_enabled?: boolean;
           onboarding_completed_at?: string | null;
         };
         Relationships: [];
@@ -733,6 +739,10 @@ export interface Database {
           p_notes: string | null;
         };
         Returns: string;
+      };
+      get_public_venue_by_slug: {
+        Args: { p_public_slug: string };
+        Returns: Json;
       };
     };
     Enums: {

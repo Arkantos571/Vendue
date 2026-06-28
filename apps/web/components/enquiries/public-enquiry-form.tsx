@@ -23,15 +23,19 @@ import {
 
 type PublicEnquiryFormProps = {
   initialVenueId?: string;
+  fixedVenue?: {
+    id: string;
+    name: string;
+  };
 };
 
-export function PublicEnquiryForm({ initialVenueId }: PublicEnquiryFormProps) {
+export function PublicEnquiryForm({ initialVenueId, fixedVenue }: PublicEnquiryFormProps) {
   const [venues, setVenues] = useState<PublicVenueOption[]>([]);
-  const [venueId, setVenueId] = useState(initialVenueId ?? "");
+  const [venueId, setVenueId] = useState(fixedVenue?.id ?? initialVenueId ?? "");
   const [venueName, setVenueName] = useState("");
   const [spaces, setSpaces] = useState<{ id: string; name: string }[]>([]);
   const [eventTypes, setEventTypes] = useState<{ id: string; name: string }[]>([]);
-  const [isLoadingVenues, setIsLoadingVenues] = useState(true);
+  const [isLoadingVenues, setIsLoadingVenues] = useState(!fixedVenue);
   const [isLoadingOptions, setIsLoadingOptions] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,9 +50,14 @@ export function PublicEnquiryForm({ initialVenueId }: PublicEnquiryFormProps) {
     return getEndTimeOptionsForStart(startTime);
   }, [startTime]);
 
-  const showVenueSelector = venues.length > 1;
+  const showVenueSelector = !fixedVenue && venues.length > 1;
 
   useEffect(() => {
+    if (fixedVenue) {
+      setVenueName(fixedVenue.name);
+      return;
+    }
+
     let cancelled = false;
 
     async function loadVenues() {
@@ -87,7 +96,7 @@ export function PublicEnquiryForm({ initialVenueId }: PublicEnquiryFormProps) {
     return () => {
       cancelled = true;
     };
-  }, [initialVenueId]);
+  }, [fixedVenue, initialVenueId]);
 
   useEffect(() => {
     if (!venueId) {
@@ -223,7 +232,7 @@ export function PublicEnquiryForm({ initialVenueId }: PublicEnquiryFormProps) {
     );
   }
 
-  if (venues.length === 0) {
+  if (!fixedVenue && venues.length === 0) {
     return (
       <div className="v-panel">
         <h2 className="text-base font-semibold text-stone-900 dark:text-stone-100">
@@ -279,7 +288,7 @@ export function PublicEnquiryForm({ initialVenueId }: PublicEnquiryFormProps) {
         </section>
       )}
 
-      {!showVenueSelector && venueName && (
+      {!fixedVenue && !showVenueSelector && venueName && (
         <section className="v-panel">
           <p className="text-sm text-stone-500 dark:text-stone-400">Enquiring with</p>
           <p className="mt-1 text-lg font-semibold text-stone-900 dark:text-stone-100">{venueName}</p>

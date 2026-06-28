@@ -161,6 +161,8 @@ export interface VenueOnboardingDraft {
   venue_type_custom: string;
   accent_colour: string;
   default_opening_hours: string;
+  public_slug: string;
+  enquiry_form_enabled: boolean;
   spaces: Array<Pick<Space, "name" | "capacity" | "description">>;
   event_types: Array<Pick<EventType, "name" | "description" | "default_duration_minutes">>;
 }

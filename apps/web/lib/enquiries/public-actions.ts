@@ -12,6 +12,14 @@ export type PublicEnquiryActionResult<T> =
 export type PublicVenueOption = {
   id: string;
   name: string;
+  publicSlug: string | null;
+};
+
+export type PublicVenueBySlug = {
+  venueId: string;
+  venueName: string;
+  publicSlug: string;
+  enquiryFormEnabled: boolean;
 };
 
 export type PublicEnquiryFormOptions = {
@@ -45,6 +53,9 @@ function dbErrorMessage(error: { message?: string } | null): string {
   if (message.includes("Invalid venue")) {
     return "Please choose a valid venue.";
   }
+  if (message.includes("Enquiry form unavailable")) {
+    return "This enquiry form is currently unavailable.";
+  }
   return message;
 }
 
@@ -74,13 +85,63 @@ export async function loadPublicVenuesAction(): Promise<
 
     return {
       success: true,
-      venues: ((data ?? []) as { id: string; name: string }[]).map((venue) => ({
+      venues: ((data ?? []) as { id: string; name: string; public_slug?: string | null }[]).map((venue) => ({
         id: venue.id,
         name: venue.name,
+        publicSlug: venue.public_slug ?? null,
       })),
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to load venues.";
+    return { success: false, error: message };
+  }
+}
+
+
+export async function loadPublicVenueBySlugAction(
+  venueSlug: string,
+): Promise<PublicEnquiryActionResult<{ venue: PublicVenueBySlug | null }>> {
+  if (!isSupabaseConfigured()) {
+    return { success: false, error: "Enquiry form is not available right now." };
+  }
+
+  const slug = venueSlug.trim().toLowerCase();
+  if (!slug) {
+    return { success: true, venue: null };
+  }
+
+  try {
+    const supabase = (await createClient()) as unknown as DbClient;
+    const { data, error } = await supabase.rpc("get_public_venue_by_slug", {
+      p_public_slug: slug,
+    });
+
+    if (error) {
+      return { success: false, error: dbErrorMessage(error) };
+    }
+
+    if (!data || typeof data !== "object" || Array.isArray(data)) {
+      return { success: true, venue: null };
+    }
+
+    const payload = data as {
+      venue_id: string;
+      venue_name: string;
+      public_slug: string;
+      enquiry_form_enabled: boolean;
+    };
+
+    return {
+      success: true,
+      venue: {
+        venueId: payload.venue_id,
+        venueName: payload.venue_name,
+        publicSlug: payload.public_slug,
+        enquiryFormEnabled: payload.enquiry_form_enabled,
+      },
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to load venue.";
     return { success: false, error: message };
   }
 }
