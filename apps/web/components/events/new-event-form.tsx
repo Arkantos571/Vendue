@@ -150,7 +150,7 @@ export function NewEventForm() {
   if (isLoading) {
     return (
       <div className="v-empty">
-        <p className="text-sm text-stone-500">Loading form…</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Loading form…</p>
       </div>
     );
   }
@@ -168,8 +168,8 @@ export function NewEventForm() {
       )}
 
       <section className="v-panel">
-        <h2 className="text-base font-semibold text-stone-900">Event details</h2>
-        <p className="mt-1 text-sm text-stone-500">Core information for this booking.</p>
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Event details</h2>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Core information for this booking.</p>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="title">Event name</Label>
@@ -196,8 +196,8 @@ export function NewEventForm() {
       </section>
 
       <section className="v-panel">
-        <h2 className="text-base font-semibold text-stone-900">Client details</h2>
-        <p className="mt-1 text-sm text-stone-500">Primary contact for this event.</p>
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Client details</h2>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Primary contact for this event.</p>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="client_name">Client name</Label>
@@ -215,8 +215,8 @@ export function NewEventForm() {
       </section>
 
       <section className="v-panel">
-        <h2 className="text-base font-semibold text-stone-900">Schedule & space</h2>
-        <p className="mt-1 text-sm text-stone-500">When and where the event takes place.</p>
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Schedule & space</h2>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">When and where the event takes place.</p>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="event_date">Event date</Label>
@@ -292,7 +292,7 @@ export function NewEventForm() {
                 </optgroup>
               )}
             </Select>
-            <p className="text-xs text-stone-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               For events past midnight, pick an option under Next day (e.g. 00:00 next day).
             </p>
           </div>
@@ -300,8 +300,8 @@ export function NewEventForm() {
       </section>
 
       <section className="v-panel">
-        <h2 className="text-base font-semibold text-stone-900">Notes</h2>
-        <p className="mt-1 text-sm text-stone-500">Operational notes for your team.</p>
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Notes</h2>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Operational notes for your team.</p>
         <div className="mt-5">
           <Textarea
             id="notes"
@@ -315,7 +315,7 @@ export function NewEventForm() {
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
         <Link
           href="/dashboard/events"
-          className="inline-flex h-10 items-center justify-center rounded-lg border border-stone-300 bg-white px-4 text-sm font-medium text-stone-900 hover:bg-stone-50"
+          className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:bg-slate-900/50"
         >
           Cancel
         </Link>

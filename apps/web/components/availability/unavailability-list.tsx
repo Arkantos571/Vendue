@@ -21,11 +21,11 @@ export function UnavailabilityList({
   emptyMessage = "No upcoming unavailability recorded.",
 }: UnavailabilityListProps) {
   if (periods.length === 0) {
-    return <p className="text-sm text-stone-500 dark:text-stone-400">{emptyMessage}</p>;
+    return <p className="text-sm text-slate-500 dark:text-slate-400">{emptyMessage}</p>;
   }
 
   return (
-    <ul className="divide-y divide-stone-100 rounded-lg border border-stone-200 dark:divide-stone-800 dark:border-stone-700">
+    <ul className="divide-y divide-stone-100 rounded-lg border border-slate-200 dark:divide-stone-800 dark:border-slate-700">
       {periods.map((period) => {
         const showDelete = onDelete && (canDelete ? canDelete(period) : true);
 
@@ -36,13 +36,13 @@ export function UnavailabilityList({
           >
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <p className="text-sm font-medium text-stone-900 dark:text-stone-100">
+                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
                   {formatUnavailabilityRange(period)}
                 </p>
                 <UnavailabilityStatusBadge status={period.status} />
               </div>
               {period.reason ? (
-                <p className="mt-1 text-sm text-stone-600 dark:text-stone-300">{period.reason}</p>
+                <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{period.reason}</p>
               ) : null}
             </div>
             {showDelete ? (
@@ -50,7 +50,7 @@ export function UnavailabilityList({
                 type="button"
                 onClick={() => onDelete(period.id)}
                 disabled={deletingId === period.id}
-                className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-stone-200 px-3 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-50 disabled:opacity-50 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-800"
+                className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-3 text-sm font-medium text-slate-600 dark:text-slate-300 transition-colors hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:hover:bg-slate-800"
               >
                 <Trash2 className="h-4 w-4" />
                 {deletingId === period.id ? "Removing…" : "Remove"}

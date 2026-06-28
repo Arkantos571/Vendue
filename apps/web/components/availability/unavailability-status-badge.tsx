@@ -4,7 +4,7 @@ import { unavailabilityStatusLabels } from "@/lib/availability/types";
 
 const styles: Record<UnavailabilityStatus, string> = {
   pending: "bg-amber-50 text-amber-800 ring-1 ring-amber-200/80 dark:bg-amber-950/40 dark:text-amber-300 dark:ring-amber-900/60",
-  approved: "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300",
+  approved: "bg-slate-100 text-slate-700 dark:text-slate-300 dark:bg-slate-800 ",
   rejected: "bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-300",
 };
 

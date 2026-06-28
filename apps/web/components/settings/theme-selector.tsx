@@ -33,15 +33,15 @@ export function ThemeSelector({ compact = false }: ThemeSelectorProps) {
     const current = themeOptions.find((option) => option.value === theme) ?? themeOptions[2];
 
     return (
-      <div className="flex items-center gap-1 rounded-lg bg-white/5 p-1">
+      <div className="flex items-center gap-1 rounded-lg bg-white dark:bg-slate-950/5 p-1">
         {themeOptions.map(({ value, label, icon: Icon }) => (
           <button
             key={value}
             type="button"
             onClick={() => setTheme(value)}
             className={cn(
-              "rounded-md p-2 text-stone-400 transition-colors hover:bg-white/10 hover:text-white",
-              theme === value && "bg-white/10 text-white",
+              "rounded-md p-2 text-stone-400 transition-colors hover:bg-white dark:bg-slate-950/10 hover:text-white",
+              theme === value && "bg-white dark:bg-slate-950/10 text-white",
             )}
             aria-label={label}
             title={label}
@@ -68,19 +68,19 @@ export function ThemeSelector({ compact = false }: ThemeSelectorProps) {
               "flex flex-col items-start gap-3 rounded-xl border p-4 text-left transition-colors",
               isActive
                 ? "border-brand-600 bg-brand-50 ring-2 ring-brand-600/20 dark:border-brand-500 dark:bg-brand-950/40 dark:ring-brand-500/30"
-                : "border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:hover:border-stone-600 dark:hover:bg-stone-800",
+                : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-slate-600 dark:hover:bg-slate-800",
             )}
           >
             <Icon
               className={cn(
                 "h-5 w-5",
-                isActive ? "text-brand-700 dark:text-brand-300" : "text-stone-500",
+                isActive ? "text-brand-700 dark:text-brand-300" : "text-slate-500 dark:text-slate-400",
               )}
             />
             <span
               className={cn(
                 "text-sm font-medium",
-                isActive ? "text-stone-900 dark:text-stone-100" : "text-stone-700 dark:text-stone-300",
+                isActive ? "text-slate-900 dark:text-slate-100 " : "text-slate-700 dark:text-slate-300 ",
               )}
             >
               {label}

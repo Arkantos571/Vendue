@@ -29,7 +29,7 @@ export default async function PublicProposalPage({ params }: PublicProposalPageP
     return (
       <EnquirePageShell title="Proposal not found" description="This proposal link is invalid or has expired.">
         <div className="v-panel">
-          <p className="text-sm text-stone-600">{result.error}</p>
+          <p className="text-sm text-slate-600 dark:text-slate-300">{result.error}</p>
         </div>
       </EnquirePageShell>
     );

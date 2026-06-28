@@ -8,7 +8,7 @@ interface CalendarNavControlsProps {
 export function CalendarNavControls({ label }: CalendarNavControlsProps) {
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <p className="text-sm font-medium text-stone-900">{label}</p>
+      <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{label}</p>
       <div className="flex items-center gap-2">
         <Button type="button" variant="outline" size="sm" disabled className="gap-1">
           <ChevronLeft className="h-4 w-4" />

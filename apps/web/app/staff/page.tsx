@@ -28,11 +28,11 @@ export default async function StaffHomePage() {
     <StaffShell title="My shifts">
       <div className="space-y-6">
         <section>
-          <p className="text-sm text-stone-500 dark:text-stone-400">Welcome back</p>
-          <h1 className="mt-1 text-2xl font-semibold text-stone-900 dark:text-stone-100">
+          <p className="text-sm text-slate-500 dark:text-slate-400">Welcome back</p>
+          <h1 className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">
             {profile.fullName}
           </h1>
-          <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
             Your upcoming Venudue shifts
           </p>
         </section>
@@ -40,10 +40,10 @@ export default async function StaffHomePage() {
         {nextShift ? (
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                 Next shift
               </h2>
-              <span className="text-sm text-stone-500 dark:text-stone-400">
+              <span className="text-sm text-slate-500 dark:text-slate-400">
                 {upcomingShifts.length} upcoming
               </span>
             </div>
@@ -59,7 +59,7 @@ export default async function StaffHomePage() {
         <div className="grid gap-3">
           <Link
             href="/staff/availability"
-            className="flex items-center justify-between rounded-2xl border border-stone-200 bg-white px-4 py-4 text-sm font-medium text-stone-900 shadow-sm transition-colors hover:border-brand-200 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:hover:border-brand-900"
+            className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-medium text-slate-900 dark:text-slate-100 shadow-sm transition-colors hover:border-brand-200 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-brand-900"
           >
             Manage availability
             <ChevronRight className="h-4 w-4 text-brand-700 dark:text-brand-400" />
@@ -67,7 +67,7 @@ export default async function StaffHomePage() {
           {upcomingShifts.length > 0 && (
             <Link
               href="/staff/shifts"
-              className="flex items-center justify-between rounded-2xl border border-stone-200 bg-white px-4 py-4 text-sm font-medium text-stone-900 shadow-sm transition-colors hover:border-brand-200 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:hover:border-brand-900"
+              className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-medium text-slate-900 dark:text-slate-100 shadow-sm transition-colors hover:border-brand-200 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-brand-900"
             >
               View all shifts
               <ChevronRight className="h-4 w-4 text-brand-700 dark:text-brand-400" />

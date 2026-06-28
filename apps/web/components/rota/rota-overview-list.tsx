@@ -38,28 +38,28 @@ function RotaTableRow({ event }: { event: RotaEventSummary }) {
       tabIndex={0}
       onClick={navigate}
       onKeyDown={handleKeyDown}
-      className="group cursor-pointer transition-colors hover:bg-stone-50/80 focus-visible:bg-stone-50/80 dark:hover:bg-stone-800/50 dark:focus-visible:bg-stone-800/50 focus-visible:outline-none"
+      className="group cursor-pointer transition-colors hover:bg-slate-50/80 focus-visible:bg-slate-50/80 dark:hover:bg-slate-800/50 dark:focus-visible:bg-slate-800/50 focus-visible:outline-none"
       aria-label={`Build rota for ${event.eventName}`}
     >
       <td className="px-6 py-4">
-        <span className="font-medium text-stone-900">{event.eventName}</span>
+        <span className="font-medium text-slate-900 dark:text-slate-100">{event.eventName}</span>
       </td>
-      <td className="px-4 py-4 text-stone-600">{formatDate(event.date)}</td>
-      <td className="px-4 py-4 text-stone-600">{formatEventTimeRange(event)}</td>
-      <td className="px-4 py-4 text-stone-600">{event.space}</td>
-      <td className="px-4 py-4 text-stone-600">{event.guestCount}</td>
+      <td className="px-4 py-4 text-slate-600 dark:text-slate-300">{formatDate(event.date)}</td>
+      <td className="px-4 py-4 text-slate-600 dark:text-slate-300">{formatEventTimeRange(event)}</td>
+      <td className="px-4 py-4 text-slate-600 dark:text-slate-300">{event.space}</td>
+      <td className="px-4 py-4 text-slate-600 dark:text-slate-300">{event.guestCount}</td>
       <td className="px-4 py-4">
         <RotaStatusBadge status={event.rotaStatus} />
         {event.rotaPublishedAt && (
-          <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             Published {formatDate(event.rotaPublishedAt)}
           </p>
         )}
       </td>
-      <td className="px-4 py-4 text-stone-600">
+      <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
         <div>{event.assignedStaffCount}/{event.requiredStaffCount}</div>
         {event.assignedStaffCount > 0 && (
-          <div className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+          <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             {formatConfirmationSummary({
               totalAssigned: event.assignedStaffCount - event.declinedCount,
               confirmedCount: event.confirmedCount,
@@ -75,11 +75,11 @@ function RotaTableRow({ event }: { event: RotaEventSummary }) {
         )}
       </td>
       <td className="px-4 py-4">
-        <span className={event.gapCount > 0 ? "font-medium text-amber-700" : "text-stone-600"}>
+        <span className={event.gapCount > 0 ? "font-medium text-amber-700" : "text-slate-600 dark:text-slate-300"}>
           {event.gapCount}
         </span>
       </td>
-      <td className="px-4 py-4 font-medium text-stone-900">
+      <td className="px-4 py-4 font-medium text-slate-900 dark:text-slate-100">
         {formatCurrency(event.estimatedLabourCost)}
       </td>
       <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
@@ -114,20 +114,20 @@ function RotaCard({ event }: { event: RotaEventSummary }) {
       tabIndex={0}
       onClick={navigate}
       onKeyDown={handleKeyDown}
-      className="cursor-pointer rounded-xl border border-stone-200 bg-white p-4 shadow-sm transition-all hover:border-stone-300 hover:bg-stone-50/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+      className="cursor-pointer rounded-xl border border-slate-200 dark:border-slate-800 bg-white p-4 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50 dark:bg-slate-900/50/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
       aria-label={`Build rota for ${event.eventName}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="font-medium text-stone-900">{event.eventName}</p>
-          <p className="mt-1 text-sm text-stone-500">
+          <p className="font-medium text-slate-900 dark:text-slate-100">{event.eventName}</p>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             {formatDate(event.date)} · {formatEventTimeRange(event)}
           </p>
         </div>
         <div className="text-right">
           <RotaStatusBadge status={event.rotaStatus} />
           {event.rotaPublishedAt && (
-            <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
               Published {formatDate(event.rotaPublishedAt)}
             </p>
           )}
@@ -136,19 +136,19 @@ function RotaCard({ event }: { event: RotaEventSummary }) {
 
       <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
         <div>
-          <dt className="text-xs text-stone-500">Space</dt>
-          <dd className="text-stone-700">{event.space}</dd>
+          <dt className="text-xs text-slate-500 dark:text-slate-400">Space</dt>
+          <dd className="text-slate-700 dark:text-slate-300">{event.space}</dd>
         </div>
         <div>
-          <dt className="text-xs text-stone-500">Guests</dt>
-          <dd className="text-stone-700">{event.guestCount}</dd>
+          <dt className="text-xs text-slate-500 dark:text-slate-400">Guests</dt>
+          <dd className="text-slate-700 dark:text-slate-300">{event.guestCount}</dd>
         </div>
         <div>
-          <dt className="text-xs text-stone-500">Staff</dt>
-          <dd className="text-stone-700">
+          <dt className="text-xs text-slate-500 dark:text-slate-400">Staff</dt>
+          <dd className="text-slate-700 dark:text-slate-300">
             {event.assignedStaffCount}/{event.requiredStaffCount}
             {event.assignedStaffCount > 0 && (
-              <p className="mt-0.5 text-xs text-stone-500 dark:text-stone-400">
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                 {formatConfirmationSummary({
                   totalAssigned: event.assignedStaffCount - event.declinedCount,
                   confirmedCount: event.confirmedCount,
@@ -160,14 +160,14 @@ function RotaCard({ event }: { event: RotaEventSummary }) {
           </dd>
         </div>
         <div>
-          <dt className="text-xs text-stone-500">Gaps</dt>
-          <dd className={event.gapCount > 0 ? "font-medium text-amber-700" : "text-stone-700"}>
+          <dt className="text-xs text-slate-500 dark:text-slate-400">Gaps</dt>
+          <dd className={event.gapCount > 0 ? "font-medium text-amber-700" : "text-slate-700 dark:text-slate-300"}>
             {event.gapCount}
           </dd>
         </div>
         <div className="col-span-2">
-          <dt className="text-xs text-stone-500">Est. labour cost</dt>
-          <dd className="font-medium text-stone-900">{formatCurrency(event.estimatedLabourCost)}</dd>
+          <dt className="text-xs text-slate-500 dark:text-slate-400">Est. labour cost</dt>
+          <dd className="font-medium text-slate-900 dark:text-slate-100">{formatCurrency(event.estimatedLabourCost)}</dd>
         </div>
       </dl>
 
@@ -242,7 +242,7 @@ export function RotaOverviewList() {
   if (isLoading) {
     return (
       <div className="v-empty">
-        <p className="text-sm text-stone-500">Loading rotas…</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Loading rotas…</p>
       </div>
     );
   }
@@ -297,7 +297,7 @@ export function RotaOverviewList() {
               "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
               statusFilter === value
                 ? "bg-brand-700 text-white"
-                : "bg-white text-stone-600 ring-1 ring-stone-200 hover:bg-stone-50 dark:bg-stone-900 dark:text-stone-300 dark:ring-stone-700 dark:hover:bg-stone-800",
+                : "bg-white text-slate-600 dark:text-slate-300 ring-1 ring-stone-200 hover:bg-slate-50 dark:bg-slate-900  dark:ring-stone-700 dark:hover:bg-slate-800",
             )}
           >
             {label}
@@ -307,8 +307,8 @@ export function RotaOverviewList() {
 
       {filteredEvents.length === 0 ? (
         <div className="v-empty">
-          <p className="text-sm font-medium text-stone-900">No rota events found</p>
-          <p className="mt-1 text-sm text-stone-500">
+          <p className="text-sm font-medium text-slate-900 dark:text-slate-100">No rota events found</p>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             {events.length === 0
               ? "Create an event first, then build its rota here."
               : "Try adjusting your search or filters."}
@@ -316,10 +316,10 @@ export function RotaOverviewList() {
         </div>
       ) : (
         <>
-          <div className="hidden overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm lg:block">
+          <div className="hidden overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm lg:block">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-stone-100 bg-stone-50/50 text-xs font-medium uppercase tracking-wide text-stone-500">
+                <tr className="border-b border-slate-100 bg-slate-50/50 text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
                   <th className="px-6 py-3">Event</th>
                   <th className="px-4 py-3">Date</th>
                   <th className="px-4 py-3">Time</th>

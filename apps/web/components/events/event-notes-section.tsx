@@ -10,9 +10,9 @@ export function EventNotesSection({ event }: { event: MockEvent }) {
       </CardHeader>
       <CardContent>
         {event.notes ? (
-          <p className="text-sm leading-relaxed text-stone-700">{event.notes}</p>
+          <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">{event.notes}</p>
         ) : (
-          <p className="text-sm text-stone-500">No notes recorded for this event.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">No notes recorded for this event.</p>
         )}
       </CardContent>
     </Card>

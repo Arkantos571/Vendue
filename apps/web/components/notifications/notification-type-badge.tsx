@@ -8,7 +8,7 @@ const styles: Record<string, string> = {
   shift_confirmed: "bg-emerald-50 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300",
   shift_declined: "bg-red-50 text-red-800 dark:bg-red-950/50 dark:text-red-300",
   function_sheet_updated: "bg-violet-50 text-violet-800 dark:bg-violet-950/50 dark:text-violet-300",
-  enquiry_converted: "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300",
+  enquiry_converted: "bg-slate-100 text-slate-700 dark:text-slate-300 dark:bg-slate-800 ",
   proposal_viewed: "bg-amber-50 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300",
   proposal_response: "bg-emerald-50 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300",
 };
@@ -19,7 +19,7 @@ export function NotificationTypeBadge({ type }: { type: string }) {
     <span
       className={cn(
         "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize",
-        styles[type] ?? "bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300",
+        styles[type] ?? "bg-slate-100 text-slate-600 dark:text-slate-300 dark:bg-slate-800 ",
       )}
     >
       {label}

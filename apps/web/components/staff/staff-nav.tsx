@@ -16,7 +16,7 @@ export function StaffNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-stone-200 bg-white/95 backdrop-blur-sm dark:border-stone-800 dark:bg-stone-900/95">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/95">
       <div className="mx-auto grid max-w-lg grid-cols-4">
         {links.map(({ href, label, icon: Icon, exact }) => {
           const active = exact ? pathname === href : pathname.startsWith(href);
@@ -29,7 +29,7 @@ export function StaffNav() {
                 "flex flex-col items-center gap-1 px-2 py-3 text-xs font-medium transition-colors",
                 active
                   ? "text-brand-700 dark:text-brand-400"
-                  : "text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200",
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200  dark:hover:text-slate-200",
               )}
             >
               <Icon className="h-5 w-5" />

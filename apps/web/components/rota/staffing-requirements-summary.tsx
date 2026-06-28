@@ -7,8 +7,8 @@ interface StaffingRequirementsSummaryProps {
 export function StaffingRequirementsSummary({ requirements }: StaffingRequirementsSummaryProps) {
   return (
     <div className="v-panel">
-      <h3 className="text-sm font-semibold text-stone-900">Staffing requirements</h3>
-      <p className="mt-1 text-sm text-stone-500">
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Staffing requirements</h3>
+      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
         Roles and headcount needed for this event.
       </p>
 
@@ -20,13 +20,13 @@ export function StaffingRequirementsSummary({ requirements }: StaffingRequiremen
           return (
             <div key={requirement.role} className="flex items-center justify-between gap-4">
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-stone-900">{requirement.role}</p>
-                <p className="text-xs text-stone-500">
+                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{requirement.role}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   {requirement.assigned} of {requirement.required} assigned
                   {gap > 0 && <span className="text-amber-600"> · {gap} gap{gap !== 1 ? "s" : ""}</span>}
                 </p>
               </div>
-              <div className="flex h-2 w-24 overflow-hidden rounded-full bg-stone-100">
+              <div className="flex h-2 w-24 overflow-hidden rounded-full bg-slate-100">
                 <div
                   className={isFilled ? "bg-emerald-500" : "bg-amber-500"}
                   style={{

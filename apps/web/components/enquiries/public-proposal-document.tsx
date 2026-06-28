@@ -24,7 +24,7 @@ export function PublicProposalDocument({ proposal, className }: PublicProposalDo
   return (
     <article
       className={cn(
-        "overflow-hidden rounded-xl border border-stone-200 bg-white shadow-lg",
+        "overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-lg",
         className,
       )}
     >
@@ -42,68 +42,68 @@ export function PublicProposalDocument({ proposal, className }: PublicProposalDo
 
       <div className="space-y-10 px-6 py-10 sm:px-10">
         <section>
-          <p className="text-base leading-relaxed text-stone-700">{intro}</p>
+          <p className="text-base leading-relaxed text-slate-700 dark:text-slate-300">{intro}</p>
         </section>
 
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-500">Event details</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Event details</h2>
           <dl className="mt-4 grid gap-4 text-sm sm:grid-cols-2">
             <div>
-              <dt className="text-stone-500">Event</dt>
-              <dd className="mt-1 font-medium text-stone-900">{proposal.eventName}</dd>
+              <dt className="text-slate-500 dark:text-slate-400">Event</dt>
+              <dd className="mt-1 font-medium text-slate-900 dark:text-slate-100">{proposal.eventName}</dd>
             </div>
             {proposal.eventTypeName && (
               <div>
-                <dt className="text-stone-500">Event type</dt>
-                <dd className="mt-1 text-stone-800">{proposal.eventTypeName}</dd>
+                <dt className="text-slate-500 dark:text-slate-400">Event type</dt>
+                <dd className="mt-1 text-slate-800 dark:text-slate-200">{proposal.eventTypeName}</dd>
               </div>
             )}
             <div>
-              <dt className="text-stone-500">Schedule</dt>
-              <dd className="mt-1 text-stone-800">{publicProposalSchedule(proposal)}</dd>
+              <dt className="text-slate-500 dark:text-slate-400">Schedule</dt>
+              <dd className="mt-1 text-slate-800 dark:text-slate-200">{publicProposalSchedule(proposal)}</dd>
             </div>
             <div>
-              <dt className="text-stone-500">Guests</dt>
-              <dd className="mt-1 text-stone-800">{proposal.guestCount}</dd>
+              <dt className="text-slate-500 dark:text-slate-400">Guests</dt>
+              <dd className="mt-1 text-slate-800 dark:text-slate-200">{proposal.guestCount}</dd>
             </div>
           </dl>
         </section>
 
-        <section className="rounded-xl bg-stone-50 px-5 py-6">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-500">Proposed package</h2>
-          <p className="mt-3 text-lg font-medium text-stone-900">{publicProposalPackage(proposal)}</p>
-          <p className="mt-4 text-3xl font-semibold tracking-tight text-stone-900">
+        <section className="rounded-xl bg-slate-50 dark:bg-slate-900/50 px-5 py-6">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Proposed package</h2>
+          <p className="mt-3 text-lg font-medium text-slate-900 dark:text-slate-100">{publicProposalPackage(proposal)}</p>
+          <p className="mt-4 text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
             {formatEnquiryCurrency(proposal.estimatedValue)}
-            <span className="ml-2 text-sm font-normal text-stone-500">estimated</span>
+            <span className="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">estimated</span>
           </p>
         </section>
 
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-500">Inclusions</h2>
-          <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-stone-700">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Inclusions</h2>
+          <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-slate-700 dark:text-slate-300">
             {publicProposalInclusions(proposal)}
           </p>
         </section>
 
         {proposal.proposalValidUntil && (
-          <section className="rounded-lg border border-stone-200 px-4 py-3">
-            <p className="text-sm text-stone-700">
+          <section className="rounded-lg border border-slate-200 px-4 py-3">
+            <p className="text-sm text-slate-700 dark:text-slate-300">
               <span className="font-medium">Valid until</span> {formatDate(proposal.proposalValidUntil)}
             </p>
           </section>
         )}
 
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-500">Next steps</h2>
-          <p className="mt-3 text-sm leading-relaxed text-stone-600">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Next steps</h2>
+          <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
             To proceed, please let us know if this proposal works for you. Our team will follow up with
             formal booking documentation. Online acceptance and payments are coming soon.
           </p>
         </section>
 
-        <section className="border-t border-stone-100 pt-8">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-500">Terms</h2>
-          <p className="mt-3 whitespace-pre-wrap text-xs leading-relaxed text-stone-500">
+        <section className="border-t border-slate-100 dark:border-slate-800 pt-8">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Terms</h2>
+          <p className="mt-3 whitespace-pre-wrap text-xs leading-relaxed text-slate-500 dark:text-slate-400">
             {publicProposalTerms(proposal)}
           </p>
         </section>

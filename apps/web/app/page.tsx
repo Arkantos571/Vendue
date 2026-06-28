@@ -39,23 +39,23 @@ export default function HomePage() {
             <div className="grid items-center gap-12 lg:grid-cols-2">
               <div>
                 <p className="text-sm font-medium uppercase tracking-widest text-brand-600 dark:text-brand-400">Hospitality event operations</p>
-                <h1 className="mt-4 text-4xl font-semibold tracking-tight text-stone-900 dark:text-stone-50 sm:text-5xl">Run enquiries, events, and rotas in one calm workspace.</h1>
-                <p className="mt-6 text-lg leading-relaxed text-stone-600 dark:text-stone-400">Venudue helps venues manage enquiries, events, rotas, function sheets, and teams in one place — so your team knows what is happening, where, and when.</p>
+                <h1 className="mt-4 text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl">Run enquiries, events, and rotas in one calm workspace.</h1>
+                <p className="mt-6 text-lg leading-relaxed text-slate-600 dark:text-slate-300">Venudue helps venues manage enquiries, events, rotas, function sheets, and teams in one place — so your team knows what is happening, where, and when.</p>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                   <Link href="/sign-up" className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-brand-700 px-5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-800">Start managing events<ArrowRight className="h-4 w-4" /></Link>
-                  <Link href="/enquire" className="inline-flex h-11 items-center justify-center rounded-lg border border-stone-300 bg-surface-elevated px-5 text-sm font-medium text-stone-900 transition-colors hover:bg-stone-50 dark:border-stone-600 dark:text-stone-100 dark:hover:bg-stone-800">Submit an enquiry</Link>
+                  <Link href="/enquire" className="inline-flex h-11 items-center justify-center rounded-lg border border-slate-300 bg-surface-elevated px-5 text-sm font-medium text-slate-900 dark:text-slate-100 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-800">Submit an enquiry</Link>
                 </div>
               </div>
               <div className="v-card overflow-hidden p-0">
-                <div className="border-b border-stone-100 bg-brand-950 px-5 py-4 dark:border-stone-800">
+                <div className="border-b border-slate-100 bg-brand-950 px-5 py-4 dark:border-slate-800">
                   <div className="flex items-center gap-2"><LayoutDashboard className="h-4 w-4 text-brand-300" /><span className="text-sm font-medium text-white">Venudue dashboard</span></div>
                 </div>
                 <div className="space-y-3 p-5">
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-lg border border-stone-200 bg-stone-50 p-3 dark:border-stone-700 dark:bg-stone-800/50"><p className="text-xs text-stone-500 dark:text-stone-400">New enquiries</p><p className="mt-1 text-2xl font-semibold text-stone-900 dark:text-stone-50">12</p></div>
-                    <div className="rounded-lg border border-stone-200 bg-stone-50 p-3 dark:border-stone-700 dark:bg-stone-800/50"><p className="text-xs text-stone-500 dark:text-stone-400">Events this week</p><p className="mt-1 text-2xl font-semibold text-stone-900 dark:text-stone-50">8</p></div>
+                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800/50"><p className="text-xs text-slate-500 dark:text-slate-400">New enquiries</p><p className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">12</p></div>
+                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800/50"><p className="text-xs text-slate-500 dark:text-slate-400">Events this week</p><p className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">8</p></div>
                   </div>
-                  <div className="rounded-lg border border-stone-200 p-3 dark:border-stone-700"><p className="text-xs font-medium text-stone-500 dark:text-stone-400">Tonight — Main Ballroom</p><p className="mt-1 text-sm font-medium text-stone-900 dark:text-stone-100">Corporate dinner · 85 guests</p><p className="mt-1 text-xs text-stone-500 dark:text-stone-400">18:00 – 00:00 +1 · Rota 92% staffed</p></div>
+                  <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-700"><p className="text-xs font-medium text-slate-500 dark:text-slate-400">Tonight — Main Ballroom</p><p className="mt-1 text-sm font-medium text-slate-900 dark:text-slate-100">Corporate dinner · 85 guests</p><p className="mt-1 text-xs text-slate-500 dark:text-slate-400">18:00 – 00:00 +1 · Rota 92% staffed</p></div>
                 </div>
               </div>
             </div>
@@ -63,20 +63,20 @@ export default function HomePage() {
         </section>
         <section id="how-it-works" className="border-b v-divider v-section-alt py-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <div className="max-w-2xl"><h2 className="text-2xl font-semibold text-stone-900 dark:text-stone-50">How it works</h2><p className="mt-3 text-stone-600 dark:text-stone-400">A simple path from first enquiry to service day.</p></div>
-            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">{workflowSteps.map((item) => (<div key={item.step} className="v-card p-5"><p className="text-xs font-semibold uppercase tracking-widest text-brand-600 dark:text-brand-400">{item.step}</p><h3 className="mt-3 text-lg font-semibold text-stone-900 dark:text-stone-50">{item.title}</h3><p className="mt-2 text-sm leading-relaxed text-stone-600 dark:text-stone-400">{item.description}</p></div>))}</div>
+            <div className="max-w-2xl"><h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">How it works</h2><p className="mt-3 text-slate-600 dark:text-slate-300">A simple path from first enquiry to service day.</p></div>
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">{workflowSteps.map((item) => (<div key={item.step} className="v-card p-5"><p className="text-xs font-semibold uppercase tracking-widest text-brand-600 dark:text-brand-400">{item.step}</p><h3 className="mt-3 text-lg font-semibold text-slate-900 dark:text-slate-100">{item.title}</h3><p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{item.description}</p></div>))}</div>
           </div>
         </section>
         <section id="features" className="bg-surface-elevated py-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <div className="max-w-2xl"><h2 className="text-2xl font-semibold text-stone-900 dark:text-stone-50">Built for venue operations</h2><p className="mt-3 text-stone-600 dark:text-stone-400">Modern, premium tooling that stays clear on busy service days.</p></div>
-            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{features.map(({ icon: Icon, title, description }) => (<div key={title} className="v-card p-6"><div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-300"><Icon className="h-5 w-5" /></div><h3 className="mt-4 text-lg font-semibold text-stone-900 dark:text-stone-50">{title}</h3><p className="mt-2 text-sm leading-relaxed text-stone-600 dark:text-stone-400">{description}</p></div>))}</div>
+            <div className="max-w-2xl"><h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Built for venue operations</h2><p className="mt-3 text-slate-600 dark:text-slate-300">Modern, premium tooling that stays clear on busy service days.</p></div>
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{features.map(({ icon: Icon, title, description }) => (<div key={title} className="v-card p-6"><div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-300"><Icon className="h-5 w-5" /></div><h3 className="mt-4 text-lg font-semibold text-slate-900 dark:text-slate-100">{title}</h3><p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{description}</p></div>))}</div>
           </div>
         </section>
         <section id="pricing" className="border-t v-divider v-section-alt py-20">
           <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-semibold text-stone-900 dark:text-stone-50">Simple pricing</h2>
-            <p className="mt-3 text-stone-600 dark:text-stone-400">Pricing plans for single venues and groups are coming soon. Start with a free account today.</p>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Simple pricing</h2>
+            <p className="mt-3 text-slate-600 dark:text-slate-300">Pricing plans for single venues and groups are coming soon. Start with a free account today.</p>
             <Link href="/sign-up" className="mt-8 inline-flex h-11 items-center justify-center rounded-lg bg-brand-700 px-6 text-sm font-medium text-white shadow-sm hover:bg-brand-800">Create your venue account</Link>
           </div>
         </section>

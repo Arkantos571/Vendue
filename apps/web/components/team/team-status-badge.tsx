@@ -4,7 +4,7 @@ import type { TeamMemberStatus } from "@/types";
 const statusStyles: Record<TeamMemberStatus, string> = {
   active: "bg-emerald-50 text-emerald-700",
   invited: "bg-sky-50 text-sky-700",
-  inactive: "bg-stone-100 text-stone-600",
+  inactive: "bg-slate-100 text-slate-600 dark:text-slate-300",
 };
 
 const statusLabels: Record<TeamMemberStatus, string> = {

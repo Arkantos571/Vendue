@@ -19,20 +19,20 @@ export function LabourCostSummary({ summary }: LabourCostSummaryProps) {
 
   return (
     <div className="v-panel">
-      <h3 className="text-sm font-semibold text-stone-900">Labour summary</h3>
-      <p className="mt-1 text-sm text-stone-500">
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Labour summary</h3>
+      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
         Estimated cost based on assigned shifts.
       </p>
 
       <dl className="mt-4 space-y-3">
         {items.map(({ label, value, highlight }) => (
           <div key={label} className="flex items-center justify-between gap-4">
-            <dt className="text-sm text-stone-600">{label}</dt>
+            <dt className="text-sm text-slate-600 dark:text-slate-300">{label}</dt>
             <dd
               className={
                 highlight
                   ? "text-sm font-semibold text-amber-700"
-                  : "text-sm font-semibold text-stone-900"
+                  : "text-sm font-semibold text-slate-900 dark:text-slate-100"
               }
             >
               {value}

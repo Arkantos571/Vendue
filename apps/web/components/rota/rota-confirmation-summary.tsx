@@ -19,7 +19,7 @@ function StatCard({
   tone: "default" | "success" | "warning" | "danger";
 }) {
   const tones = {
-    default: "border-stone-200 bg-white text-stone-900 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100",
+    default: "border-slate-200 bg-white text-slate-900 dark:text-slate-100 dark:border-slate-700 dark:bg-slate-900 ",
     success:
       "border-emerald-200 bg-emerald-50/50 text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-200",
     warning:
@@ -44,10 +44,10 @@ export function RotaConfirmationSummary({ summary, className }: RotaConfirmation
     <div className={cn("v-panel", className)}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
             Shift confirmations
           </h3>
-          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             {formatConfirmationSummary(summary)}
             {summary.pendingCount > 0 ? ` · ${summary.pendingCount} pending` : ""}
           </p>

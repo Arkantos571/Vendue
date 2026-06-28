@@ -22,7 +22,7 @@ export default async function EditEnquiryPage({ params }: Props) {
   return (
     <DashboardShell title="Edit enquiry" description={enquiry.eventName}>
       <div className="mx-auto max-w-3xl space-y-6">
-        <Link href={`/dashboard/enquiries/${enquiryId}`} className="inline-flex items-center gap-1.5 text-sm font-medium text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100">
+        <Link href={`/dashboard/enquiries/${enquiryId}`} className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 dark:hover:text-slate-100">
           <ArrowLeft className="h-4 w-4" />Back to enquiry
         </Link>
         <EditEnquiryForm enquiry={enquiry} />

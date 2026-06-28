@@ -1,2 +1,2 @@
-# Vendue
+# Venudue
 Hospitality Web SaaS

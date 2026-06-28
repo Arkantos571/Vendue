@@ -37,8 +37,8 @@ export function RecentActivity({ items }: RecentActivityProps) {
                   <Icon className="h-4 w-4" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm text-stone-900 dark:text-stone-100">{item.message}</p>
-                  <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+                  <p className="text-sm text-slate-900 dark:text-slate-100">{item.message}</p>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                     {item.actor} · {formatDate(item.timestamp)} at {formatTime(item.timestamp)}
                   </p>
                 </div>

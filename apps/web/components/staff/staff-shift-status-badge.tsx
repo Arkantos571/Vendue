@@ -9,8 +9,8 @@ const styles: Record<RotaShiftStatus, string> = {
     "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300",
   declined:
     "bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-300",
-  completed: "bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300",
-  cancelled: "bg-stone-100 text-stone-500 dark:bg-stone-800 dark:text-stone-400",
+  completed: "bg-slate-100 text-slate-600 dark:text-slate-300 dark:bg-slate-800 ",
+  cancelled: "bg-slate-100 text-slate-500 dark:text-slate-400 dark:bg-slate-800 ",
 };
 
 export function StaffShiftStatusBadge({ status }: { status: RotaShiftStatus }) {

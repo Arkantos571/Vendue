@@ -3,7 +3,7 @@ import { shiftStatusLabels, type ShiftStatus } from "@/lib/mock/rota";
 
 const shiftStatusStyles: Record<ShiftStatus, string> = {
   draft:
-    "bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300",
+    "bg-slate-100 text-slate-600 dark:text-slate-300 dark:bg-slate-800 ",
   notified:
     "bg-amber-50 text-amber-800 ring-1 ring-amber-200/80 dark:bg-amber-950/40 dark:text-amber-300 dark:ring-amber-900/60",
   confirmed:

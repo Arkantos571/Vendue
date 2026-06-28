@@ -58,14 +58,14 @@ export function OverviewCards({ stats }: OverviewCardsProps) {
           href={href}
           className={cn(
             "block v-card p-5 shadow-sm",
-            "cursor-pointer transition-all hover:border-stone-300 hover:bg-stone-50/80 hover:shadow-md",
-            "dark:border-stone-700 dark:bg-stone-900 dark:hover:border-stone-600 dark:hover:bg-stone-800/80",
+            "cursor-pointer transition-all hover:border-slate-300 hover:bg-slate-50/80 hover:shadow-md",
+            "dark:border-slate-700 dark:bg-slate-900 dark:hover:border-slate-600 dark:hover:bg-slate-800/80",
           )}
         >
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-medium text-stone-500 dark:text-stone-400">{label}</p>
-              <p className="mt-2 text-3xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</p>
+              <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
                 {values[key]}
               </p>
               <p className="mt-1 text-xs text-stone-400 dark:text-stone-500">{sublabel}</p>

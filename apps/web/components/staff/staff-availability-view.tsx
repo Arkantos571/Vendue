@@ -83,8 +83,8 @@ export function StaffAvailabilityView() {
   return (
     <div className="space-y-6">
       <section>
-        <h1 className="text-xl font-semibold text-stone-900 dark:text-stone-100">Your availability</h1>
-        <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Your availability</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Tell your manager when you cannot work. Entries are saved as pending until reviewed.
         </p>
       </section>
@@ -108,11 +108,11 @@ export function StaffAvailabilityView() {
       />
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
           Upcoming unavailability
         </h2>
         {isLoading ? (
-          <p className="text-sm text-stone-500">Loading…</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Loading…</p>
         ) : (
           <UnavailabilityList
             periods={periods}

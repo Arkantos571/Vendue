@@ -84,7 +84,7 @@ export function UpcomingEventsList() {
   if (isLoading) {
     return (
       <div className="v-empty">
-        <p className="text-sm text-stone-500">Loading upcoming events…</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Loading upcoming events…</p>
       </div>
     );
   }
@@ -116,7 +116,7 @@ export function UpcomingEventsList() {
               "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
               filter === value
                 ? "bg-brand-700 text-white"
-                : "bg-white text-stone-600 ring-1 ring-stone-200 hover:bg-stone-50 dark:bg-stone-900 dark:text-stone-300 dark:ring-stone-700 dark:hover:bg-stone-800",
+                : "bg-white text-slate-600 dark:text-slate-300 ring-1 ring-stone-200 hover:bg-slate-50 dark:bg-slate-900  dark:ring-stone-700 dark:hover:bg-slate-800",
             )}
           >
             {label}
@@ -126,19 +126,19 @@ export function UpcomingEventsList() {
 
       {grouped.length === 0 ? (
         <div className="v-empty">
-          <p className="text-sm font-medium text-stone-900">No upcoming events found</p>
-          <p className="mt-1 text-sm text-stone-500">Try another filter to see more events.</p>
+          <p className="text-sm font-medium text-slate-900 dark:text-slate-100">No upcoming events found</p>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Try another filter to see more events.</p>
         </div>
       ) : (
         <div className="space-y-8">
           {grouped.map(({ date, events: dayEvents }) => (
             <section key={date}>
-              <h3 className="mb-3 text-sm font-semibold text-stone-900">{formatDate(date)}</h3>
+              <h3 className="mb-3 text-sm font-semibold text-slate-900 dark:text-slate-100">{formatDate(date)}</h3>
 
-              <div className="hidden overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm lg:block">
+              <div className="hidden overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm lg:block">
                 <table className="w-full text-left text-sm">
                   <thead>
-                    <tr className="border-b border-stone-100 bg-stone-50/50 text-xs font-medium uppercase tracking-wide text-stone-500">
+                    <tr className="border-b border-slate-100 bg-slate-50/50 text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
                       <th className="px-6 py-3">Event</th>
                       <th className="px-4 py-3">Client</th>
                       <th className="px-4 py-3">Time</th>
@@ -158,16 +158,16 @@ export function UpcomingEventsList() {
                         tabIndex={0}
                         onClick={() => navigate(event.id)}
                         onKeyDown={(e) => handleKeyDown(e, event.id)}
-                        className="cursor-pointer transition-colors hover:bg-stone-50/80 focus-visible:bg-stone-50/80 dark:hover:bg-stone-800/50 dark:focus-visible:bg-stone-800/50 focus-visible:outline-none"
+                        className="cursor-pointer transition-colors hover:bg-slate-50/80 focus-visible:bg-slate-50/80 dark:hover:bg-slate-800/50 dark:focus-visible:bg-slate-800/50 focus-visible:outline-none"
                         aria-label={`View ${event.title}`}
                       >
-                        <td className="px-6 py-4 font-medium text-stone-900">{event.title}</td>
-                        <td className="px-4 py-4 text-stone-600">{event.clientName}</td>
-                        <td className="px-4 py-4 text-stone-600">
+                        <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-100">{event.title}</td>
+                        <td className="px-4 py-4 text-slate-600 dark:text-slate-300">{event.clientName}</td>
+                        <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
                           {formatEventTimeRange(event)}
                         </td>
-                        <td className="px-4 py-4 text-stone-600">{event.space}</td>
-                        <td className="px-4 py-4 text-stone-600">{event.guestCount}</td>
+                        <td className="px-4 py-4 text-slate-600 dark:text-slate-300">{event.space}</td>
+                        <td className="px-4 py-4 text-slate-600 dark:text-slate-300">{event.guestCount}</td>
                         <td className="px-4 py-4">
                           <StatusBadge status={event.status} />
                         </td>
@@ -208,30 +208,30 @@ export function UpcomingEventsList() {
                     tabIndex={0}
                     onClick={() => navigate(event.id)}
                     onKeyDown={(e) => handleKeyDown(e, event.id)}
-                    className="cursor-pointer rounded-xl border border-stone-200 bg-white p-4 shadow-sm transition-all hover:border-stone-300 hover:bg-stone-50/80"
+                    className="cursor-pointer rounded-xl border border-slate-200 dark:border-slate-800 bg-white p-4 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50 dark:bg-slate-900/50/80"
                     aria-label={`View ${event.title}`}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="font-medium text-stone-900">{event.title}</p>
-                        <p className="mt-1 text-sm text-stone-500">{event.clientName}</p>
+                        <p className="font-medium text-slate-900 dark:text-slate-100">{event.title}</p>
+                        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{event.clientName}</p>
                       </div>
                       <StatusBadge status={event.status} />
                     </div>
                     <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
                       <div>
-                        <dt className="text-xs text-stone-500">Time</dt>
-                        <dd className="text-stone-700">
+                        <dt className="text-xs text-slate-500 dark:text-slate-400">Time</dt>
+                        <dd className="text-slate-700 dark:text-slate-300">
                           {formatEventTimeRange(event)}
                         </dd>
                       </div>
                       <div>
-                        <dt className="text-xs text-stone-500">Space</dt>
-                        <dd className="text-stone-700">{event.space}</dd>
+                        <dt className="text-xs text-slate-500 dark:text-slate-400">Space</dt>
+                        <dd className="text-slate-700 dark:text-slate-300">{event.space}</dd>
                       </div>
                       <div>
-                        <dt className="text-xs text-stone-500">Guests</dt>
-                        <dd className="text-stone-700">{event.guestCount}</dd>
+                        <dt className="text-xs text-slate-500 dark:text-slate-400">Guests</dt>
+                        <dd className="text-slate-700 dark:text-slate-300">{event.guestCount}</dd>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         <RotaStatusBadge status={rotaStatus} />
@@ -239,7 +239,7 @@ export function UpcomingEventsList() {
                       </div>
                     </dl>
                     {warnings.length > 0 && (
-                      <ul className="mt-3 space-y-1 border-t border-stone-100 pt-3">
+                      <ul className="mt-3 space-y-1 border-t border-slate-100 dark:border-slate-800 pt-3">
                         {warnings.map((warning) => (
                           <li
                             key={warning}

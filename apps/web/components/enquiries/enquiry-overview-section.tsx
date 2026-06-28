@@ -39,8 +39,8 @@ export function EnquiryOverviewSection({ enquiry }: { enquiry: MockEnquiry }) {
         <dl className="grid gap-4 sm:grid-cols-2">
           {items.map(({ label, value }) => (
             <div key={label}>
-              <dt className="text-xs font-medium uppercase tracking-wide text-stone-500">{label}</dt>
-              <dd className="mt-1 text-sm text-stone-900">{value}</dd>
+              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</dt>
+              <dd className="mt-1 text-sm text-slate-900 dark:text-slate-100">{value}</dd>
             </div>
           ))}
         </dl>

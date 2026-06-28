@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { Logo } from "@/components/layout/logo";
 import { PublicThemeToggle } from "@/components/layout/public-theme-toggle";
 import { StaffNav } from "@/components/staff/staff-nav";
 
@@ -13,25 +14,23 @@ interface StaffShellProps {
 
 export function StaffShell({ title, backHref, children }: StaffShellProps) {
   return (
-    <div className="min-h-screen bg-stone-100 dark:bg-stone-950">
-      <header className="sticky top-0 z-30 border-b border-stone-200/80 bg-white/95 backdrop-blur-sm dark:border-stone-800 dark:bg-stone-900/95">
+    <div className="min-h-screen bg-slate-100 dark:bg-slate-950">
+      <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/95">
         <div className="mx-auto flex h-14 max-w-lg items-center justify-between gap-3 px-4">
           <div className="flex min-w-0 items-center gap-2">
             {backHref ? (
               <Link
                 href={backHref}
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-800"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                 aria-label="Go back"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Link>
             ) : null}
             <div className="min-w-0">
-              <Link href="/staff" className="text-sm font-semibold text-brand-700 dark:text-brand-400">
-                Venudue
-              </Link>
+              <Logo href="/staff" size="sm" />
               {title ? (
-                <p className="truncate text-xs text-stone-500 dark:text-stone-400">{title}</p>
+                <p className="truncate text-xs text-slate-500 dark:text-slate-400">{title}</p>
               ) : null}
             </div>
           </div>

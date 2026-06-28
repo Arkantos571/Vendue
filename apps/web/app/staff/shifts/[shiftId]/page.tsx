@@ -55,13 +55,13 @@ export default async function StaffShiftDetailPage({ params }: StaffShiftDetailP
   return (
     <StaffShell title="Shift detail" backHref="/staff/shifts">
       <div className="space-y-6">
-        <section className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-stone-700 dark:bg-stone-900">
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h1 className="text-xl font-semibold text-stone-900 dark:text-stone-100">
+              <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
                 {shift.eventName}
               </h1>
-              <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">{shift.venueName}</p>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{shift.venueName}</p>
             </div>
             <StaffShiftStatusBadge status={shift.status} />
           </div>
@@ -69,20 +69,20 @@ export default async function StaffShiftDetailPage({ params }: StaffShiftDetailP
           <dl className="mt-5 grid gap-4 sm:grid-cols-2">
             {details.map(({ label, value }) => (
               <div key={label}>
-                <dt className="text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400">
+                <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
                   {label}
                 </dt>
-                <dd className="mt-1 text-sm text-stone-900 dark:text-stone-100">{value}</dd>
+                <dd className="mt-1 text-sm text-slate-900 dark:text-slate-100">{value}</dd>
               </div>
             ))}
           </dl>
 
           {shift.notes && (
-            <div className="mt-5 rounded-xl bg-stone-50 px-4 py-3 dark:bg-stone-800/60">
-              <p className="text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400">
+            <div className="mt-5 rounded-xl bg-slate-50 px-4 py-3 dark:bg-slate-800/60">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
                 Notes
               </p>
-              <p className="mt-2 text-sm leading-relaxed text-stone-700 dark:text-stone-300">
+              <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
                 {shift.notes}
               </p>
             </div>

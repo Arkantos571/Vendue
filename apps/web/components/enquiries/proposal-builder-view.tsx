@@ -172,17 +172,17 @@ export function ProposalBuilderView({ enquiry: initialEnquiry, venue }: Proposal
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-xl font-semibold text-stone-900 dark:text-stone-100">Proposal builder</h2>
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Proposal builder</h2>
             <EnquiryStatusBadge status={enquiry.status} />
           </div>
-          <p className="mt-1 text-sm text-stone-500">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             {enquiry.eventName} · {enquiry.clientName}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Link
             href={`/dashboard/enquiries/${enquiry.id}`}
-            className="inline-flex h-10 items-center gap-2 rounded-lg border border-stone-300 bg-white px-4 text-sm font-medium text-stone-900 hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800"
+            className="inline-flex h-10 items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to enquiry
@@ -214,7 +214,7 @@ export function ProposalBuilderView({ enquiry: initialEnquiry, venue }: Proposal
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label htmlFor="proposal-title" className="text-sm font-medium text-stone-700 dark:text-stone-300">
+                <label htmlFor="proposal-title" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Proposal title
                 </label>
                 <Input
@@ -226,7 +226,7 @@ export function ProposalBuilderView({ enquiry: initialEnquiry, venue }: Proposal
                 />
               </div>
               <div>
-                <label htmlFor="proposal-intro" className="text-sm font-medium text-stone-700 dark:text-stone-300">
+                <label htmlFor="proposal-intro" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Intro message
                 </label>
                 <Textarea
@@ -239,7 +239,7 @@ export function ProposalBuilderView({ enquiry: initialEnquiry, venue }: Proposal
                 />
               </div>
               <div>
-                <label htmlFor="builder-package" className="text-sm font-medium text-stone-700 dark:text-stone-300">
+                <label htmlFor="builder-package" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Proposed package
                 </label>
                 <Input
@@ -252,7 +252,7 @@ export function ProposalBuilderView({ enquiry: initialEnquiry, venue }: Proposal
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label htmlFor="builder-value" className="text-sm font-medium text-stone-700 dark:text-stone-300">
+                  <label htmlFor="builder-value" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     Estimated value (£)
                   </label>
                   <Input
@@ -266,7 +266,7 @@ export function ProposalBuilderView({ enquiry: initialEnquiry, venue }: Proposal
                   />
                 </div>
                 <div>
-                  <label htmlFor="builder-valid" className="text-sm font-medium text-stone-700 dark:text-stone-300">
+                  <label htmlFor="builder-valid" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     Valid until
                   </label>
                   <Input
@@ -280,7 +280,7 @@ export function ProposalBuilderView({ enquiry: initialEnquiry, venue }: Proposal
                 </div>
               </div>
               <div>
-                <label htmlFor="builder-inclusions" className="text-sm font-medium text-stone-700 dark:text-stone-300">
+                <label htmlFor="builder-inclusions" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Inclusions
                 </label>
                 <Textarea
@@ -294,7 +294,7 @@ export function ProposalBuilderView({ enquiry: initialEnquiry, venue }: Proposal
                 />
               </div>
               <div>
-                <label htmlFor="builder-notes" className="text-sm font-medium text-stone-700 dark:text-stone-300">
+                <label htmlFor="builder-notes" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Client-facing notes
                 </label>
                 <Textarea
@@ -307,7 +307,7 @@ export function ProposalBuilderView({ enquiry: initialEnquiry, venue }: Proposal
                 />
               </div>
               <div>
-                <label htmlFor="builder-terms" className="text-sm font-medium text-stone-700 dark:text-stone-300">
+                <label htmlFor="builder-terms" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Terms placeholder
                 </label>
                 <Textarea
@@ -320,7 +320,7 @@ export function ProposalBuilderView({ enquiry: initialEnquiry, venue }: Proposal
                 />
               </div>
               <div>
-                <label htmlFor="builder-internal" className="text-sm font-medium text-stone-700 dark:text-stone-300">
+                <label htmlFor="builder-internal" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Internal proposal notes
                 </label>
                 <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">
@@ -336,7 +336,7 @@ export function ProposalBuilderView({ enquiry: initialEnquiry, venue }: Proposal
                 />
               </div>
               <div>
-                <label htmlFor="builder-followup" className="text-sm font-medium text-stone-700 dark:text-stone-300">
+                <label htmlFor="builder-followup" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Internal follow-up date
                 </label>
                 <Input
@@ -359,30 +359,30 @@ export function ProposalBuilderView({ enquiry: initialEnquiry, venue }: Proposal
             <CardContent>
               <dl className="grid gap-3 text-sm sm:grid-cols-2">
                 <div>
-                  <dt className="text-stone-500">Venue</dt>
-                  <dd className="text-stone-900 dark:text-stone-100">{venue.name}</dd>
+                  <dt className="text-slate-500 dark:text-slate-400">Venue</dt>
+                  <dd className="text-slate-900 dark:text-slate-100">{venue.name}</dd>
                 </div>
                 <div>
-                  <dt className="text-stone-500">Venue type</dt>
-                  <dd className="text-stone-800 dark:text-stone-200">{venue.venueType}</dd>
+                  <dt className="text-slate-500 dark:text-slate-400">Venue type</dt>
+                  <dd className="text-slate-800 dark:text-slate-200">{venue.venueType}</dd>
                 </div>
                 <div>
-                  <dt className="text-stone-500">Client email</dt>
-                  <dd className="text-stone-800 dark:text-stone-200">{enquiry.clientEmail}</dd>
+                  <dt className="text-slate-500 dark:text-slate-400">Client email</dt>
+                  <dd className="text-slate-800 dark:text-slate-200">{enquiry.clientEmail}</dd>
                 </div>
                 <div>
-                  <dt className="text-stone-500">Requested date</dt>
-                  <dd className="text-stone-800 dark:text-stone-200">
+                  <dt className="text-slate-500 dark:text-slate-400">Requested date</dt>
+                  <dd className="text-slate-800 dark:text-slate-200">
                     {enquiry.requestedDate ? formatDate(enquiry.requestedDate) : "—"}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-stone-500">Space</dt>
-                  <dd className="text-stone-800 dark:text-stone-200">{enquiry.spacePreference}</dd>
+                  <dt className="text-slate-500 dark:text-slate-400">Space</dt>
+                  <dd className="text-slate-800 dark:text-slate-200">{enquiry.spacePreference}</dd>
                 </div>
                 <div>
-                  <dt className="text-stone-500">Current estimate</dt>
-                  <dd className="font-medium text-stone-900 dark:text-stone-100">
+                  <dt className="text-slate-500 dark:text-slate-400">Current estimate</dt>
+                  <dd className="font-medium text-slate-900 dark:text-slate-100">
                     {formatEnquiryCurrency(enquiry.estimatedValue)}
                   </dd>
                 </div>

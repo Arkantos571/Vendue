@@ -50,29 +50,29 @@ export function PublicEnquiryLinkSettings({
   }
 
   return (
-    <section className="space-y-4 border-t border-stone-100 pt-8 dark:border-stone-800">
+    <section className="space-y-4 border-t border-slate-100 pt-8 dark:border-slate-800">
       <div>
-        <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
           Public enquiry form
         </h3>
-        <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Share a link with clients so they can submit enquiries directly to your venue.
         </p>
       </div>
 
-      <label className="flex items-start gap-3 rounded-lg border border-stone-200 bg-stone-50/50 p-4 dark:border-stone-700 dark:bg-stone-800/50">
+      <label className="flex items-start gap-3 rounded-lg border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
         <input
           type="checkbox"
-          className="mt-1 h-4 w-4 rounded border-stone-300 text-brand-700 focus:ring-brand-500"
+          className="mt-1 h-4 w-4 rounded border-slate-300 text-brand-700 focus:ring-brand-500"
           checked={enabled}
           disabled={disabled}
           onChange={(event) => onEnabledChange(event.target.checked)}
         />
         <span>
-          <span className="block text-sm font-medium text-stone-900 dark:text-stone-100">
+          <span className="block text-sm font-medium text-slate-900 dark:text-slate-100">
             Enable public enquiry form
           </span>
-          <span className="mt-1 block text-sm text-stone-500 dark:text-stone-400">
+          <span className="mt-1 block text-sm text-slate-500 dark:text-slate-400">
             When enabled, your shareable link accepts new website enquiries.
           </span>
         </span>
@@ -90,13 +90,13 @@ export function PublicEnquiryLinkSettings({
             autoComplete="off"
             spellCheck={false}
           />
-          <p className="text-xs text-stone-500 dark:text-stone-400">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Lowercase letters, numbers, and hyphens only.
           </p>
         </div>
         <div className="space-y-2 sm:col-span-2">
           <Label>Preview URL</Label>
-          <div className="rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-300">
+          <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 dark:text-slate-300 dark:border-slate-700 dark:bg-slate-900">
             {enabled && previewSlug ? previewUrl : "Enable the form and set a slug to generate a link."}
           </div>
         </div>

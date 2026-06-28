@@ -29,7 +29,7 @@ export function RotaGapsPreview({ gaps }: RotaGapsPreviewProps) {
           {gaps.map((gap) => (
             <li
               key={gap.id}
-              className="rounded-lg border border-stone-200 bg-stone-50/50 px-4 py-3"
+              className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50/50 px-4 py-3"
             >
               <div className="flex items-start gap-3">
                 <AlertCircle
@@ -39,9 +39,9 @@ export function RotaGapsPreview({ gaps }: RotaGapsPreviewProps) {
                   )}
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-stone-900">{gap.role}</p>
-                  <p className="mt-0.5 truncate text-xs text-stone-600">{gap.eventTitle}</p>
-                  <p className="mt-2 text-xs text-stone-500">
+                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{gap.role}</p>
+                  <p className="mt-0.5 truncate text-xs text-slate-600 dark:text-slate-300">{gap.eventTitle}</p>
+                  <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
                     {formatDate(gap.date)} · {gap.time} · {gap.space}
                   </p>
                 </div>
@@ -50,7 +50,7 @@ export function RotaGapsPreview({ gaps }: RotaGapsPreviewProps) {
                     "shrink-0 rounded-full px-2 py-0.5 text-xs font-medium",
                     gap.priority === "high"
                       ? "bg-amber-50 text-amber-700"
-                      : "bg-stone-100 text-stone-600",
+                      : "bg-slate-100 text-slate-600 dark:text-slate-300",
                   )}
                 >
                   {gap.priority === "high" ? "Urgent" : "Open"}

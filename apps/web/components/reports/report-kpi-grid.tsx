@@ -33,9 +33,9 @@ export function ReportKpiGrid({ kpis }: ReportKpiGridProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {cards.map(({ key, label, format }) => (
-        <div key={key} className="v-card p-4 shadow-sm dark:bg-stone-900">
-          <p className="text-sm font-medium text-stone-500 dark:text-stone-400">{label}</p>
-          <p className="mt-2 text-2xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">
+        <div key={key} className="v-card p-4 shadow-sm dark:bg-slate-900">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</p>
+          <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
             {format(kpis[key])}
           </p>
         </div>

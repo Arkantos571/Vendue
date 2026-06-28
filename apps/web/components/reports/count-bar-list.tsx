@@ -13,7 +13,7 @@ export function CountBarList({
   className,
 }: CountBarListProps) {
   if (items.length === 0) {
-    return <p className="text-sm text-stone-500 dark:text-stone-400">{emptyLabel}</p>;
+    return <p className="text-sm text-slate-500 dark:text-slate-400">{emptyLabel}</p>;
   }
 
   const max = Math.max(...items.map((item) => item.count), 1);
@@ -23,10 +23,10 @@ export function CountBarList({
       {items.map((item) => (
         <li key={item.label}>
           <div className="mb-1 flex items-center justify-between gap-3 text-sm">
-            <span className="capitalize text-stone-700 dark:text-stone-200">{item.label}</span>
-            <span className="font-medium text-stone-900 dark:text-stone-100">{item.count}</span>
+            <span className="capitalize text-slate-700 dark:text-slate-300">{item.label}</span>
+            <span className="font-medium text-slate-900 dark:text-slate-100">{item.count}</span>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-stone-100 dark:bg-stone-800">
+          <div className="h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
             <div
               className="h-full rounded-full bg-brand-600 dark:bg-brand-500"
               style={{ width: `${Math.max(8, (item.count / max) * 100)}%` }}

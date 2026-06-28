@@ -147,7 +147,7 @@ export function NewEnquiryForm() {
   if (isLoading) {
     return (
       <div className="v-empty">
-        <p className="text-sm text-stone-500">Loading form…</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Loading form…</p>
       </div>
     );
   }
@@ -177,8 +177,8 @@ export function NewEnquiryForm() {
       )}
 
       <section className="v-panel">
-        <h2 className="text-base font-semibold text-stone-900">Enquiry details</h2>
-        <p className="mt-1 text-sm text-stone-500">Event and client information from first contact.</p>
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Enquiry details</h2>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Event and client information from first contact.</p>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="event_name">Event name</Label>
@@ -218,7 +218,7 @@ export function NewEnquiryForm() {
       </section>
 
       <section className="v-panel">
-        <h2 className="text-base font-semibold text-stone-900">Event request</h2>
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Event request</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="requested_date">Requested event date</Label>

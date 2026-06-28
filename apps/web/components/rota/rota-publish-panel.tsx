@@ -47,8 +47,8 @@ export function RotaPublishPanel({
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Publish rota</h3>
-          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Publish rota</h3>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             {isPublished
               ? "Staff can view and confirm their assigned shifts."
               : isReady
@@ -60,40 +60,40 @@ export function RotaPublishPanel({
       </div>
 
       {data.rotaPublishedAt && (
-        <p className="text-xs text-stone-500 dark:text-stone-400">
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           Published {formatDate(data.rotaPublishedAt, { hour: "2-digit", minute: "2-digit" })}
         </p>
       )}
 
       <dl className="grid grid-cols-2 gap-3 text-sm">
         <div>
-          <dt className="text-xs text-stone-500 dark:text-stone-400">Assigned staff</dt>
-          <dd className="font-medium text-stone-900 dark:text-stone-100">{labourSummary.assignedStaff}</dd>
+          <dt className="text-xs text-slate-500 dark:text-slate-400">Assigned staff</dt>
+          <dd className="font-medium text-slate-900 dark:text-slate-100">{labourSummary.assignedStaff}</dd>
         </div>
         <div>
-          <dt className="text-xs text-stone-500 dark:text-stone-400">Staffing gaps</dt>
-          <dd className="font-medium text-stone-900 dark:text-stone-100">{labourSummary.remainingGaps}</dd>
+          <dt className="text-xs text-slate-500 dark:text-slate-400">Staffing gaps</dt>
+          <dd className="font-medium text-slate-900 dark:text-slate-100">{labourSummary.remainingGaps}</dd>
         </div>
         <div>
-          <dt className="text-xs text-stone-500 dark:text-stone-400">Scheduled hours</dt>
-          <dd className="font-medium text-stone-900 dark:text-stone-100">
+          <dt className="text-xs text-slate-500 dark:text-slate-400">Scheduled hours</dt>
+          <dd className="font-medium text-slate-900 dark:text-slate-100">
             {labourSummary.totalScheduledHours.toFixed(1)}h
           </dd>
         </div>
         <div>
-          <dt className="text-xs text-stone-500 dark:text-stone-400">Est. labour cost</dt>
-          <dd className="font-medium text-stone-900 dark:text-stone-100">
+          <dt className="text-xs text-slate-500 dark:text-slate-400">Est. labour cost</dt>
+          <dd className="font-medium text-slate-900 dark:text-slate-100">
             {formatCurrency(labourSummary.estimatedLabourCost)}
           </dd>
         </div>
         <div>
-          <dt className="text-xs text-stone-500 dark:text-stone-400">Confirmed</dt>
+          <dt className="text-xs text-slate-500 dark:text-slate-400">Confirmed</dt>
           <dd className="font-medium text-emerald-700 dark:text-emerald-300">
             {confirmationSummary.confirmedCount}
           </dd>
         </div>
         <div>
-          <dt className="text-xs text-stone-500 dark:text-stone-400">Pending</dt>
+          <dt className="text-xs text-slate-500 dark:text-slate-400">Pending</dt>
           <dd className="font-medium text-amber-700 dark:text-amber-300">
             {confirmationSummary.pendingCount}
           </dd>
@@ -117,7 +117,7 @@ export function RotaPublishPanel({
       )}
 
       {hasShifts && !isPublished && (
-        <p className="rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-600 dark:border-stone-700 dark:bg-stone-800/50 dark:text-stone-300">
+        <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 dark:border-slate-700 dark:bg-slate-800/50">
           Shift changes save automatically. Staff cannot see this rota until it is published.
         </p>
       )}

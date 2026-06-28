@@ -41,24 +41,24 @@ export function EventRotaSection({ event, hasRotaBuilder }: EventRotaSectionProp
       </CardHeader>
       <CardContent>
         {event.rotaShifts.length === 0 ? (
-          <p className="text-sm text-stone-500">No shifts scheduled yet.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">No shifts scheduled yet.</p>
         ) : (
-          <ul className="divide-y divide-stone-100 rounded-lg border border-stone-200">
+          <ul className="divide-y divide-stone-100 rounded-lg border border-slate-200 dark:border-slate-800">
             {event.rotaShifts.map((shift, index) => (
               <li
                 key={`${shift.role}-${index}`}
                 className="flex items-center justify-between gap-4 px-4 py-3"
               >
                 <div>
-                  <p className="text-sm font-medium text-stone-900">{shift.role}</p>
-                  <p className="text-xs text-stone-500">
+                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{shift.role}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     {formatEventTimeRange(event)}
                   </p>
                 </div>
                 <span
                   className={
                     shift.staffName
-                      ? "text-sm text-stone-700"
+                      ? "text-sm text-slate-700 dark:text-slate-300"
                       : "rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700"
                   }
                 >

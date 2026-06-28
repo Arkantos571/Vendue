@@ -84,7 +84,7 @@ export function NewTeamMemberForm() {
   if (isLoading) {
     return (
       <div className="v-empty">
-        <p className="text-sm text-stone-500">Loading form…</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Loading form…</p>
       </div>
     );
   }
@@ -109,8 +109,8 @@ export function NewTeamMemberForm() {
       )}
 
       <section className="v-panel">
-        <h2 className="text-base font-semibold text-stone-900">Personal details</h2>
-        <p className="mt-1 text-sm text-stone-500">Basic information for the team roster.</p>
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Personal details</h2>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Basic information for the team roster.</p>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="first_name">First name</Label>
@@ -132,8 +132,8 @@ export function NewTeamMemberForm() {
       </section>
 
       <section className="v-panel">
-        <h2 className="text-base font-semibold text-stone-900">Role & employment</h2>
-        <p className="mt-1 text-sm text-stone-500">Used for rota assignment and costing.</p>
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Role & employment</h2>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Used for rota assignment and costing.</p>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="role">Role</Label>
@@ -161,21 +161,21 @@ export function NewTeamMemberForm() {
       </section>
 
       <section className="v-panel">
-        <h2 className="text-base font-semibold text-stone-900">Notes</h2>
-        <p className="mt-1 text-sm text-stone-500">Availability preferences and internal notes.</p>
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Notes</h2>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Availability preferences and internal notes.</p>
         <div className="mt-5">
           <Textarea id="notes" name="notes" placeholder="e.g. Available weekends only…" rows={4} />
         </div>
-        <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-lg border border-stone-200 bg-stone-50/50 px-4 py-3">
+        <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50/50 px-4 py-3">
           <input
             type="checkbox"
             checked={sendInvite}
             onChange={(e) => setSendInvite(e.target.checked)}
-            className="mt-1 h-4 w-4 rounded border-stone-300 text-brand-700 focus:ring-brand-500"
+            className="mt-1 h-4 w-4 rounded border-slate-300 text-brand-700 focus:ring-brand-500"
           />
           <span>
-            <span className="block text-sm font-medium text-stone-900">Send invite</span>
-            <span className="mt-0.5 block text-sm text-stone-500">
+            <span className="block text-sm font-medium text-slate-900 dark:text-slate-100">Send invite</span>
+            <span className="mt-0.5 block text-sm text-slate-500 dark:text-slate-400">
               Email an invitation to join the venue on Venudue. (Invite emails are not sent yet.)
             </span>
           </span>
@@ -183,7 +183,7 @@ export function NewTeamMemberForm() {
       </section>
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <Link href="/dashboard/team" className="inline-flex h-10 items-center justify-center rounded-lg border border-stone-300 bg-white px-4 text-sm font-medium text-stone-900 hover:bg-stone-50">Cancel</Link>
+        <Link href="/dashboard/team" className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:bg-slate-900/50">Cancel</Link>
         <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Adding…" : "Add team member"}</Button>
       </div>
     </form>

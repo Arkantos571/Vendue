@@ -9,11 +9,11 @@ const statusConfig: Record<
   saved: {
     label: "Saved",
     className:
-      "text-stone-500 dark:text-stone-400",
+      "text-slate-500 dark:text-slate-400 ",
   },
   saving: {
     label: "Saving...",
-    className: "text-stone-600 dark:text-stone-300",
+    className: "text-slate-600 dark:text-slate-300 ",
   },
   unsaved: {
     label: "Unsaved changes",
@@ -40,9 +40,9 @@ export function FunctionSheetSaveStatus({
         className={cn(
           "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium",
           status === "saved" &&
-            "border-stone-200 bg-stone-50 dark:border-stone-700 dark:bg-stone-800/60",
+            "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/60",
           status === "saving" &&
-            "border-stone-200 bg-stone-50 dark:border-stone-700 dark:bg-stone-800/60",
+            "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/60",
           status === "unsaved" &&
             "border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/40",
           status === "error" &&

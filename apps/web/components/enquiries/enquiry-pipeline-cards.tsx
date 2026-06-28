@@ -30,8 +30,8 @@ export function EnquiryPipelineCards({ stats }: EnquiryPipelineCardsProps) {
             key === "conversionRate" && "bg-brand-50/30 dark:bg-brand-950/30",
           )}
         >
-          <p className="text-sm font-medium text-stone-500 dark:text-stone-400">{label}</p>
-          <p className="mt-2 text-3xl font-semibold tracking-tight text-stone-900 dark:text-stone-50">{values[key]}</p>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</p>
+          <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{values[key]}</p>
           <p className="mt-1 text-xs text-stone-400">{sublabel}</p>
         </div>
       ))}

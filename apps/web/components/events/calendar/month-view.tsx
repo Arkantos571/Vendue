@@ -15,11 +15,11 @@ export function EventCalendarMonthView({ events, referenceDate }: EventCalendarM
 
   return (
     <div>
-      <div className="grid grid-cols-7 border-b border-stone-200 bg-stone-50/80">
+      <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50/80">
         {weekdayLabels.map((label) => (
           <div
             key={label}
-            className="px-2 py-2 text-center text-xs font-medium uppercase tracking-wide text-stone-500"
+            className="px-2 py-2 text-center text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400"
           >
             {label}
           </div>
@@ -35,8 +35,8 @@ export function EventCalendarMonthView({ events, referenceDate }: EventCalendarM
             <div
               key={key}
               className={cn(
-                "min-h-28 border-b border-r border-stone-100 p-2",
-                !inMonth && "bg-stone-50/60",
+                "min-h-28 border-b border-r border-slate-100 dark:border-slate-800 p-2",
+                !inMonth && "bg-slate-50 dark:bg-slate-900/50/60",
               )}
             >
               <div className="mb-2 flex items-center justify-between">
@@ -46,7 +46,7 @@ export function EventCalendarMonthView({ events, referenceDate }: EventCalendarM
                     isToday
                       ? "bg-brand-700 text-white"
                       : inMonth
-                        ? "text-stone-700"
+                        ? "text-slate-700 dark:text-slate-300"
                         : "text-stone-400",
                   )}
                 >

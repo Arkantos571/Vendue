@@ -21,7 +21,7 @@ export function NotificationBell({ href = "/dashboard/notifications", className 
     <Link
       href={href}
       className={cn(
-        "relative rounded-lg p-2 text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-800",
+        "relative rounded-lg p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100  dark:hover:bg-slate-800",
         className,
       )}
       aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"}

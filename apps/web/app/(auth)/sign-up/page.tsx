@@ -18,7 +18,7 @@ export default function SignUpPage() {
         </>
       }
     >
-      <Suspense fallback={<p className="text-sm text-stone-500 dark:text-stone-400">Loading…</p>}>
+      <Suspense fallback={<p className="text-sm text-slate-500 dark:text-slate-400">Loading…</p>}>
         <SignUpForm />
       </Suspense>
     </AuthCard>

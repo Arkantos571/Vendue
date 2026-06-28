@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { enquiryPriorityLabels, type EnquiryPriority } from "@/lib/mock/enquiries";
 
 const styles: Record<EnquiryPriority, string> = {
-  low: "bg-stone-100 text-stone-600",
+  low: "bg-slate-100 text-slate-600 dark:text-slate-300",
   medium: "bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300",
   high: "bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300",
 };

@@ -9,19 +9,19 @@ export function StaffShiftCard({ shift, compact = false }: { shift: StaffShift; 
   return (
     <Link
       href={`/staff/shifts/${shift.id}`}
-      className="block rounded-2xl border border-stone-200 bg-white p-4 shadow-sm transition-colors hover:border-brand-200 hover:bg-brand-50/30 dark:border-stone-700 dark:bg-stone-900 dark:hover:border-brand-900 dark:hover:bg-brand-950/20"
+      className="block rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-colors hover:border-brand-200 hover:bg-brand-50/30 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-brand-900 dark:hover:bg-brand-950/20"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="truncate text-base font-semibold text-stone-900 dark:text-stone-100">
+          <p className="truncate text-base font-semibold text-slate-900 dark:text-slate-100">
             {shift.eventName}
           </p>
-          <p className="mt-0.5 truncate text-sm text-stone-500 dark:text-stone-400">{shift.venueName}</p>
+          <p className="mt-0.5 truncate text-sm text-slate-500 dark:text-slate-400">{shift.venueName}</p>
         </div>
         <StaffShiftStatusBadge status={shift.status} />
       </div>
 
-      <div className="mt-4 space-y-2 text-sm text-stone-700 dark:text-stone-300">
+      <div className="mt-4 space-y-2 text-sm text-slate-700 dark:text-slate-300">
         <div className="flex items-center gap-2">
           <Clock className="h-4 w-4 shrink-0 text-stone-400" />
           <span>
@@ -39,7 +39,7 @@ export function StaffShiftCard({ shift, compact = false }: { shift: StaffShift; 
               </span>
             </div>
             {shift.notes && (
-              <p className="rounded-lg bg-stone-50 px-3 py-2 text-sm text-stone-600 dark:bg-stone-800/60 dark:text-stone-300">
+              <p className="rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 dark:bg-slate-800/60">
                 {shift.notes}
               </p>
             )}

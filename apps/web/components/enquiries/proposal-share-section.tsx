@@ -113,15 +113,15 @@ export function ProposalShareSection({
 
         <dl className="grid gap-3 text-sm sm:grid-cols-2">
           <div>
-            <dt className="text-xs font-medium uppercase tracking-wide text-stone-500">Proposal status</dt>
-            <dd className="mt-1 font-medium text-stone-900 dark:text-stone-100">
+            <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Proposal status</dt>
+            <dd className="mt-1 font-medium text-slate-900 dark:text-slate-100">
               {proposalShareStatusLabels[current.proposalShareStatus]}
             </dd>
           </div>
           {current.proposalViewedAt && (
             <div>
-              <dt className="text-xs font-medium uppercase tracking-wide text-stone-500">First viewed</dt>
-              <dd className="mt-1 text-stone-800 dark:text-stone-200">
+              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">First viewed</dt>
+              <dd className="mt-1 text-slate-800 dark:text-slate-200">
                 {formatDate(current.proposalViewedAt)}
               </dd>
             </div>
@@ -130,7 +130,7 @@ export function ProposalShareSection({
 
         {hasLink && (
           <div>
-            <label htmlFor="public-proposal-url" className="text-sm font-medium text-stone-700 dark:text-stone-300">
+            <label htmlFor="public-proposal-url" className="text-sm font-medium text-slate-700 dark:text-slate-300">
               Public proposal link
             </label>
             <Input id="public-proposal-url" readOnly value={publicUrl} className="mt-1.5 font-mono text-xs" />
@@ -153,7 +153,7 @@ export function ProposalShareSection({
                 href={getPublicProposalPath(current.proposalToken!)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-10 items-center gap-2 rounded-lg border border-stone-300 bg-white px-4 text-sm font-medium text-stone-900 hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800"
+                className="inline-flex h-10 items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
               >
                 <ExternalLink className="h-4 w-4" />
                 Open public proposal

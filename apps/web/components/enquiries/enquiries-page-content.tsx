@@ -59,7 +59,7 @@ export function EnquiriesPageContent() {
   if (isLoading) {
     return (
       <div className="v-empty">
-        <p className="text-sm text-stone-500">Loading enquiries…</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Loading enquiries…</p>
       </div>
     );
   }

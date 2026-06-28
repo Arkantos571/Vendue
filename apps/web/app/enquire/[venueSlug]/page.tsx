@@ -33,7 +33,7 @@ export default async function VenueEnquirePage({ params }: VenueEnquirePageProps
         description="We could not load this enquiry form right now. Please try again later."
       >
         <div className="v-panel">
-          <p className="text-sm text-stone-600 dark:text-stone-400">{result.error}</p>
+          <p className="text-sm text-slate-600 dark:text-slate-300">{result.error}</p>
         </div>
       </EnquirePageShell>
     );
@@ -46,7 +46,7 @@ export default async function VenueEnquirePage({ params }: VenueEnquirePageProps
         description="This link does not match a venue enquiry form."
       >
         <div className="v-panel space-y-3">
-          <p className="text-sm text-stone-600 dark:text-stone-400">
+          <p className="text-sm text-slate-600 dark:text-slate-300">
             Check the link you were given, or contact the venue directly.
           </p>
           <Link
@@ -68,7 +68,7 @@ export default async function VenueEnquirePage({ params }: VenueEnquirePageProps
         description="This enquiry form is currently unavailable."
       >
         <div className="v-panel">
-          <p className="text-sm text-stone-600 dark:text-stone-400">
+          <p className="text-sm text-slate-600 dark:text-slate-300">
             {result.venue.venueName} is not accepting online enquiries at the moment. Please contact
             the venue team directly.
           </p>

@@ -46,12 +46,12 @@ export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProp
   const content = (
     <div className="flex h-full min-h-0 flex-col bg-brand-950">
       <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/10 px-5">
-        <Logo variant="dark" href="/dashboard" />
+        <Logo variant="inverse" href="/dashboard" />
         {onClose && (
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-stone-400 hover:bg-white/10 hover:text-white lg:hidden"
+            className="rounded-lg p-2 text-stone-400 hover:bg-white dark:bg-slate-950/10 hover:text-white lg:hidden"
             aria-label="Close navigation"
           >
             <X className="h-5 w-5" />
@@ -72,8 +72,8 @@ export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProp
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-white/10 text-white"
-                  : "text-stone-400 hover:bg-white/5 hover:text-stone-100",
+                  ? "bg-white dark:bg-slate-950/10 text-white"
+                  : "text-stone-400 hover:bg-white dark:bg-slate-950/5 hover:text-stone-100",
               )}
             >
               <Icon className="h-4 w-4 shrink-0" />
@@ -93,12 +93,12 @@ export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProp
 
       <div className="shrink-0 space-y-3 border-t border-white/10 p-4">
         <div>
-          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-stone-500">Theme</p>
+          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Theme</p>
           <ThemeSelector compact />
         </div>
         <SignOutButton />
-        <div className="rounded-lg bg-white/5 px-3 py-3">
-          <p className="text-xs font-medium uppercase tracking-wide text-stone-500">
+        <div className="rounded-lg bg-white dark:bg-slate-950/5 px-3 py-3">
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
             Core workflow
           </p>
           <p className="mt-1 text-xs leading-relaxed text-stone-400">
@@ -117,7 +117,7 @@ export function DashboardSidebar({ open = false, onClose }: DashboardSidebarProp
         <div className="fixed inset-0 z-50 lg:hidden">
           <button
             type="button"
-            className="absolute inset-0 bg-stone-950/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
             onClick={onClose}
             aria-label="Close overlay"
           />

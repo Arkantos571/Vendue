@@ -34,9 +34,9 @@ export function AssignedShiftsList({
 
   if (shifts.length === 0) {
     return (
-      <div className="v-panel dark:bg-stone-900">
-        <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Assigned shifts</h3>
-        <p className="mt-4 text-sm text-stone-500 dark:text-stone-400">
+      <div className="v-panel dark:bg-slate-900">
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Assigned shifts</h3>
+        <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
           No shifts assigned yet. Add staff from the panel below or use the add shift form.
         </p>
       </div>
@@ -46,24 +46,24 @@ export function AssignedShiftsList({
   const showActions = onDeleteShift || onUpdateShift;
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white shadow-sm dark:border-stone-800 dark:bg-stone-900">
-      <div className="border-b border-stone-100 px-6 py-4 dark:border-stone-800">
-        <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Assigned shifts</h3>
-        <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+    <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Assigned shifts</h3>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           {shifts.length} shift{shifts.length !== 1 ? "s" : ""} on this rota
         </p>
       </div>
 
       <div className="space-y-0">
         {shifts.map((shift) => (
-          <div key={shift.id} className="border-b border-stone-100 p-4 last:border-b-0 dark:border-stone-800">
+          <div key={shift.id} className="border-b border-slate-100 p-4 last:border-b-0 dark:border-slate-800">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="font-medium text-stone-900 dark:text-stone-100">{shift.staffName}</p>
-                <p className="text-sm text-stone-500 dark:text-stone-400">
+                <p className="font-medium text-slate-900 dark:text-slate-100">{shift.staffName}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   {shift.role} · {shift.section} · {shift.startTime} – {formatFinishTime(shift)}
                 </p>
-                <p className="mt-1 text-sm text-stone-600 dark:text-stone-300">
+                <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
                   {formatHourlyRate(shift.hourlyRate)} · {formatCurrencyPrecise(shift.estimatedCost)}
                 </p>
               </div>
@@ -98,7 +98,7 @@ export function AssignedShiftsList({
                 ) : null}
               </div>
             </div>
-            {shift.notes ? <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">{shift.notes}</p> : null}
+            {shift.notes ? <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{shift.notes}</p> : null}
             {editingShiftId === shift.id && onUpdateShift ? (
               <EditShiftForm
                 shift={shift}

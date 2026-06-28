@@ -25,15 +25,15 @@ export function EventCalendarWeekView({ events, referenceDate }: EventCalendarWe
           <div
             key={key}
             className={cn(
-              "rounded-xl border border-stone-200 bg-white shadow-sm",
+              "rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm",
               isToday && "ring-2 ring-brand-200",
             )}
           >
-            <div className="border-b border-stone-100 px-3 py-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-stone-500">
+            <div className="border-b border-slate-100 dark:border-slate-800 px-3 py-3">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
                 {new Intl.DateTimeFormat("en-GB", { weekday: "short" }).format(date)}
               </p>
-              <p className="mt-0.5 text-sm font-semibold text-stone-900">
+              <p className="mt-0.5 text-sm font-semibold text-slate-900 dark:text-slate-100">
                 {formatDate(date, { day: "numeric", month: "short" })}
               </p>
             </div>
@@ -45,15 +45,15 @@ export function EventCalendarWeekView({ events, referenceDate }: EventCalendarWe
                   <Link
                     key={event.id}
                     href={`/dashboard/events/${event.id}`}
-                    className="block rounded-lg border border-stone-100 bg-stone-50/50 p-3 transition-all hover:border-stone-200 hover:bg-stone-50"
+                    className="block rounded-lg border border-slate-100 bg-slate-50/50 p-3 transition-all hover:border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:bg-slate-900/50"
                   >
                     <p className="text-xs font-medium text-brand-700">
                       {formatEventTimeRange(event)}
                     </p>
-                    <p className="mt-1 text-sm font-medium text-stone-900">{event.title}</p>
-                    <p className="mt-1 text-xs text-stone-500">{event.space}</p>
+                    <p className="mt-1 text-sm font-medium text-slate-900 dark:text-slate-100">{event.title}</p>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{event.space}</p>
                     <div className="mt-2 flex items-center justify-between gap-2">
-                      <span className="text-xs text-stone-500">{event.guestCount} guests</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">{event.guestCount} guests</span>
                       <StatusBadge status={event.status} />
                     </div>
                   </Link>

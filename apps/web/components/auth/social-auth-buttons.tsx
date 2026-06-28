@@ -39,15 +39,15 @@ function AppleIcon({ className }: { className?: string }) {
 }
 
 const comingSoonButtonClass =
-  "w-full border-stone-200 bg-stone-50 text-stone-500 dark:border-stone-700 dark:bg-stone-800/50 dark:text-stone-400";
+  "w-full border-slate-200 bg-slate-50 text-slate-500 dark:text-slate-400 dark:border-slate-700 dark:bg-slate-800/50 ";
 
 export function OAuthDivider() {
   return (
     <div className="relative py-2">
       <div className="absolute inset-0 flex items-center" aria-hidden>
-        <div className="w-full border-t border-stone-200 dark:border-stone-700" />
+        <div className="w-full border-t border-slate-200 dark:border-slate-700" />
       </div>
-      <p className="relative mx-auto w-fit bg-surface-elevated px-3 text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400">
+      <p className="relative mx-auto w-fit bg-surface-elevated px-3 text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
         or continue with email
       </p>
     </div>
@@ -57,20 +57,20 @@ export function OAuthDivider() {
 function ComingSoonSocialButtons() {
   return (
     <div className="space-y-3">
-      <p className="text-center text-xs text-stone-500 dark:text-stone-400">
+      <p className="text-center text-xs text-slate-500 dark:text-slate-400">
         Google and Apple login will be enabled soon.
       </p>
       <Button type="button" variant="outline" className={comingSoonButtonClass} disabled>
         <GoogleIcon className="h-4 w-4 opacity-70" />
         Continue with Google
-        <span className="ml-auto rounded-full bg-stone-200 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-stone-600 dark:bg-stone-700 dark:text-stone-300">
+        <span className="ml-auto rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300 dark:bg-slate-700">
           Soon
         </span>
       </Button>
       <Button type="button" variant="outline" className={comingSoonButtonClass} disabled>
         <AppleIcon className="h-4 w-4 opacity-70" />
         Continue with Apple
-        <span className="ml-auto rounded-full bg-stone-200 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-stone-600 dark:bg-stone-700 dark:text-stone-300">
+        <span className="ml-auto rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300 dark:bg-slate-700">
           Soon
         </span>
       </Button>

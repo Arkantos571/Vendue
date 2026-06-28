@@ -18,8 +18,8 @@ function StaffRow({
   return (
     <li className="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="min-w-0">
-        <p className="font-medium text-stone-900 dark:text-stone-100">{member.name}</p>
-        <p className="text-sm text-stone-500 dark:text-stone-400">{member.role}</p>
+        <p className="font-medium text-slate-900 dark:text-slate-100">{member.name}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{member.role}</p>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <AvailabilityBadge status={member.availability} />
           {member.isUnavailableForEvent ? (
@@ -27,7 +27,7 @@ function StaffRow({
               Unavailable
             </span>
           ) : null}
-          <span className="text-xs text-stone-500 dark:text-stone-400">
+          <span className="text-xs text-slate-500 dark:text-slate-400">
             {formatHourlyRate(member.hourlyRate)}
           </span>
           <span className="text-xs text-stone-400 dark:text-stone-500">
@@ -39,7 +39,7 @@ function StaffRow({
       <button
         type="button"
         onClick={() => onAddToRota(member)}
-        className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-stone-200 bg-white px-3 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:hover:bg-stone-800"
+        className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 dark:text-slate-300 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
       >
         <UserPlus className="h-4 w-4" />
         Add to rota
@@ -54,14 +54,14 @@ export function AvailableStaffPanel({ staff, onAddToRota }: AvailableStaffPanelP
 
   if (staff.length === 0) {
     return (
-      <div className="rounded-xl border border-stone-200 bg-white shadow-sm dark:border-stone-700 dark:bg-stone-900">
-        <div className="border-b border-stone-100 px-6 py-4 dark:border-stone-800">
-          <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Available staff</h3>
-          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+      <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <div className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Available staff</h3>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Team members not yet on this rota.
           </p>
         </div>
-        <p className="px-6 py-8 text-sm text-stone-500 dark:text-stone-400">
+        <p className="px-6 py-8 text-sm text-slate-500 dark:text-slate-400">
           All roster-eligible staff are already assigned to this rota.
         </p>
       </div>
@@ -70,15 +70,15 @@ export function AvailableStaffPanel({ staff, onAddToRota }: AvailableStaffPanelP
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl border border-stone-200 bg-white shadow-sm dark:border-stone-700 dark:bg-stone-900">
-        <div className="border-b border-stone-100 px-6 py-4 dark:border-stone-800">
-          <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Available staff</h3>
-          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+      <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <div className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Available staff</h3>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             No unavailability conflicts for this event.
           </p>
         </div>
         {available.length === 0 ? (
-          <p className="px-6 py-8 text-sm text-stone-500 dark:text-stone-400">
+          <p className="px-6 py-8 text-sm text-slate-500 dark:text-slate-400">
             Everyone left on the roster is marked unavailable for this event time.
           </p>
         ) : (

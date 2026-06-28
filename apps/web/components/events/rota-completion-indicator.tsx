@@ -18,17 +18,17 @@ export function RotaCompletionIndicator({
   return (
     <div className={cn("space-y-1.5", compact && "min-w-[120px]")}>
       <div className="flex items-center justify-between gap-2 text-xs">
-        <span className="text-stone-500">Rota</span>
+        <span className="text-slate-500 dark:text-slate-400">Rota</span>
         <span
           className={cn(
             "font-medium",
-            isComplete ? "text-emerald-700" : isUrgent ? "text-amber-700" : "text-stone-700",
+            isComplete ? "text-emerald-700" : isUrgent ? "text-amber-700" : "text-slate-700 dark:text-slate-300",
           )}
         >
           {assigned}/{required}
         </span>
       </div>
-      <div className="h-1.5 overflow-hidden rounded-full bg-stone-100">
+      <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
         <div
           className={cn(
             "h-full rounded-full transition-all",

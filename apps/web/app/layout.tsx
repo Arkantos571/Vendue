@@ -20,6 +20,21 @@ export const metadata: Metadata = {
   },
   description:
     "Venudue — hospitality events management from venue setup to staff rota and mobile operations.",
+  openGraph: {
+    title: "Venudue",
+    description:
+      "Hospitality event operations — enquiries, events, rotas, and function sheets in one workspace.",
+    url: "https://venudue.app",
+    siteName: "Venudue",
+    locale: "en_GB",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Venudue",
+    description:
+      "Hospitality event operations — enquiries, events, rotas, and function sheets in one workspace.",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

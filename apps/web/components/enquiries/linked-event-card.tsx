@@ -17,7 +17,7 @@ export function LinkedEventCard({ event }: LinkedEventCardProps) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <CardTitle>Linked event</CardTitle>
-            <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
               Converted to event — operational details live on the event record.
             </p>
           </div>
@@ -27,16 +27,16 @@ export function LinkedEventCard({ event }: LinkedEventCardProps) {
       <CardContent>
         <dl className="grid gap-4 sm:grid-cols-2">
           <div>
-            <dt className="text-xs font-medium uppercase tracking-wide text-stone-500">Event name</dt>
-            <dd className="mt-1 text-sm font-medium text-stone-900 dark:text-stone-100">{event.title}</dd>
+            <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Event name</dt>
+            <dd className="mt-1 text-sm font-medium text-slate-900 dark:text-slate-100">{event.title}</dd>
           </div>
           <div>
-            <dt className="text-xs font-medium uppercase tracking-wide text-stone-500">Date</dt>
-            <dd className="mt-1 text-sm text-stone-900 dark:text-stone-100">{formatDate(event.date)}</dd>
+            <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Date</dt>
+            <dd className="mt-1 text-sm text-slate-900 dark:text-slate-100">{formatDate(event.date)}</dd>
           </div>
           <div>
-            <dt className="text-xs font-medium uppercase tracking-wide text-stone-500">Time</dt>
-            <dd className="mt-1 text-sm text-stone-900 dark:text-stone-100">
+            <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Time</dt>
+            <dd className="mt-1 text-sm text-slate-900 dark:text-slate-100">
               {formatEnquiryTimeRange({
                 preferredStartTime: event.startTime,
                 preferredEndTime: event.endTime,
@@ -45,7 +45,7 @@ export function LinkedEventCard({ event }: LinkedEventCardProps) {
             </dd>
           </div>
           <div>
-            <dt className="text-xs font-medium uppercase tracking-wide text-stone-500">Status</dt>
+            <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Status</dt>
             <dd className="mt-1">
               <StatusBadge status={event.status} />
             </dd>

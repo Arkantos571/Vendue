@@ -18,7 +18,7 @@ export default function SignInPage() {
         </>
       }
     >
-      <Suspense fallback={<p className="text-sm text-stone-500">Loading…</p>}>
+      <Suspense fallback={<p className="text-sm text-slate-500 dark:text-slate-400">Loading…</p>}>
         <SignInForm />
       </Suspense>
     </AuthCard>

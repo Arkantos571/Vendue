@@ -50,9 +50,9 @@ export function AddUnavailabilityForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-stone-200 bg-stone-50/60 p-4 dark:border-stone-700 dark:bg-stone-900/40">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-slate-200 bg-slate-50/60 p-4 dark:border-slate-700 dark:bg-slate-900/40">
       {defaultStatusLabel ? (
-        <p className="text-xs text-stone-500 dark:text-stone-400">
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           New entries will be saved as {defaultStatusLabel.toLowerCase()}.
         </p>
       ) : null}
@@ -111,7 +111,7 @@ export function AddUnavailabilityForm({
           onChange={(e) => setReason(e.target.value)}
         />
       </div>
-      <p className="text-xs text-stone-500 dark:text-stone-400">
+      <p className="text-xs text-slate-500 dark:text-slate-400">
         Leave times empty to block full days. Overnight times are supported (e.g. 22:00 – 01:00).
       </p>
       <div className="flex flex-wrap gap-2">

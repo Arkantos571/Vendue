@@ -14,8 +14,8 @@ function StaffList({ label, names }: { label: string; names: string[] }) {
 
   return (
     <div>
-      <dt className="text-xs font-medium uppercase tracking-wide text-stone-500">{label}</dt>
-      <dd className="mt-1 text-sm text-stone-900 dark:text-stone-100">{names.join(", ")}</dd>
+      <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</dt>
+      <dd className="mt-1 text-sm text-slate-900 dark:text-slate-100">{names.join(", ")}</dd>
     </div>
   );
 }
@@ -53,15 +53,15 @@ export function StaffingPlanSummaryCard({
       </CardHeader>
       <CardContent>
         {!hasAnyStaff ? (
-          <p className="text-sm text-stone-500 dark:text-stone-400">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             Build the rota to populate staffing summary.
           </p>
         ) : (
           <dl className="grid gap-4 sm:grid-cols-2">
             {staffing.managerOnDuty && (
               <div>
-                <dt className="text-xs font-medium uppercase tracking-wide text-stone-500">Manager on duty</dt>
-                <dd className="mt-1 text-sm font-medium text-stone-900 dark:text-stone-100">
+                <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Manager on duty</dt>
+                <dd className="mt-1 text-sm font-medium text-slate-900 dark:text-slate-100">
                   {staffing.managerOnDuty}
                 </dd>
               </div>

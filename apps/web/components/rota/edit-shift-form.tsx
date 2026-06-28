@@ -102,7 +102,7 @@ export function EditShiftForm({
 
   return (
     <form onSubmit={handleSubmit} className="mt-4 space-y-4 rounded-lg border border-brand-200 bg-brand-50/30 p-4 dark:border-brand-900 dark:bg-brand-950/20">
-      <p className="text-sm font-medium text-stone-900 dark:text-stone-100">Edit shift — {shift.staffName}</p>
+      <p className="text-sm font-medium text-slate-900 dark:text-slate-100">Edit shift — {shift.staffName}</p>
       {error ? <p className="text-sm text-red-700 dark:text-red-300">{error}</p> : null}
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2 sm:col-span-2">
