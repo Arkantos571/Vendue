@@ -12,9 +12,6 @@ export function LandingCta() {
           <Link href="/sign-up" className="lp-btn lp-btn-primary">
             Start managing events
           </Link>
-          <Link href="/sign-in" className="lp-btn lp-btn-secondary">
-            View demo dashboard
-          </Link>
         </div>
       </div>
     </section>

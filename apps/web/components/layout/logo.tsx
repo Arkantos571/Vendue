@@ -2,11 +2,12 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 type LogoSize = "sm" | "md" | "lg";
+type LogoVariant = "default" | "inverse" | "landing";
 
 interface LogoProps {
   className?: string;
   showWordmark?: boolean;
-  variant?: "default" | "inverse";
+  variant?: LogoVariant;
   href?: string;
   size?: LogoSize;
   ariaLabel?: string;
@@ -16,36 +17,46 @@ const sizeStyles: Record<
   LogoSize,
   { box: string; wordmark: string; gap: string; vText: string }
 > = {
-  sm: { box: "h-7 w-7 rounded-[6px]", wordmark: "text-base", gap: "gap-2", vText: "text-[13px]" },
-  md: { box: "h-8 w-8 rounded-[7px]", wordmark: "text-lg", gap: "gap-2.5", vText: "text-[15px]" },
-  lg: { box: "h-10 w-10 rounded-[8px]", wordmark: "text-xl", gap: "gap-3", vText: "text-[18px]" },
+  sm: { box: "h-7 w-7 rounded-lg", wordmark: "text-base", gap: "gap-2", vText: "text-[15px]" },
+  md: { box: "h-8 w-8 rounded-[9px]", wordmark: "text-lg", gap: "gap-2.5", vText: "text-[17px]" },
+  lg: { box: "h-10 w-10 rounded-[10px]", wordmark: "text-xl", gap: "gap-3", vText: "text-[21px]" },
 };
 
-function LogoIcon({ className, size = "md" }: { className?: string; size?: LogoSize }) {
+const markStyles: Record<LogoVariant, string> = {
+  default: "bg-primary text-primary-foreground",
+  inverse: "bg-primary text-primary-foreground",
+  landing: "bg-[#6f9180] text-[#f7f4ef]",
+};
+
+const wordmarkStyles: Record<LogoVariant, string> = {
+  default: "text-foreground",
+  inverse: "text-primary-foreground",
+  landing: "text-[#f2f4ef]",
+};
+
+function LogoIcon({
+  className,
+  size = "md",
+  variant = "default",
+}: {
+  className?: string;
+  size?: LogoSize;
+  variant?: LogoVariant;
+}) {
   const styles = sizeStyles[size];
 
   return (
     <span
       className={cn(
-        "relative inline-flex shrink-0 items-center justify-center overflow-hidden bg-primary text-primary-foreground",
+        "logo-mark inline-flex shrink-0 items-center justify-center font-display font-medium leading-none",
+        markStyles[variant],
         styles.box,
+        styles.vText,
         className,
       )}
       aria-hidden
     >
-      <span className="absolute inset-x-0 top-[20%] flex justify-center gap-[3px]">
-        <span className="h-[3px] w-[3px] rounded-full bg-primary-foreground/60" />
-        <span className="h-[3px] w-[3px] rounded-full bg-primary-foreground/60" />
-        <span className="h-[3px] w-[3px] rounded-full bg-primary-foreground/60" />
-      </span>
-      <span
-        className={cn(
-          "font-display translate-y-[8%] font-medium leading-none",
-          styles.vText,
-        )}
-      >
-        V
-      </span>
+      V
     </span>
   );
 }
@@ -59,17 +70,16 @@ export function Logo({
   ariaLabel = "Venudue home",
 }: LogoProps) {
   const styles = sizeStyles[size];
-  const isInverse = variant === "inverse";
 
   const content = (
     <>
-      <LogoIcon size={size} />
+      <LogoIcon size={size} variant={variant} />
       {showWordmark ? (
         <span
           className={cn(
-            "font-display font-medium tracking-tight",
+            "logo-wordmark font-display font-medium tracking-tight",
             styles.wordmark,
-            isInverse ? "text-primary-foreground" : "text-foreground",
+            wordmarkStyles[variant],
           )}
         >
           Venudue
@@ -106,9 +116,11 @@ export function Logo({
 export function LogoIconOnly({
   className,
   size = "md",
+  variant = "default",
 }: {
   className?: string;
   size?: LogoSize;
+  variant?: LogoVariant;
 }) {
-  return <LogoIcon className={className} size={size} />;
+  return <LogoIcon className={className} size={size} variant={variant} />;
 }

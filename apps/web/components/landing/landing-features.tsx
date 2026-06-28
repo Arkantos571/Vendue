@@ -79,7 +79,7 @@ export function LandingFeatures() {
           </article>
 
           <article className="lp-bento">
-            <p className="lp-bento__label">Public proposal links</p>
+            <p className="lp-bento__label">Public proposals</p>
             <p className="lp-bento__stat">6</p>
             <p className="lp-bento__caption">awaiting client response</p>
             <p className="lp-bento__desc">

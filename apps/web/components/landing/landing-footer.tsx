@@ -33,7 +33,7 @@ export function LandingFooter() {
     <footer className="lp-footer">
       <div className="lp-container lp-footer__grid">
         <div className="lp-footer__brand">
-          <Logo href="/" />
+          <Logo href="/" variant="landing" />
           <p className="lp-footer__tagline">
             Hospitality event operations, on one screen.
           </p>
