@@ -1,0 +1,12 @@
+{
+  "name": "vendue",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter @vendue/web dev",
+    "build": "pnpm --filter @vendue/web build",
+    "start": "pnpm --filter @vendue/web start",
+    "lint": "pnpm --filter @vendue/web lint",
+    "typecheck": "pnpm --filter @vendue/web typecheck",
+    "test:e2e": "pnpm --filter @vendue/web test:e2e"
+  }
+}

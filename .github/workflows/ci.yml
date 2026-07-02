@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: apps/web/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: apps/web
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        working-directory: apps/web
+        run: pnpm lint
+
+      - name: Typecheck
+        working-directory: apps/web
+        run: pnpm typecheck
+
+      - name: Build
+        working-directory: apps/web
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
+
+      - name: Install Playwright browsers
+        if: secrets.NEXT_PUBLIC_SUPABASE_URL != ''
+        working-directory: apps/web
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: E2E tests
+        if: secrets.NEXT_PUBLIC_SUPABASE_URL != '' && secrets.SUPABASE_SERVICE_ROLE_KEY != ''
+        working-directory: apps/web
+        run: pnpm test:e2e
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
+          E2E_VENUE_SLUG: ${{ secrets.E2E_VENUE_SLUG }}
+          E2E_PROPOSAL_TOKEN: ${{ secrets.E2E_PROPOSAL_TOKEN }}
