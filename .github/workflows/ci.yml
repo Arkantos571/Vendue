@@ -42,13 +42,25 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder
           NEXT_PUBLIC_APP_URL: http://localhost:3000
 
+      - name: Check E2E secrets
+        id: e2e_check
+        run: |
+          if [ -n "$SUPABASE_URL" ] && [ -n "$SERVICE_ROLE_KEY" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
       - name: Install Playwright browsers
-        if: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' }}
+        if: steps.e2e_check.outputs.enabled == 'true'
         working-directory: apps/web
         run: pnpm exec playwright install --with-deps chromium
 
       - name: E2E tests
-        if: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' }} && secrets.SUPABASE_SERVICE_ROLE_KEY != ''
+        if: steps.e2e_check.outputs.enabled == 'true'
         run: pnpm test:e2e
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
