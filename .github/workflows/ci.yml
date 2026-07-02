@@ -24,22 +24,18 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          cache-dependency-path: apps/web/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
-        working-directory: apps/web
         run: pnpm install --frozen-lockfile
 
       - name: Lint
-        working-directory: apps/web
         run: pnpm lint
 
       - name: Typecheck
-        working-directory: apps/web
         run: pnpm typecheck
 
       - name: Build
-        working-directory: apps/web
         run: pnpm build
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
@@ -53,7 +49,6 @@ jobs:
 
       - name: E2E tests
         if: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' }} && secrets.SUPABASE_SERVICE_ROLE_KEY != ''
-        working-directory: apps/web
         run: pnpm test:e2e
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}

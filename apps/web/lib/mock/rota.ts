@@ -145,7 +145,7 @@ export function calculateShiftHours(
   finishTime: string,
   breakMinutes: number,
 ): number {
-  let start = parseTimeToMinutes(startTime);
+  const start = parseTimeToMinutes(startTime);
   let finish = parseTimeToMinutes(finishTime);
   if (finish < start) finish += 24 * 60;
   return Math.max(0, (finish - start - breakMinutes) / 60);

@@ -233,7 +233,7 @@ export async function saveVenueSetupAction(
 
   if (!venueId) {
     const newVenueId = randomUUID();
-    let slug = slugifyVenueName(trimmedName);
+    const slug = slugifyVenueName(trimmedName);
     let venueError: { message?: string; code?: string } | null = null;
 
     for (let attempt = 0; attempt < 3; attempt += 1) {

@@ -22,7 +22,7 @@ const NOTIFICATION_SELECT_LEGACY =
 async function fetchNotifications(
   supabase: Awaited<ReturnType<typeof requireAuthenticatedClient>>["supabase"],
 ): Promise<{ notifications: AppNotification[]; migrationRequired: boolean }> {
-  let { data, error } = await supabase
+  const { data, error } = await supabase
     .from("notifications")
     .select(NOTIFICATION_SELECT)
     .order("created_at", { ascending: false })
