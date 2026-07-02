@@ -14,6 +14,7 @@ import {
   uniqueVenueSlug,
 } from "@/lib/venue-setup/slug";
 import type { VenueOnboardingDraft } from "@/types";
+import type { OnboardingChecklistItem } from "@/lib/mock/dashboard";
 
 export type VenueSetupActionResult =
   | { success: true; draft: VenueOnboardingDraft; message?: string }
@@ -356,3 +357,185 @@ export async function saveVenueSetupAction(
     return { success: false, error: message };
   }
 }
+
+export type OnboardingChecklistActionResult =
+  | { success: true; items: OnboardingChecklistItem[]; complete: number; total: number }
+  | { success: false; error: string };
+
+export async function loadOnboardingChecklistAction(): Promise<OnboardingChecklistActionResult> {
+  if (!isSupabaseConfigured()) {
+    const items = [
+      {
+        id: "ob-1",
+        label: "Venue profile",
+        description: "Name, type, and regional defaults",
+        completed: false,
+        href: "/dashboard/settings#venue-setup",
+      },
+      {
+        id: "ob-2",
+        label: "Spaces configured",
+        description: "Rooms and areas available for events",
+        completed: false,
+        href: "/dashboard/settings#venue-setup",
+      },
+      {
+        id: "ob-3",
+        label: "Event types defined",
+        description: "Templates for faster event creation",
+        completed: false,
+        href: "/dashboard/settings#venue-setup",
+      },
+      {
+        id: "ob-4",
+        label: "Team roster started",
+        description: "Add staff before building rotas",
+        completed: false,
+        href: "/dashboard/team",
+      },
+    ];
+    return { success: true, items, complete: 0, total: items.length };
+  }
+
+  try {
+    const { supabase, user } = await requireAuthenticatedClient();
+
+    const { data: membership, error: membershipError } = await supabase
+      .from("venue_members")
+      .select("venue_id")
+      .eq("profile_id", user.id)
+      .not("joined_at", "is", null)
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if (membershipError) {
+      return { success: false, error: dbErrorMessage(membershipError) };
+    }
+
+    if (!membership?.venue_id) {
+      const items = [
+        {
+          id: "ob-1",
+          label: "Venue profile",
+          description: "Name, type, and regional defaults",
+          completed: false,
+          href: "/dashboard/onboarding",
+        },
+        {
+          id: "ob-2",
+          label: "Spaces configured",
+          description: "Rooms and areas available for events",
+          completed: false,
+          href: "/dashboard/onboarding",
+        },
+        {
+          id: "ob-3",
+          label: "Event types defined",
+          description: "Templates for faster event creation",
+          completed: false,
+          href: "/dashboard/onboarding",
+        },
+        {
+          id: "ob-4",
+          label: "Team roster started",
+          description: "Add staff before building rotas",
+          completed: false,
+          href: "/dashboard/team",
+        },
+      ];
+      return { success: true, items, complete: 0, total: items.length };
+    }
+
+    const venueId = membership.venue_id;
+
+    const [
+      { data: venue, error: venueError },
+      { count: spaceCount, error: spacesError },
+      { count: eventTypeCount, error: eventTypesError },
+      { count: teamCount, error: teamError },
+    ] = await Promise.all([
+      supabase
+        .from("venues")
+        .select("name, venue_type")
+        .eq("id", venueId)
+        .maybeSingle(),
+      supabase
+        .from("spaces")
+        .select("id", { count: "exact", head: true })
+        .eq("venue_id", venueId),
+      supabase
+        .from("event_types")
+        .select("id", { count: "exact", head: true })
+        .eq("venue_id", venueId),
+      supabase
+        .from("team_members")
+        .select("id", { count: "exact", head: true })
+        .eq("venue_id", venueId)
+        .in("status", ["active", "invited"]),
+    ]);
+
+    if (venueError) {
+      return { success: false, error: dbErrorMessage(venueError) };
+    }
+    if (spacesError) {
+      return { success: false, error: dbErrorMessage(spacesError) };
+    }
+    if (eventTypesError) {
+      return { success: false, error: dbErrorMessage(eventTypesError) };
+    }
+    if (teamError) {
+      return { success: false, error: dbErrorMessage(teamError) };
+    }
+
+    const profileComplete = Boolean(venue?.name?.trim() && venue?.venue_type);
+    const spacesComplete = (spaceCount ?? 0) > 0;
+    const eventTypesComplete = (eventTypeCount ?? 0) > 0;
+    const teamComplete = (teamCount ?? 0) > 0;
+
+    const items: OnboardingChecklistItem[] = [
+      {
+        id: "ob-1",
+        label: "Venue profile",
+        description: "Name, type, and regional defaults",
+        completed: profileComplete,
+        href: "/dashboard/settings#venue-setup",
+      },
+      {
+        id: "ob-2",
+        label: "Spaces configured",
+        description: "Rooms and areas available for events",
+        completed: spacesComplete,
+        href: "/dashboard/settings#venue-setup",
+      },
+      {
+        id: "ob-3",
+        label: "Event types defined",
+        description: "Templates for faster event creation",
+        completed: eventTypesComplete,
+        href: "/dashboard/settings#venue-setup",
+      },
+      {
+        id: "ob-4",
+        label: "Team roster started",
+        description: "Add staff before building rotas",
+        completed: teamComplete,
+        href: "/dashboard/team",
+      },
+    ];
+
+    const complete = items.filter((item) => item.completed).length;
+
+    return {
+      success: true,
+      items,
+      complete,
+      total: items.length,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to load onboarding checklist.";
+    return { success: false, error: message };
+  }
+}
+
+

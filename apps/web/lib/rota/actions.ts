@@ -3,7 +3,8 @@
 import { randomUUID } from "crypto";
 import { getPrimaryVenueId, requireAuthenticatedClient } from "@/lib/auth/session";
 import { queryVenueEventById, queryVenueEvents } from "@/lib/events/event-select";
-import { toMockEvent, type EventRowWithJoins } from "@/lib/events/mappers";
+import { splitDateTime, toMockEvent, type EventRowWithJoins } from "@/lib/events/mappers";
+import type { RotaGapPreview } from "@/lib/mock/dashboard";
 import type { RotaBuilderData, RotaEventSummary } from "@/lib/mock/rota";
 import {
   buildRotaBuilderData,
@@ -149,7 +150,6 @@ export async function loadRotaOverviewAction(): Promise<
       return {
         success: true,
         events: [],
-        migrationRequired: !rotaPublishSchemaReady,
       };
     }
 
@@ -703,3 +703,155 @@ export async function publishRotaAction(
     return { success: false, error: message };
   }
 }
+
+function formatShiftWindow(startsAt: string, endsAt: string): string {
+  const start = splitDateTime(startsAt);
+  const end = splitDateTime(endsAt);
+  return `${start.time} – ${end.time}`;
+}
+
+function gapPriority(startsAt: string): RotaGapPreview["priority"] {
+  const daysUntil = (new Date(startsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+  return daysUntil <= 3 ? "high" : "medium";
+}
+
+export async function loadRotaGapsPreviewAction(): Promise<
+  RotaActionResult<{ gaps: RotaGapPreview[]; gapCount: number }>
+> {
+  if (!isSupabaseConfigured()) {
+    return { success: true, gaps: [], gapCount: 0, noVenue: true };
+  }
+
+  try {
+    const context = await loadVenueContext("/sign-in?redirect=/dashboard");
+
+    if (!("supabase" in context)) {
+      return { success: true, gaps: [], gapCount: 0, noVenue: true };
+    }
+
+    const { supabase, venueId } = context;
+    const nowIso = new Date().toISOString();
+    const horizon = new Date();
+    horizon.setDate(horizon.getDate() + 14);
+    const horizonIso = horizon.toISOString();
+
+    const { rows: events, rotaPublishSchemaReady } = await queryVenueEvents((select) =>
+      supabase
+        .from("events")
+        .select(select)
+        .eq("venue_id", venueId)
+        .gte("starts_at", nowIso)
+        .lte("starts_at", horizonIso)
+        .not("status", "in", '("cancelled","completed")')
+        .order("starts_at", { ascending: true }),
+    );
+
+    if (events.length === 0) {
+      return {
+        success: true,
+        gaps: [],
+        gapCount: 0,
+      };
+    }
+
+    const eventIds = events.map((event) => event.id);
+
+    const { data: shiftRows, error: shiftsError } = await supabase
+      .from("rota_shifts")
+      .select(
+        "id, event_id, role_label, starts_at, ends_at, status, events ( title, spaces ( name ) )",
+      )
+      .eq("venue_id", venueId)
+      .in("event_id", eventIds);
+
+    if (shiftsError) {
+      return { success: false, error: dbErrorMessage(shiftsError) };
+    }
+
+    const shiftsByEvent = new Map<string, number>();
+    const gaps: RotaGapPreview[] = [];
+
+    type ShiftGapRow = {
+      id: string;
+      event_id: string | null;
+      role_label: string | null;
+      starts_at: string;
+      ends_at: string;
+      status: string;
+      events:
+        | {
+            title: string;
+            spaces: { name: string } | { name: string }[] | null;
+          }
+        | {
+            title: string;
+            spaces: { name: string } | { name: string }[] | null;
+          }[]
+        | null;
+    };
+
+    function resolveShiftEvent(shift: ShiftGapRow): { title: string; space: string } {
+      const eventJoin = Array.isArray(shift.events) ? shift.events[0] : shift.events;
+      const spaceJoin = eventJoin?.spaces;
+      const spaceName = Array.isArray(spaceJoin)
+        ? (spaceJoin[0]?.name ?? "—")
+        : (spaceJoin?.name ?? "—");
+
+      return {
+        title: eventJoin?.title ?? "Upcoming event",
+        space: spaceName,
+      };
+    }
+
+    for (const shift of (shiftRows as ShiftGapRow[] | null) ?? []) {
+      if (!shift.event_id) continue;
+
+      if (shift.status === "declined") {
+        const { title, space } = resolveShiftEvent(shift);
+        const start = splitDateTime(shift.starts_at);
+
+        gaps.push({
+          id: shift.id,
+          eventTitle: title,
+          role: shift.role_label?.trim() || "Staff reassignment needed",
+          date: start.date,
+          time: formatShiftWindow(shift.starts_at, shift.ends_at),
+          space,
+          priority: gapPriority(shift.starts_at),
+        });
+      } else {
+        shiftsByEvent.set(shift.event_id, (shiftsByEvent.get(shift.event_id) ?? 0) + 1);
+      }
+    }
+
+    for (const row of events) {
+      const event = toMockEvent(row);
+      if ((shiftsByEvent.get(event.id) ?? 0) > 0) {
+        continue;
+      }
+
+      gaps.push({
+        id: `event-gap-${event.id}`,
+        eventTitle: event.title,
+        role: "Staff assignment needed",
+        date: event.date,
+        time: `${event.startTime} – ${event.endTime}`,
+        space: event.space,
+        priority: gapPriority(row.starts_at),
+      });
+    }
+
+    gaps.sort((a, b) => a.date.localeCompare(b.date));
+
+    return {
+      success: true,
+      gaps: gaps.slice(0, 5),
+      gapCount: gaps.length,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to load rota gaps.";
+    return { success: false, error: message };
+  }
+}
+
+

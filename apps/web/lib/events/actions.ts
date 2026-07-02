@@ -4,6 +4,7 @@ import { randomUUID } from "crypto";
 import { getPrimaryVenueId, requireAuthenticatedClient } from "@/lib/auth/session";
 import { resolveEventTimestamps } from "@/lib/events/event-time";
 import { toMockEvent, type EventRowWithJoins } from "@/lib/events/mappers";
+import type { UpcomingEventPreview } from "@/lib/mock/dashboard";
 import type { MockEvent } from "@/lib/mock/events";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { EventStatus } from "@/types";
@@ -59,6 +60,82 @@ async function fetchVenueEvents(
   }
 
   return (data as EventRowWithJoins[] | null)?.map(toMockEvent) ?? [];
+}
+
+function toUpcomingEventPreview(row: EventRowWithJoins): UpcomingEventPreview {
+  const event = toMockEvent(row);
+  return {
+    id: event.id,
+    title: event.title,
+    space: event.space,
+    date: event.date,
+    startsAt: event.startTime,
+    guestCount: event.guestCount,
+    status: event.status,
+  };
+}
+
+function upcomingWindowEnd(days: number): string {
+  const end = new Date();
+  end.setDate(end.getDate() + days);
+  end.setHours(23, 59, 59, 999);
+  return end.toISOString();
+}
+
+async function fetchUpcomingEventsForVenue(
+  supabase: Awaited<ReturnType<typeof requireAuthenticatedClient>>["supabase"],
+  venueId: string,
+  days = 7,
+): Promise<{ events: UpcomingEventPreview[]; totalCount: number }> {
+  const nowIso = new Date().toISOString();
+  const endIso = upcomingWindowEnd(days);
+
+  const { data, error, count } = await supabase
+    .from("events")
+    .select(EVENT_SELECT, { count: "exact" })
+    .eq("venue_id", venueId)
+    .gte("starts_at", nowIso)
+    .lte("starts_at", endIso)
+    .not("status", "in", '("cancelled","completed")')
+    .order("starts_at", { ascending: true })
+    .limit(4);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const events = ((data as EventRowWithJoins[] | null) ?? []).map(toUpcomingEventPreview);
+
+  return {
+    events,
+    totalCount: count ?? events.length,
+  };
+}
+
+export async function loadUpcomingEventsPreviewAction(): Promise<
+  EventsActionResult<{ events: UpcomingEventPreview[]; totalCount: number }>
+> {
+  if (!isSupabaseConfigured()) {
+    return { success: true, events: [], totalCount: 0, noVenue: true };
+  }
+
+  try {
+    const { supabase, user } = await requireAuthenticatedClient(
+      "/sign-in?redirect=/dashboard",
+    );
+    const venueId = await getPrimaryVenueId(supabase, user.id);
+
+    if (!venueId) {
+      return { success: true, events: [], totalCount: 0, noVenue: true };
+    }
+
+    const { events, totalCount } = await fetchUpcomingEventsForVenue(supabase, venueId);
+    return { success: true, events, totalCount };
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to load upcoming events.";
+    return { success: false, error: message };
+  }
 }
 
 export async function loadEventsAction(): Promise<

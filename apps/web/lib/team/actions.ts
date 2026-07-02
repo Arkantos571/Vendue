@@ -60,6 +60,50 @@ async function fetchVenueTeamMembers(
   return (data as TeamMemberRow[] | null)?.map(toMockTeamMember) ?? [];
 }
 
+async function fetchActiveTeamMemberCount(
+  supabase: Awaited<ReturnType<typeof requireAuthenticatedClient>>["supabase"],
+  venueId: string,
+): Promise<number> {
+  const { count, error } = await supabase
+    .from("team_members")
+    .select("id", { count: "exact", head: true })
+    .eq("venue_id", venueId)
+    .in("status", ["active", "invited"]);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return count ?? 0;
+}
+
+export async function loadActiveTeamMemberCountAction(): Promise<
+  TeamActionResult<{ count: number }>
+> {
+  if (!isSupabaseConfigured()) {
+    return { success: true, count: 0, noVenue: true };
+  }
+
+  try {
+    const { supabase, user } = await requireAuthenticatedClient(
+      "/sign-in?redirect=/dashboard",
+    );
+    const venueId = await getPrimaryVenueId(supabase, user.id);
+
+    if (!venueId) {
+      return { success: true, count: 0, noVenue: true };
+    }
+
+    const count = await fetchActiveTeamMemberCount(supabase, venueId);
+    return { success: true, count };
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to load team member count.";
+    return { success: false, error: message };
+  }
+}
+
+
 export async function loadTeamMembersAction(): Promise<
   TeamActionResult<{ members: MockTeamMember[] }>
 > {
