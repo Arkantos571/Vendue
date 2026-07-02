@@ -47,12 +47,12 @@ jobs:
           NEXT_PUBLIC_APP_URL: http://localhost:3000
 
       - name: Install Playwright browsers
-        if: secrets.NEXT_PUBLIC_SUPABASE_URL != ''
+        if: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' }}
         working-directory: apps/web
         run: pnpm exec playwright install --with-deps chromium
 
       - name: E2E tests
-        if: secrets.NEXT_PUBLIC_SUPABASE_URL != '' && secrets.SUPABASE_SERVICE_ROLE_KEY != ''
+        if: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' }} && secrets.SUPABASE_SERVICE_ROLE_KEY != ''
         working-directory: apps/web
         run: pnpm test:e2e
         env:
