@@ -1,6 +1,7 @@
 {
   "name": "vendue",
   "private": true,
+  "packageManager": "pnpm@11.9.0",
   "scripts": {
     "dev": "pnpm --filter @vendue/web dev",
     "build": "pnpm --filter @vendue/web build",
