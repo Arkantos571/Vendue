@@ -42,7 +42,7 @@ test.describe("Public enquiry → proposal workflow", () => {
 
     await page.goto(`/proposal/${proposalToken}`);
     await expect(page.getByRole("heading", { name: /your event proposal/i })).toBeVisible();
-    await expect(page.getByText(/prepared for/i)).toBeVisible();
+    await expect(page.getByText(/prepared for/i).first()).toBeVisible();
 
     await page.getByRole("button", { name: "Looks good" }).click();
     await page.getByLabel(/message to the venue team/i).fill("Looking forward to discussing details.");
