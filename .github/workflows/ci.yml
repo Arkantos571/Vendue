@@ -56,8 +56,7 @@ jobs:
 
       - name: Install Playwright browsers
         if: steps.e2e_check.outputs.enabled == 'true'
-        working-directory: apps/web
-        run: pnpm exec playwright install --with-deps chromium
+        run: pnpm --filter @vendue/web exec playwright install --with-deps chromium
 
       - name: E2E tests
         if: steps.e2e_check.outputs.enabled == 'true'
